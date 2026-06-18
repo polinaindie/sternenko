@@ -1,0 +1,48 @@
+/*
+ * Brand theme template — copy via `pnpm create-theme <slug>`, then fill in the
+ * values from the client's brandbook. Only visual tokens live here; layout,
+ * spacing and breakpoints stay in base.css and never change per brand.
+ *
+ * Replace CLIENT_SLUG with the client name (lowercase, kebab-case).
+ * Colors use oklch(); pick values from the brandbook (a hex → oklch converter
+ * is fine). Keep enough contrast for accessible text on each surface.
+ */
+[data-theme="CLIENT_SLUG"] {
+  /* Primary — the main brand color (buttons, active states, focus ring). */
+  --primary: oklch(0.55 0.2 264);
+  --primary-foreground: oklch(0.985 0 0);
+  --ring: oklch(0.55 0.2 264);
+
+  /* Secondary / accent — supporting surfaces. Tint slightly toward the brand
+   * hue, or keep neutral if the brandbook only defines one color. */
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+
+  /* Destructive — error/delete actions. Keep a clearly "danger" red. */
+  --destructive: oklch(0.577 0.245 27.325);
+
+  /* Typography — the brandbook's primary font. Add the @fontsource import or a
+   * self-hosted @font-face elsewhere, then reference the family here. */
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+
+  /* Shape & elevation. */
+  --radius: 0.625rem;
+  --border-width: 1px;
+  --shadow-card:
+    0 1px 3px 0 oklch(0 0 0 / 0.1), 0 1px 2px -1px oklch(0 0 0 / 0.1);
+}
+
+/* Dark mode overrides — brighten the brand color so it stays legible on dark
+ * surfaces. Remove this block if the client does not need dark mode. */
+[data-theme="CLIENT_SLUG"].dark {
+  --primary: oklch(0.7 0.18 264);
+  --primary-foreground: oklch(0.205 0 0);
+  --ring: oklch(0.7 0.18 264);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+}

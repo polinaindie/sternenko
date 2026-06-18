@@ -1,0 +1,58 @@
+{
+  "required": [
+    "--background",
+    "--foreground",
+    "--primary",
+    "--primary-foreground",
+    "--secondary",
+    "--secondary-foreground",
+    "--muted",
+    "--muted-foreground",
+    "--accent",
+    "--accent-foreground",
+    "--destructive",
+    "--border",
+    "--input",
+    "--ring",
+    "--radius",
+    "--font-sans"
+  ],
+  "brand": [
+    "--primary",
+    "--primary-foreground",
+    "--secondary",
+    "--secondary-foreground",
+    "--accent",
+    "--accent-foreground",
+    "--destructive",
+    "--ring",
+    "--font-sans"
+  ],
+  "appearance": ["--radius", "--shadow-card", "--border-width"],
+  "typography": [
+    "--font-size-sm",
+    "--line-height-sm",
+    "--font-size-base",
+    "--line-height-base",
+    "--font-weight-medium"
+  ],
+  "spacing": ["--spacing-2-5", "--spacing-4"],
+  "stroke": ["--stroke-1", "--stroke-2"],
+  "layout": [
+    "--breakpoint-xs",
+    "--breakpoint-sm",
+    "--breakpoint-md",
+    "--breakpoint-lg",
+    "--breakpoint-xl",
+    "--breakpoint-2xl",
+    "--breakpoint-3xl",
+    "--container-max",
+    "--container-content-max",
+    "--content-inner-padding",
+    "--content-aside-width",
+    "--content-column-gap",
+    "--page-gutter",
+    "--page-gutter-md",
+    "--page-gutter-lg"
+  ]
+}

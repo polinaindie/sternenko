@@ -1,0 +1,36 @@
+/* Ukrainian Institute brand typeface — https://ui.org.ua/ui-logo/ */
+@font-face {
+  font-family: "Ukrainian Institute";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("../assets/fonts/ukrainian-institute/ukrainianinstitutelight.woff")
+    format("woff");
+}
+@font-face {
+  font-family: "Ukrainian Institute";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/ukrainian-institute/ukrainianinstituteregular.woff")
+    format("woff");
+}
+@font-face {
+  font-family: "Ukrainian Institute";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../assets/fonts/ukrainian-institute/UkrainianinstituteBold.woff2")
+    format("woff2");
+}
+
+@layer base {
+  [data-theme="ukrainian-institute"] body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  [data-theme="ukrainian-institute"] :is(h1, h2, h3, h4, h5, h6) {
+    letter-spacing: var(--letter-spacing-heading, -0.04em);
+  }
+}

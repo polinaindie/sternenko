@@ -1,0 +1,43 @@
+/*
+ * Base primitives — structural tokens shared by every theme.
+ * These map directly to the Figma kit variables and stay constant across
+ * brands (only colors / radius / font-family change per brand theme).
+ * Imported once, before any brand theme.
+ */
+:root {
+  /* Typography (Figma: size/sm, leading/5, weight/medium, ...) */
+  --font-size-sm: 0.875rem; /* 14px — Figma size/sm */
+  --line-height-sm: 1.25rem; /* 20px — Figma leading/5 */
+  --font-size-base: 1rem; /* 16px */
+  --line-height-base: 1.5rem; /* 24px */
+  --font-weight-medium: 500; /* Figma weight/medium */
+
+  /* Spacing (Figma: py-4, mr-2,5) */
+  --spacing-2-5: 0.625rem; /* 10px — Figma mr-2,5 */
+  --spacing-4: 1rem; /* 16px — Figma py-4 */
+
+  /* Stroke scale (Figma: stroke-1, stroke-2) */
+  --stroke-1: 1px;
+  --stroke-2: 2px;
+
+  /* Breakpoints — single source of truth for page-level layout (2026 device landscape).
+   * Mirror rem values in packages/ui/src/styles/globals.css @theme for Tailwind.
+   * Read by JS (useIsMobile). */
+  --breakpoint-xs: 30rem; /* 480px — large phones (iPhone Pro Max, Galaxy Ultra) */
+  --breakpoint-sm: 40rem; /* 640px — small tablets portrait, phones landscape */
+  --breakpoint-md: 48rem; /* 768px — iPad Mini/Air portrait, 1 → 2 columns */
+  --breakpoint-lg: 64rem; /* 1024px — iPad Pro, laptops, split layouts */
+  --breakpoint-xl: 80rem; /* 1280px — standard desktop */
+  --breakpoint-2xl: 96rem; /* 1536px — wide monitors, max-width containers */
+  --breakpoint-3xl: 120rem; /* 1920px — Full HD, loose spacing & type scale */
+
+  /* Page layout primitives (Container / PageShell). */
+  --container-max: 80rem; /* 1280px content cap */
+  --container-content-max: var(--container-max); /* inner reading column */
+  --content-inner-padding: 0px;
+  --content-aside-width: 16rem;
+  --content-column-gap: 2rem;
+  --page-gutter: 1rem; /* horizontal padding on mobile */
+  --page-gutter-md: 1.5rem; /* horizontal padding from md up */
+  --page-gutter-lg: var(--page-gutter-md); /* desktop gutters — override per product */
+}
