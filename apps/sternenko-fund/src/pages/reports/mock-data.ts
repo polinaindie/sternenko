@@ -136,15 +136,6 @@ export const FUNDRAISING_TO_PROJECT: Record<
 export type IssuanceSnapshot = {
   /** ISO datetime останнього пакетного оновлення. */
   updatedAt: string
-  totalPurchaseAmountUah: number
-  closedRequestsCount: number
-  /** Приблизні збитки ворогу за весь час, USD (оцінка). */
-  lossesUsd: number
-  /** Місячна норма закупівель — поточний місяць, не залежить від фільтра. */
-  monthlyNorm: {
-    valueUah: number
-    targetUah: number
-  }
 }
 
 /** Спільна дата останнього оновлення даних на сторінці «Звіти». */
@@ -152,13 +143,6 @@ export const REPORTS_DATA_UPDATED_AT = "2026-06-18T14:00:00+03:00"
 
 export const ISSUANCE_SNAPSHOT: IssuanceSnapshot = {
   updatedAt: REPORTS_DATA_UPDATED_AT,
-  totalPurchaseAmountUah: 892_450_000,
-  closedRequestsCount: 142,
-  lossesUsd: 127_400_000,
-  monthlyNorm: {
-    valueUah: 68_500_000,
-    targetUah: 85_000_000,
-  },
 }
 
 const ISSUANCE_PRODUCTS_BY_CATEGORY: Record<

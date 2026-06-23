@@ -1,7 +1,9 @@
 import { useMemo, type ReactNode } from "react"
 
-import { MetricBar, MetricBarGroup } from "@workspace/ui/components/metric-bar"
-import { Progress } from "@workspace/ui/components/progress"
+import {
+  MetricBarHorizontal,
+  MetricBarList,
+} from "@workspace/ui/components/metric-bar"
 import {
   CurrencyMetric,
   DisplayMetric,
@@ -20,8 +22,8 @@ import { Stack } from "@workspace/ui/layout/stack"
 import {
   formatRequestCountCaption,
   summarizeClosedRequestsByProject,
+  summarizeIssuanceKpis,
 } from "../lib/issuance-analytics"
-import { getIssuanceSnapshot } from "../lib/issuance-snapshot"
 import type { IssuanceRow } from "../mock-data"
 import { EmptyReportState } from "./ReportPagination"
 import {
@@ -31,14 +33,12 @@ import {
 import { SectionTitle } from "./report-ui"
 
 type IssuanceSnapshotSectionProps = {
-  /** Рядки таблиці після застосованих фільтрів — для розподілу закритих запитів. */
+  /** Рядки таблиці після застосованих фільтрів. */
   rows: IssuanceRow[]
+  /** Підпис періоду з фільтра «Дата видачі». */
+  periodLabel: string
 }
 
-/**
- * KPI закупівель — пакетний знімок (щоденний/щотижневий).
- * Розподіл закритих запитів за проєктами — за застосованими фільтрами таблиці.
- */
 function SnapshotCaption({ children }: { children: ReactNode }) {
   return (
     <span className="[font-family:var(--font-body)] text-sm font-normal tracking-normal text-muted-foreground">
@@ -47,14 +47,11 @@ function SnapshotCaption({ children }: { children: ReactNode }) {
   )
 }
 
-export function IssuanceSnapshotSection({ rows }: IssuanceSnapshotSectionProps) {
-  const snapshot = getIssuanceSnapshot()
-  const monthlyNormPercent = Math.min(
-    100,
-    Math.round(
-      (snapshot.monthlyNorm.valueUah / snapshot.monthlyNorm.targetUah) * 100
-    )
-  )
+export function IssuanceSnapshotSection({
+  rows,
+  periodLabel,
+}: IssuanceSnapshotSectionProps) {
+  const kpis = useMemo(() => summarizeIssuanceKpis(rows), [rows])
 
   const projectBreakdown = useMemo(
     () => summarizeClosedRequestsByProject(rows),
@@ -63,17 +60,17 @@ export function IssuanceSnapshotSection({ rows }: IssuanceSnapshotSectionProps) 
 
   return (
     <Stack className="gap-3">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <ReportCard
           tone="outline"
           className="bg-[var(--report-surface)] text-[var(--report-surface-foreground)]"
         >
           <CurrencyMetric
-            amount={snapshot.totalPurchaseAmountUah}
+            amount={kpis.totalPurchaseAmountUah}
             label="Загальна сума закупівель, ₴"
             size="sm"
           >
-            <SnapshotCaption>за весь час</SnapshotCaption>
+            <SnapshotCaption>{periodLabel}</SnapshotCaption>
           </CurrencyMetric>
         </ReportCard>
         <ReportCard
@@ -81,11 +78,11 @@ export function IssuanceSnapshotSection({ rows }: IssuanceSnapshotSectionProps) 
           className="bg-[var(--report-surface)] text-[var(--report-surface-foreground)]"
         >
           <DisplayMetric
-            value={snapshot.closedRequestsCount}
+            value={kpis.closedRequestsCount}
             label="Закритих запитів"
             size="sm"
           >
-            <SnapshotCaption>за весь час</SnapshotCaption>
+            <SnapshotCaption>{periodLabel}</SnapshotCaption>
           </DisplayMetric>
         </ReportCard>
         <ReportCard
@@ -93,38 +90,14 @@ export function IssuanceSnapshotSection({ rows }: IssuanceSnapshotSectionProps) 
           className="bg-[var(--report-surface)] text-[var(--report-surface-foreground)]"
         >
           <CurrencyMetric
-            amount={snapshot.lossesUsd}
+            amount={kpis.lossesUsd}
             currency="$"
             compact
             label="Збитки ворогу"
             size="sm"
           >
-            <SnapshotCaption>приблизна оцінка · за весь час</SnapshotCaption>
+            <SnapshotCaption>приблизна оцінка · {periodLabel}</SnapshotCaption>
           </CurrencyMetric>
-        </ReportCard>
-        <ReportCard
-          tone="outline"
-          className="bg-[var(--report-surface)] text-[var(--report-surface-foreground)]"
-        >
-          <Stack className="gap-2">
-            <CurrencyMetric
-              amount={snapshot.monthlyNorm.valueUah}
-              label="Місячна норма, ₴"
-              size="sm"
-            >
-              <SnapshotCaption>поточний місяць</SnapshotCaption>
-            </CurrencyMetric>
-            <div className="flex items-baseline justify-between gap-2">
-              <span className="text-xs tracking-wide text-muted-foreground uppercase">
-                Ціль {formatReportNumber(snapshot.monthlyNorm.targetUah)}
-                {UAH_SUFFIX}
-              </span>
-              <span className="[font-family:var(--font-display-dark)] text-base leading-none">
-                {monthlyNormPercent}%
-              </span>
-            </div>
-            <Progress value={monthlyNormPercent} />
-          </Stack>
         </ReportCard>
       </div>
 
@@ -134,50 +107,44 @@ export function IssuanceSnapshotSection({ rows }: IssuanceSnapshotSectionProps) 
           <EmptyReportState message="За обраними фільтрами немає даних для розподілу." />
         </ReportCard>
       ) : (
-        <ReportCard tone="contrast" className="gap-[38px] overflow-x-auto">
+        <ReportCard tone="contrast" className="gap-[38px]">
           <SectionTitle className="text-center">Закриті запити за проєктами</SectionTitle>
           <TooltipProvider>
-            <MetricBarGroup className="min-w-[640px]">
+            <MetricBarList>
               {projectBreakdown.map((item) => (
-                <MetricBar
-                  key={item.project}
-                  percent={item.share}
-                  label={item.project}
-                  className="min-w-0 flex-1"
-                  renderFill={(clamped) => (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div
-                          className="absolute inset-x-0 bottom-0 cursor-default bg-current outline-none focus-visible:ring-2 focus-visible:ring-foreground/30"
-                          style={{ height: `${clamped}%` }}
-                          aria-label={`Закритих запитів: ${formatReportNumber(item.count)} ${formatRequestCountCaption(item.count)}; Сума закупівель: ${formatReportNumber(item.amountUah)}${UAH_SUFFIX}`}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="top"
-                        sideOffset={8}
-                        hideArrow
-                        className={reportChartTooltipContentClass}
-                      >
-                        <ReportChartTooltipBody
-                          title={item.project}
-                          rows={[
-                            {
-                              label: "Закритих запитів",
-                              value: `${formatReportNumber(item.count)} ${formatRequestCountCaption(item.count)}`,
-                            },
-                            {
-                              label: "Сума закупівель",
-                              value: `${formatReportNumber(item.amountUah)}${UAH_SUFFIX}`,
-                            },
-                          ]}
-                        />
-                      </TooltipContent>
-                    </Tooltip>
-                  )}
-                />
+                <Tooltip key={item.project}>
+                  <TooltipTrigger asChild>
+                    <div className="outline-none focus-visible:ring-2 focus-visible:ring-foreground/30">
+                      <MetricBarHorizontal
+                        percent={item.share}
+                        label={item.project}
+                        valueLabel={`${formatReportNumber(item.count)} ${formatRequestCountCaption(item.count)}`}
+                      />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="top"
+                    sideOffset={8}
+                    hideArrow
+                    className={reportChartTooltipContentClass}
+                  >
+                    <ReportChartTooltipBody
+                      title={item.project}
+                      rows={[
+                        {
+                          label: "Закритих запитів",
+                          value: `${formatReportNumber(item.count)} ${formatRequestCountCaption(item.count)}`,
+                        },
+                        {
+                          label: "Сума закупівель",
+                          value: `${formatReportNumber(item.amountUah)}${UAH_SUFFIX}`,
+                        },
+                      ]}
+                    />
+                  </TooltipContent>
+                </Tooltip>
               ))}
-            </MetricBarGroup>
+            </MetricBarList>
           </TooltipProvider>
         </ReportCard>
       )}
