@@ -191,7 +191,7 @@ export function IssuanceTab() {
                 onChange={(fundraisings) =>
                   setDraftFilters((current) => ({ ...current, fundraisings }))
                 }
-                placeholder="Усі"
+                placeholder="Усі збори"
               />
             </FilterField>
             <FilterField label="Підрозділи">
