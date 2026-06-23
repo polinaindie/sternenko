@@ -9,8 +9,21 @@ export const PROJECT_TAG_CLASS: Record<IssuanceProjectLine, string> = {
   Секретний: "bg-[#FE6A34] text-[#1E1E1E]",
 }
 
+/** Колір stroke/fill для вертикального MetricBar (border + заливка). */
+export const PROJECT_BAR_CLASS: Record<IssuanceProjectLine, string> = {
+  Поточний: "text-[#829474]",
+  Шахедоріз: "text-[#FFD62E]",
+  Небесний: "text-[#59CBE7]",
+  РеДрон: "text-[#1C1C1C]",
+  Секретний: "text-[#FE6A34]",
+}
+
 export function getProjectTagClass(name: IssuanceProjectLine): string {
   return PROJECT_TAG_CLASS[name]
+}
+
+export function getProjectBarClass(name: IssuanceProjectLine): string {
+  return PROJECT_BAR_CLASS[name]
 }
 
 export function isIssuanceProjectLine(name: string): name is IssuanceProjectLine {

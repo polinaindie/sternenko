@@ -1,35 +1,19 @@
 import { useMemo, type ReactNode } from "react"
 
 import {
-  MetricBarHorizontal,
-  MetricBarList,
-} from "@workspace/ui/components/metric-bar"
-import {
   CurrencyMetric,
   DisplayMetric,
-  formatReportNumber,
-  UAH_SUFFIX,
 } from "@workspace/ui/components/report-metric"
 import { ReportCard } from "@workspace/ui/components/report-card"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@workspace/ui/components/tooltip"
 import { Stack } from "@workspace/ui/layout/stack"
 
 import {
-  formatRequestCountCaption,
   summarizeClosedRequestsByProject,
   summarizeIssuanceKpis,
 } from "../lib/issuance-analytics"
 import type { IssuanceRow } from "../mock-data"
+import { ClosedRequestsByProjectChart } from "./ClosedRequestsByProjectChart"
 import { EmptyReportState } from "./ReportPagination"
-import {
-  ReportChartTooltipBody,
-  reportChartTooltipContentClass,
-} from "./ReportChartTooltip"
 import { SectionTitle } from "./report-ui"
 
 type IssuanceSnapshotSectionProps = {
@@ -107,46 +91,7 @@ export function IssuanceSnapshotSection({
           <EmptyReportState message="За обраними фільтрами немає даних для розподілу." />
         </ReportCard>
       ) : (
-        <ReportCard tone="contrast" className="gap-[38px]">
-          <SectionTitle className="text-center">Закриті запити за проєктами</SectionTitle>
-          <TooltipProvider>
-            <MetricBarList>
-              {projectBreakdown.map((item) => (
-                <Tooltip key={item.project}>
-                  <TooltipTrigger asChild>
-                    <div className="outline-none focus-visible:ring-2 focus-visible:ring-foreground/30">
-                      <MetricBarHorizontal
-                        percent={item.share}
-                        label={item.project}
-                        valueLabel={`${formatReportNumber(item.count)} ${formatRequestCountCaption(item.count)}`}
-                      />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side="top"
-                    sideOffset={8}
-                    hideArrow
-                    className={reportChartTooltipContentClass}
-                  >
-                    <ReportChartTooltipBody
-                      title={item.project}
-                      rows={[
-                        {
-                          label: "Закритих запитів",
-                          value: `${formatReportNumber(item.count)} ${formatRequestCountCaption(item.count)}`,
-                        },
-                        {
-                          label: "Сума закупівель",
-                          value: `${formatReportNumber(item.amountUah)}${UAH_SUFFIX}`,
-                        },
-                      ]}
-                    />
-                  </TooltipContent>
-                </Tooltip>
-              ))}
-            </MetricBarList>
-          </TooltipProvider>
-        </ReportCard>
+        <ClosedRequestsByProjectChart breakdown={projectBreakdown} />
       )}
     </Stack>
   )
