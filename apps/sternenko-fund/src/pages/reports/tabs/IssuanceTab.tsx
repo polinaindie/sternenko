@@ -24,6 +24,7 @@ import {
 import { DateRangeFilter } from "../components/DateRangeFilter"
 import { FilterChips } from "../components/FilterChips"
 import { FundraisingTag } from "../components/FundraisingTag"
+import { ProjectTag } from "../components/ProjectTag"
 import { IssuanceSnapshotSection } from "../components/IssuanceSnapshotSection"
 import { MultiSelectFilter } from "../components/MultiSelectFilter"
 import { NameSearchFilter } from "../components/NameSearchFilter"
@@ -72,6 +73,7 @@ const ISSUANCE_COLUMNS = [
   68, // К-сть
   112, // Вартість
   104, // Сума
+  108, // Проєкт
   132, // Збір
   212, // Кому передали
   96, // Фото/відео
@@ -80,7 +82,7 @@ const ISSUANCE_COLUMNS = [
 ] as const
 
 const issuanceTableClassName =
-  "w-full min-w-[1106px] table-fixed border-collapse"
+  "w-full min-w-[1214px] table-fixed border-collapse"
 
 type ViewerState = {
   title: string
@@ -251,6 +253,7 @@ export function IssuanceTab() {
                   <ReportTableHead className={cn("!px-2 text-right", issuanceHeadNowrap)}>
                     Сума, ₴
                   </ReportTableHead>
+                  <ReportTableHead className={cn("!px-2", issuanceHeadWrap)}>Проєкт</ReportTableHead>
                   <ReportTableHead className={cn("!px-2", issuanceHeadWrap)}>Збір</ReportTableHead>
                   <ReportTableHead className={cn("!px-2", issuanceHeadNowrap)}>
                     Кому передали
@@ -283,6 +286,9 @@ export function IssuanceTab() {
                     </ReportTableCell>
                     <ReportTableCell className={cn("!px-2 text-right tabular-nums", issuanceCellNowrap)}>
                       {formatReportNumber(row.total)}
+                    </ReportTableCell>
+                    <ReportTableCell className={cn("!px-2", issuanceCellWrap)}>
+                      <ProjectTag name={row.project} />
                     </ReportTableCell>
                     <ReportTableCell className={cn("!px-2", issuanceCellWrap)}>
                       <FundraisingTag name={row.fundraising} />
