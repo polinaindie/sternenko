@@ -18,17 +18,24 @@ export const siteControlClass = "rounded-none"
 /** Outline filter triggers (date, multiselect, amount) — Storybook Button outline + site chrome. */
 export const siteFilterTriggerClass = cn(
   siteControlClass,
-  "border-border h-8 w-full min-w-0 font-normal"
+  "border-border h-[38px] w-full min-w-0 font-normal [&_span.truncate]:text-muted-foreground"
 )
 
-/** Primary apply action in a filter row — Storybook Button default без site overrides. */
+/** Primary apply action in a filter row — Wide Black label, 10px padding. */
 export function FilterApplyButton({
   className,
   children = "Фільтрувати",
   ...props
 }: React.ComponentProps<typeof Button>) {
   return (
-    <Button type="button" className={cn("shrink-0", className)} {...props}>
+    <Button
+      type="button"
+      className={cn(
+        "shrink-0 [font-family:var(--font-display-black)] font-black h-[38px] p-2.5",
+        className
+      )}
+      {...props}
+    >
       {children}
     </Button>
   )
@@ -108,11 +115,30 @@ export function FilterField({
   )
 }
 
-export function KpiGrid({ children }: { children: React.ReactNode }) {
+export function KpiGrid({
+  children,
+  className,
+}: {
+  children: React.ReactNode
+  className?: string
+}) {
   return (
-    <div className="grid w-full min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div
+      className={cn(
+        "w-full min-w-0 gap-3",
+        className ?? "grid sm:grid-cols-2 lg:grid-cols-3"
+      )}
+    >
       {children}
     </div>
+  )
+}
+
+export function MetricPeriodCaption({ children }: { children: string }) {
+  return (
+    <span className="[font-family:var(--font-body)] text-sm font-normal tracking-normal text-muted-foreground">
+      {children}
+    </span>
   )
 }
 
@@ -214,12 +240,14 @@ export function AttachmentButton({
   label,
   icon: Icon,
   iconClassName = "size-4",
+  compact = false,
   available,
   onClick,
 }: {
   label: string
   icon: React.ComponentType<{ className?: string }>
   iconClassName?: string
+  compact?: boolean
   available: boolean
   onClick?: () => void
 }) {
@@ -230,7 +258,8 @@ export function AttachmentButton({
       aria-label={label}
       onClick={available ? onClick : undefined}
       className={cn(
-        "inline-flex size-9 items-center justify-center transition-colors",
+        "inline-flex items-center justify-center transition-colors",
+        compact ? "size-8" : "size-9",
         siteControlClass,
         available ? "text-foreground" : "text-muted-foreground/60 cursor-not-allowed"
       )}
