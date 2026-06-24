@@ -2,11 +2,12 @@
   "name": "sternenko",
   "version": "0.0.0",
   "private": true,
-  "description": "БФ «Спільнота Стерненка» — Storybook дизайн-системи",
+  "description": "БФ «Спільнота Стерненка» — сторінка звітів",
   "scripts": {
-    "dev": "vite preview --outDir dist --port 6006 --host",
-    "preview": "vite preview --outDir dist --port 6006 --host",
-    "sync": "pnpm --dir ../DesignSystemExample --filter spilnota-sternenka build && rm -rf dist && cp -R ../DesignSystemExample/apps/spilnota-sternenka/dist ./dist"
+    "dev": "vite preview --outDir dist --port 5173 --host",
+    "preview": "vite preview --outDir dist --port 5173 --host",
+    "build": "VITE_BASE_PATH=/sternenko/ pnpm --dir ../DesignSystemExample --filter sternenko-fund exec vite build && rm -rf dist && cp -R ../DesignSystemExample/apps/sternenko-fund/dist ./dist",
+    "sync:storybook": "pnpm --dir ../DesignSystemExample --filter spilnota-sternenka build && rm -rf dist && cp -R ../DesignSystemExample/apps/spilnota-sternenka/dist ./dist"
   },
   "devDependencies": {
     "vite": "^8"
