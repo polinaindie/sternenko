@@ -1,0 +1,14 @@
+{
+  "name": "sternenko",
+  "version": "0.0.0",
+  "private": true,
+  "description": "БФ «Спільнота Стерненка» — Storybook дизайн-системи",
+  "scripts": {
+    "dev": "vite preview --outDir dist --port 6006 --host",
+    "preview": "vite preview --outDir dist --port 6006 --host",
+    "sync": "pnpm --dir ../DesignSystemExample --filter spilnota-sternenka build && rm -rf dist && cp -R ../DesignSystemExample/apps/spilnota-sternenka/dist ./dist"
+  },
+  "devDependencies": {
+    "vite": "^8"
+  }
+}
