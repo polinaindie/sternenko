@@ -36,8 +36,7 @@
 05-06-26,93SHOTSS,25,Літак-перехоплювач “Тарас П”,"423 ОББпС ""СКІФСЬКІ ГРИФОНИ""","1 827 375,00",Гривня,https://drive.google.com/file/d/11y-Wj-w-mlT5w7JgzrxNjsk8FeZwsEFd/view?usp=drivesdk,example.com,example.com,Небесний
 05-07-26,624SHU10,20,FPV SHURIKEN 10,"58 ОМПБр бБпС ""ULTIO""","438 000,00",Гривня,https://drive.google.com/file/d/1VI5DYdZuz2PnGVuArrUj4zo-lVBf06eE/view?usp=drivesdk,example.com,awaiting,Поточний
 05-07-26,104HAR,20,FPV дрон Winfly Hunter,79 ПРИКЗ ДПСУ,"774 000,00",Гривня,https://drive.google.com/file/d/1LX0w67Rk3U7bPm3HD50SPYq8-aWuxMvd/view?usp=drivesdk,awaiting,example.com,Небесний
-05-07-26,12HRZN,15,"""FPV дрон «Horizon
-10’’-О-20 км» (оптика)""",36 ОБрМП бБпС,"1 080 000,00",Гривня,https://drive.google.com/file/d/11GH9V2Ydg9CBWUCuLq-ZS_8f7OWYFbqA/view?usp=drivesdk,awaiting,example.com,Оптоволоконні
+05-07-26,12HRZN,15,"""FPV дрон «Horizon 10’’-О-20 км» (оптика)""",36 ОБрМП бБпС,"1 080 000,00",Гривня,https://drive.google.com/file/d/11GH9V2Ydg9CBWUCuLq-ZS_8f7OWYFbqA/view?usp=drivesdk,awaiting,example.com,Оптоволоконні
 05-07-26,305FLY,25,"FPV дрон ""Enterprise 10"" (оптика)",78 ОДШБр,"1 065 000,00",Гривня,https://drive.google.com/file/d/151GBAoFXin9i_r0JoiXvw8UXZwla1-e_/view?usp=drivesdk,awaiting,example.com,Оптоволоконні
 05-07-26,306FLY,25,"FPV дрон ""Enterprise 10"" (оптика)",78 ОДШБр,"1 065 000,00",Гривня,https://drive.google.com/file/d/19hIPM1UgzOtaI8TTYEi40FexTJ8z_Sr7/view?usp=drivesdk,example.com,example.com,Оптоволоконні
 05-07-26,104RED,18,ReDrone,"ББС, 79 ОДШБ","170 000,00",Гривня,https://drive.google.com/file/d/1lmbs3362gRxxhLpRPaVdKDO7RaQeFSSt/view?usp=drivesdk,example.com,example.com,ReDrone
@@ -98,16 +97,14 @@
 05-18-26,108STR,25,STRIX (ReDrone),42 ОМБр Perun,"41 250,00",Гривня,https://drive.google.com/file/d/1KXdbIjlDVneTN6QhAXz2WTuOzG6l9Ww7/view?usp=drivesdk,example.com,awaiting,ReDrone
 05-19-26,386STSS,20,"FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією","117 ОВМБр бБпС ""SAMURAI""","1 550 000,00",Гривня,https://drive.google.com/file/d/1RaTxxm31WKePZxl05QHv_xB_O2jNi1tp/view?usp=drivesdk,example.com,awaiting,Шахедоріз
 05-19-26,406STSS,10,"FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією","423 ОББпС ""СКІФСЬКІ ГРИФОНИ""","931 000,00",Гривня,https://drive.google.com/file/d/1AclwLoOf8-iRHwfms2Ta4Wr9f5_MPYBc/view?usp=drivesdk,example.com,example.com,Шахедоріз
-05-19-26,42HRZN,16,"""FPV дрон «Horizon
-10’’-О-15 км» (оптика)""","2 КНГУ ""ХАРТІЯ""","980 000,00",Гривня,https://drive.google.com/file/d/1akY5mdW7p6UcOrSxHqYETASGw66WBr77/view?usp=drivesdk,awaiting,awaiting,Оптоволоконні
+05-19-26,42HRZN,16,"""FPV дрон «Horizon 10’’-О-15 км» (оптика)""","2 КНГУ ""ХАРТІЯ""","980 000,00",Гривня,https://drive.google.com/file/d/1akY5mdW7p6UcOrSxHqYETASGw66WBr77/view?usp=drivesdk,awaiting,awaiting,Оптоволоконні
 05-19-26,637SHU10,20,FPV SHURIKEN 10,"12 бр СпП НГУ ""АЗОВ"" 1 бСП","340 000,00",Гривня,https://drive.google.com/file/d/1Fq20Ns9p7P5A2GDnwvawuAa3V74D7UyL/view?usp=drivesdk,example.com,example.com,Поточний
 05-19-26,107HAR,30,FPV дрон Winfly Hunter,"4 ПРИКЗ ДПСУ ""СТРІКС""","1 161 000,00",Гривня,https://drive.google.com/file/d/1ryhRVPvY3o70MuEvWbJ3KUmiFq33QJs6/view?usp=drivesdk,awaiting,awaiting,Небесний
 05-19-26,108HAR,30,FPV дрон Winfly Hunter,117 ОВМБр бБпС,"1 161 000,00",Гривня,https://drive.google.com/file/d/1N34nXO4SUlMwFiUNmwgVpFGYpopyURbj/view?usp=drivesdk,example.com,example.com,Небесний
 05-19-26,4TORQ,1,"Дрон квадро 20 дюймів денний, носій ретранслятора",3 БрОП НГ,"135 000,00",Гривня,https://drive.google.com/file/d/1ZYdKZCG3aPWIznQYL9KDMJTRB2MKRexE/view?usp=drivesdk,example.com,example.com,Поточний
 05-20-26,405STSS,20,"FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією","4 ПРИКЗ ДПСУ ""ПІКА""","2 020 000,00",Гривня,awaiting,example.com,awaiting,Шахедоріз
 05-20-26,145GRO10,70,FPV аналоговий коптер Hornet F10,"100 ОМБр ""ВОРОН""","1 232 000,00",Гривня,https://drive.google.com/file/d/1enHtLuA3tflavDHOnyO9kS4pmeJ_0zy2/view?usp=drivesdk,awaiting,example.com,Поточний
-05-20-26,19HRZN,18,"""FPV дрон «Horizon
-10’’-О-15 км» (оптика)""","РБпАК ССБ Алькатрас, 93 ОМБр","1 176 000,00",Гривня,https://drive.google.com/file/d/13E-mrwhO6ZqIXMeGFIxnWWC4h4nyq5bW/view?usp=drivesdk,example.com,awaiting,Оптоволоконні
+05-20-26,19HRZN,18,"""FPV дрон «Horizon 10’’-О-15 км» (оптика)""","РБпАК ССБ Алькатрас, 93 ОМБр","1 176 000,00",Гривня,https://drive.google.com/file/d/13E-mrwhO6ZqIXMeGFIxnWWC4h4nyq5bW/view?usp=drivesdk,example.com,awaiting,Оптоволоконні
 05-20-26,155SKYSS,25,FPV Зенітний цифровий дрон «Дикий шершень» 10 дюймів,36 ОБрМП,"1 615 000,00",Гривня,https://drive.google.com/file/d/1UTneJ8scXWL6kFFExFCF8msL4mhN7Xcf/view?usp=drivesdk,example.com,example.com,Небесний
 05-20-26,399STSS,97,"FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією",21 ОБрОГП НГУ,"9 030 700,00",Гривня,https://drive.google.com/file/d/1d761Qkkh60ohS0qnmmh-CvnPAL9uiax1/view?usp=drivesdk,example.com,example.com,Шахедоріз
 05-20-26,109STR,70,STRIX (ReDrone),"42 ОМБр Perun, БНР","126 000,00",Гривня,https://drive.google.com/file/d/1tOiYDL34p6eTcol6rZ56at0Mu97x6YeW/view?usp=drivesdk,example.com,awaiting,ReDrone
@@ -145,7 +142,7 @@
 05-25-26,5AHD,2,Rusopad HD носій,"4 БрОП НГУ ""РУБІЖ"" ""СВОБОДА""","374 270,00",Гривня,https://drive.google.com/file/d/1g6P9JPSdNZ7EqA-LgVEHOj5BMLGc8Bld/view?usp=drivesdk,example.com,example.com,Поточний
 05-25-26,5AHD,2,Інфраструктура Rusopad(наземка + комплектуючі),"4 БрОП НГУ ""РУБІЖ"" ""СВОБОДА""","328 900,00",Гривня,https://drive.google.com/file/d/1g6P9JPSdNZ7EqA-LgVEHOj5BMLGc8Bld/view?usp=drivesdk,example.com,example.com,Поточний
 05-25-26,47GHD,20,FPV цифровий коптер Hornet F10,237 ОББпС,"520 000,00",Гривня,https://drive.google.com/file/d/1-1NPjBOrodyTEYI4nAocEhiNQSWJUJ0w/view?usp=drivesdk,example.com,example.com,Поточний
-05-25-26,48GHD,20,FPV цифровий коптер Hornet F10,147 ОАБр рУБпАК147 ОАБр рУБпАК,"520 000,00",Гривня,https://drive.google.com/file/d/1kxRTIXjL4kAdfdK-r64KJqkbtbloLHQM/view?usp=drivesdk,awaiting,awaiting,Поточний
+05-25-26,48GHD,20,FPV цифровий коптер Hornet F10,147 ОАБр рУБпАК,"520 000,00",Гривня,https://drive.google.com/file/d/1kxRTIXjL4kAdfdK-r64KJqkbtbloLHQM/view?usp=drivesdk,awaiting,awaiting,Поточний
 05-25-26,49GHD,20,FPV цифровий коптер Hornet F10,10 ЦСП ЗСП,"520 000,00",Гривня,https://drive.google.com/file/d/1r8-0H6s9_vIi7i3TGonojW-CAsk9lFCA/view?usp=drivesdk,awaiting,example.com,Поточний
 05-25-26,50GHD,20,FPV цифровий коптер Hornet F10,"36 ОБрМП 501 обмп ""ГРИФОН""","520 000,00",Гривня,https://drive.google.com/file/d/1-Nv7TAsweXJRxQ3fO2wwjPbjpzLvxgjp/view?usp=drivesdk,example.com,example.com,Поточний
 05-25-26,51GHD,50,FPV цифровий коптер Hornet F10,78 ОДШБР 3 бат,"1 300 000,00",Гривня,https://drive.google.com/file/d/1fZEKmYW3wRLpJzxv_IGjsNPRemYUu91J/view?usp=drivesdk,example.com,example.com,Поточний
@@ -222,14 +219,13 @@
 05-27-26,108RED,46,ReDrone,6 ОЦ СПО,"241 250,00",Гривня,https://drive.google.com/file/d/1U08uAGJCJBYAjir_RiX0g9Y-sOKgNflY/view?usp=drivesdk,awaiting,example.com,ReDrone
 05-28-26,407STSS,30,"FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією","1021 ЗАП ""ФОКС""","1 530 000,00",Гривня,https://drive.google.com/file/d/1s7IJHxjkuNXA3mreq_MgflNbkDQ5IukN/view?usp=drivesdk,example.com,example.com,Шахедоріз
 05-28-26,646SHU10,50,FPV SHURIKEN 10,23 ОМБр мпб,"850 000,00",Гривня,https://drive.google.com/file/d/1ggHbsyxpT63dFoMbD6QFZsHELa9GllaG/view?usp=drivesdk,example.com,example.com,Поточний
-05-28-26,17HRZN,12,"""FPV дрон «Horizon
-10’’-О-20 км» (оптика)""",⁠4 впс РУБпАК приккшр РУБпАК 5 ПРИКЗ,"900 000,00",Гривня,https://drive.google.com/file/d/1rkhl4BGOn-eVmffapj4MUzjInLkYWyTC/view?usp=drivesdk,example.com,example.com,Оптоволоконні
+05-28-26,17HRZN,12,"""FPV дрон «Horizon 10’’-О-20 км» (оптика)""",4 впс РУБпАК приккшр РУБпАК 5 ПРИКЗ,"900 000,00",Гривня,https://drive.google.com/file/d/1rkhl4BGOn-eVmffapj4MUzjInLkYWyTC/view?usp=drivesdk,example.com,example.com,Оптоволоконні
 05-28-26,108RED,59,ReDrone,6 ОЦ СПО,"310 000,00",Гривня,https://drive.google.com/file/d/1_dZG1Q996SRFv0gOEQWyKC2HOlUxRfwK/view?usp=drivesdk,awaiting,example.com,ReDrone
 05-29-26,393STSS,20,"FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією",ГУР МО,"1 862 000,00",Гривня,https://drive.google.com/file/d/1O6_tZPHDMArKA1OUMr91xLkJUu5Q-hqH/view?usp=drivesdk,example.com,example.com,Шахедоріз
 05-29-26,648SHU10,70,FPV SHURIKEN 10,"104 ОБрТрО 2 обТрО ""СЕРАФИМИ""","1 190 000,00",Гривня,https://drive.google.com/file/d/1WecgumfEGG0HY6dBQdVsc-rJxAn-NFpq/view?usp=drivesdk,awaiting,example.com,Поточний
 05-29-26,24HRZN,12,"""FPV дрон «Horizon 10’’-О-20 км» (оптика)""",93 ОМБр рПТРК,"900 000,00",Гривня,https://drive.google.com/file/d/19ms6Sw0DGEyTQL-aefWptKIaPRutbFoE/view?usp=drivesdk,awaiting,awaiting,Оптоволоконні
 05-29-26,607SHU10,20,FPV SHURIKEN 10,13 ГУ ДВКР СБУ,"420 000,00",Гривня,https://drive.google.com/file/d/1uvNFOxXTdWaOSOqNhDKmrhmhjiPJyvmw/view?usp=drivesdk,awaiting,awaiting,Поточний
-05-29-26,110STR,55,STRIX (ReDrone),"42 ОМБр Perun,","99 000,00",Гривня,https://drive.google.com/file/d/182zpoKJog5RbuAA50_O3zWm0qgyswWXl/view?usp=drivesdk,awaiting,example.com,ReDrone
+05-29-26,110STR,55,STRIX (ReDrone),42 ОМБр Perun,"99 000,00",Гривня,https://drive.google.com/file/d/182zpoKJog5RbuAA50_O3zWm0qgyswWXl/view?usp=drivesdk,awaiting,example.com,ReDrone
 05-29-26,32RES,6,ReDrone комплектуючі,38 ОБрМП,"45 000,00",Гривня,https://drive.google.com/file/d/1mnrLnWWQGRRWiTT757jSnJCAzql-o4R0/view?usp=drivesdk,awaiting,example.com,ReDrone
 05-30-26,350STSS,20,"FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією",13 ГУ ДВКР СБУ,"1 862 000,00",Гривня,https://drive.google.com/file/d/1R5esBjXyrUEoe3yCcd_N7y-3m4fGXo8p/view?usp=drivesdk,example.com,awaiting,Шахедоріз
 05-30-26,639SHU10,20,FPV SHURIKEN 10,"40 ОБрМП бБпС ""ОРІОН""","438 000,00",Гривня,https://drive.google.com/file/d/1PWiZnD5WmssZUe8u8tPC3IwqXLV2bVlb/view?usp=drivesdk,example.com,example.com,Поточний
