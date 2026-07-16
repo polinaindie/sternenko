@@ -16,11 +16,12 @@ const meta = {
         "ghost",
         "destructive",
         "link",
+        "alternate",
       ],
     },
     size: {
       control: "select",
-      options: ["default", "xs", "sm", "lg", "icon"],
+      options: ["default", "xs", "sm", "lg", "nav", "icon"],
     },
   },
   args: {
@@ -44,6 +45,18 @@ export const Variants: Story = {
       <Button variant="ghost">Ghost</Button>
       <Button variant="destructive">Destructive</Button>
       <Button variant="link">Link</Button>
+      <Button variant="alternate">Alternate</Button>
+    </div>
+  ),
+}
+
+export const SternenkoNavDonate: Story = {
+  name: "Sternenko / Nav donate",
+  render: () => (
+    <div className="bg-[#1E1E1E] p-6">
+      <Button asChild variant="alternate" size="nav">
+        <a href="https://www.sternenkofund.org/donate">Задонатити</a>
+      </Button>
     </div>
   ),
 }

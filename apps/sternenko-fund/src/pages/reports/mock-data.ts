@@ -4,6 +4,9 @@ import type {
   DocumentAttachmentItem,
   TransferMediaItem,
 } from "./components/AttachmentViewer"
+import { ISSUANCE_IMPORTED_ROWS } from "./data/issuance-rows.generated"
+import { applyIssuanceAttachmentSamples } from "./data/issuance-attachment-samples"
+import { expandIssuanceRowsForDemo } from "./data/expand-issuance-demo"
 import { ISSUANCE_UNITS } from "./data/issuance-units"
 
 export { ISSUANCE_UNITS } from "./data/issuance-units"
@@ -27,13 +30,41 @@ export const FUNDRAISINGS = [
   "Небесна інвестиція",
 ] as const
 
+/**
+ * Демо: збори без надходжень/видач у 2026 — у фільтрі лишаються видимими,
+ * але неактивними за період «з початку року» (типовий дефолт на сторінці).
+ */
+export const FUNDRAISERS_DORMANT_IN_2026 = [
+  "Секретний RUSORIZ 2.0",
+  "Секретний RUSORIZ",
+  "ReDrone",
+  "HAPPY OPTORIZ",
+  "Дронвестиція",
+  "Небесна інвестиція",
+  "Грім для ворогів",
+] as const satisfies readonly (typeof FUNDRAISINGS)[number][]
+
+const DORMANT_IN_2026 = new Set<string>(FUNDRAISERS_DORMANT_IN_2026)
+
+export function isFundraiserDormantInYear(
+  fundraising: (typeof FUNDRAISINGS)[number],
+  year: number
+): boolean {
+  return year >= 2026 && DORMANT_IN_2026.has(fundraising)
+}
+
+export function activeFundraisingsForYear(
+  year: number
+): (typeof FUNDRAISINGS)[number][] {
+  if (year < 2026) return [...FUNDRAISINGS]
+  return FUNDRAISINGS.filter((fundraising) => !DORMANT_IN_2026.has(fundraising))
+}
+
 export const INCOME_SOURCES = [
   "Monobank",
   "ПриватБанк",
   "Portmone",
   "Рахунки в різних валютах",
-  "Криптовалюта",
-  "PayPal",
 ] as const
 
 /** Slug keys for chart/CSS — labels may contain spaces or Cyrillic. */
@@ -41,9 +72,7 @@ export const INCOME_SOURCE_CHART_KEY: Record<(typeof INCOME_SOURCES)[number], st
   Monobank: "monobank",
   "ПриватБанк": "privatbank",
   Portmone: "portmone",
-  "Рахунки в різних валутах": "foreignAccounts",
-  "Криптовалюта": "crypto",
-  PayPal: "paypal",
+  "Рахунки в різних валютах": "foreignAccounts",
 }
 
 export const INCOME_CHART_KEYS = INCOME_SOURCES.map(
@@ -82,6 +111,7 @@ export const ISSUANCE_PROJECT_LINES = [
   "Небесний",
   "РеДрон",
   "Секретний",
+  "Опторіз",
 ] as const
 
 export type IssuanceProjectLine = (typeof ISSUANCE_PROJECT_LINES)[number]
@@ -116,7 +146,7 @@ export const FUNDRAISING_TO_PROJECT: Record<
   "Русоріз": "Поточний",
   "Шахедоріз": "Шахедоріз",
   "Небесний Русоріз": "Небесний",
-  "Опторіз": "Поточний",
+  "Опторіз": "Опторіз",
   ReDrone: "РеДрон",
   "Секретний RUSORIZ 2.0": "Секретний",
   "Секретний RUSORIZ": "Секретний",
@@ -139,254 +169,25 @@ export type IssuanceSnapshot = {
 }
 
 /** Спільна дата останнього оновлення даних на сторінці «Звіти». */
-export const REPORTS_DATA_UPDATED_AT = "2026-06-18T14:00:00+03:00"
+export const REPORTS_DATA_UPDATED_AT = "2026-07-06T13:13:29+03:00"
 
 export const ISSUANCE_SNAPSHOT: IssuanceSnapshot = {
   updatedAt: REPORTS_DATA_UPDATED_AT,
 }
 
-const ISSUANCE_PRODUCTS_BY_CATEGORY: Record<
-  IssuancePropertyCategory,
-  readonly string[]
-> = {
-  "FPV-дрони": [
-    "FPV-дрон Vector 7",
-    "FPV-дрон Thunder 5",
-    "Комплект FPV «Око»",
-    "Дрон-перехоплювач SkyHunt",
-  ],
-  Оптика: ["Тепловізор Pulsar", "Приціл Holosun", "Бінокль Vector 10x42"],
-  "Зв'язок": [
-    "Антени VTX 5.8 GHz",
-    "Ретранслятор Silvus",
-    "Рація Motorola DP4400",
-    "Модуль Starlink",
-  ],
-  БК: [
-    "Стартер-комплект Shahed-cutter",
-    "Набір БК для FPV",
-    "Заряди для дронів",
-    "Комплект боєприпасів",
-  ],
-}
 
-const ISSUANCE_ROW_SEEDS: IssuanceRow[] = [
-  {
-    id: "1",
-    date: "15.06.2026",
-    productName: "FPV-дрон Vector 7",
-    quantity: 50,
-    unitPrice: 12_400,
-    total: 620_000,
-    fundraising: "Шахедоріз",
-    recipient: "65 ОМБр бБпС \"РОНІНИ\", ЗСУ",
-    project: "Шахедоріз",
-    direction: "ППО",
-    agency: "ЗСУ",
-    unit: "65 ОМБр бБпС \"РОНІНИ\"",
-    category: "FPV-дрони",
-    attachments: {
-      media: [
-        {
-          type: "image",
-          src: "https://picsum.photos/seed/sternenko-issue-1-a/1200/800",
-          alt: "Фото видачі FPV-дрон Vector 7",
-        },
-        {
-          type: "video",
-          src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm",
-          poster: "https://picsum.photos/seed/sternenko-issue-1-b/1200/800",
-          alt: "Відео передачі FPV-дронів підрозділу",
-        },
-        {
-          type: "image",
-          src: "https://picsum.photos/seed/sternenko-issue-1-c/1200/800",
-          alt: "Фото видачі — загальний план",
-        },
-      ],
-      act: [
-        {
-          src: "https://picsum.photos/seed/sternenko-act-1/800/1100",
-          alt: "Акт видачі №1247 від 15.06.2026",
-        },
-      ],
-      payment: [
-        {
-          src: "https://picsum.photos/seed/sternenko-pay-1/800/1100",
-          alt: "Платіжне доручення №883412",
-        },
-      ],
-    },
-  },
-  {
-    id: "2",
-    date: "14.06.2026",
-    productName: "Антени VTX 5.8 GHz",
-    quantity: 200,
-    unitPrice: 890,
-    total: 178_000,
-    fundraising: "ReDrone",
-    recipient: "93 ОМБр сб рУБпАК",
-    project: "РеДрон",
-    direction: "Розвідка",
-    agency: "ЗСУ",
-    unit: "93 ОМБр сб рУБпАК",
-    category: "Зв'язок",
-    attachments: {
-      media: [
-        {
-          type: "image",
-          src: "https://picsum.photos/seed/sternenko-issue-2/1200/800",
-          alt: "Фото видачі антен VTX",
-        },
-        {
-          type: "video",
-          src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-          poster: "https://picsum.photos/seed/sternenko-issue-2-v/1200/800",
-          alt: "Відео передачі антен VTX",
-        },
-      ],
-      act: [],
-      payment: [
-        {
-          src: "https://picsum.photos/seed/sternenko-pay-2/800/1100",
-          alt: "Рахунок-фактура №VTX-2026-14",
-        },
-      ],
-    },
-  },
-  {
-    id: "3",
-    date: "13.06.2026",
-    productName: "Стартер-комплект Shahed-cutter",
-    quantity: 12,
-    unitPrice: 45_000,
-    total: 540_000,
-    fundraising: "Шахедоріз",
-    recipient: "118 ОБрТрО 1 обТрО, ТРО",
-    project: "Шахедоріз",
-    direction: "ППО",
-    agency: "ТРО",
-    unit: "118 ОБрТрО 1 обТрО",
-    category: "БК",
-    attachments: {
-      media: [
-        {
-          type: "video",
-          src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/friday.webm",
-          poster: "https://picsum.photos/seed/sternenko-issue-3/1200/800",
-          alt: "Відео видачі комплекту Shahed-cutter",
-        },
-      ],
-      act: [
-        {
-          src: "https://picsum.photos/seed/sternenko-act-3/800/1100",
-          alt: "Акт видачі №1198 від 13.06.2026",
-        },
-      ],
-      payment: [],
-    },
-  },
-]
-
-function createResultRng(seed: number): () => number {
-  let state = seed
-  return () => {
-    state = (state + 0x6d2b79f5) | 0
-    let t = Math.imul(state ^ (state >>> 15), 1 | state)
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
-}
-
-function pad(value: number): string {
-  return String(value).padStart(2, "0")
-}
-
-function formatIssuanceDate(date: Date): string {
-  return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()}`
-}
-
-function parseIssuanceRowDate(value: string): number {
-  const [day, month, year] = value.split(".").map(Number)
-  return new Date(year!, (month ?? 1) - 1, day ?? 1).getTime()
-}
-
-function unitPriceForCategory(
-  category: IssuancePropertyCategory,
-  rng: () => number
-): number {
-  switch (category) {
-    case "FPV-дрони":
-      return 8_000 + Math.floor(rng() * 18_000)
-    case "Оптика":
-      return 12_000 + Math.floor(rng() * 85_000)
-    case "Зв'язок":
-      return 400 + Math.floor(rng() * 4_500)
-    case "БК":
-      return 2_500 + Math.floor(rng() * 48_000)
-  }
-}
-
-function generateIssuanceRows(): IssuanceRow[] {
-  const rows: IssuanceRow[] = [...ISSUANCE_ROW_SEEDS]
-  let id = ISSUANCE_ROW_SEEDS.length + 1
-
-  const rangeStart = new Date(2025, 8, 1)
-  const rangeEnd = new Date(2026, 5, 20)
-  const daySpan = Math.max(
-    1,
-    Math.round((rangeEnd.getTime() - rangeStart.getTime()) / 86_400_000)
+export const ISSUANCE_ROWS: IssuanceRow[] = applyIssuanceAttachmentSamples(
+  expandIssuanceRowsForDemo(
+    ISSUANCE_IMPORTED_ROWS.map((row) => ({
+      ...row,
+      attachments: {
+        media: [...row.attachments.media],
+        act: [...row.attachments.act],
+        payment: [...row.attachments.payment],
+      },
+    }))
   )
-
-  for (const [fundraisingIndex, fundraising] of FUNDRAISINGS.entries()) {
-    const rng = createResultRng(0x8a3c21 + fundraisingIndex * 6_151)
-    const rowCount = 6 + Math.floor(rng() * 7)
-
-    for (let index = 0; index < rowCount; index += 1) {
-      const category =
-        ISSUANCE_PROPERTY_CATEGORIES[
-          Math.floor(rng() * ISSUANCE_PROPERTY_CATEGORIES.length)
-        ]!
-      const products = ISSUANCE_PRODUCTS_BY_CATEGORY[category]
-      const productName = products[Math.floor(rng() * products.length)]!
-      const direction =
-        ISSUANCE_DIRECTIONS[Math.floor(rng() * ISSUANCE_DIRECTIONS.length)]!
-      const unit = ISSUANCE_UNITS[Math.floor(rng() * ISSUANCE_UNITS.length)]!
-      const agency = ISSUANCE_AGENCIES[Math.floor(rng() * ISSUANCE_AGENCIES.length)]!
-      const issueDate = new Date(rangeStart)
-      issueDate.setDate(issueDate.getDate() + Math.floor(rng() * daySpan))
-
-      const quantity = 8 + Math.floor(rng() * 180)
-      const unitPrice = unitPriceForCategory(category, rng)
-      const total = quantity * unitPrice
-
-      rows.push({
-        id: String(id),
-        date: formatIssuanceDate(issueDate),
-        productName,
-        quantity,
-        unitPrice,
-        total,
-        fundraising,
-        recipient: `${unit}, ${agency}`,
-        project: FUNDRAISING_TO_PROJECT[fundraising],
-        direction,
-        agency,
-        unit,
-        category,
-        attachments: { media: [], act: [], payment: [] },
-      })
-      id += 1
-    }
-  }
-
-  return rows.sort(
-    (left, right) => parseIssuanceRowDate(right.date) - parseIssuanceRowDate(left.date)
-  )
-}
-
-export const ISSUANCE_ROWS: IssuanceRow[] = generateIssuanceRows()
+)
 
 // --- Результати за зборами --------------------------------------------------
 // Combat / закупівельні показники по кожному збору, розкладені на місячні
@@ -509,6 +310,20 @@ function buildBreakdown(
     remaining = Math.max(0, remaining - count)
     return { label: type.label, count, amountUah: count * type.price }
   })
+}
+
+function createResultRng(seed: number): () => number {
+  let state = seed
+  return () => {
+    state = (state + 0x6d2b79f5) | 0
+    let t = Math.imul(state ^ (state >>> 15), 1 | state)
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+function pad(value: number): string {
+  return String(value).padStart(2, "0")
 }
 
 function generateFundraisingResults(): FundraisingResultRow[] {

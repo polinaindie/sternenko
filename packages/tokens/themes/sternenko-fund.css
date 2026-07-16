@@ -40,6 +40,14 @@
 
   --destructive: oklch(0.577 0.245 27.325);
 
+  /* Chart — жовтий / помаранч / коричневий / cyan / amber (2 відтінки) на чорному. */
+  --chart-1: oklch(0.886 0.172 93.9); /* #FFD62E yellow */
+  --chart-2: oklch(0.702 0.193 39.2); /* #FE6A34 orange */
+  --chart-3: oklch(0.775 0.125 78); /* golden brown */
+  --chart-4: oklch(0.787 0.11 216.6); /* #59CBE7 cyan */
+  --chart-5: oklch(0.82 0.14 75); /* light amber — криптовалюта */
+  --chart-6: oklch(0.62 0.15 75); /* dark amber — PayPal, той самий hue */
+
   --font-sans: "Murs Gothic Key Regular", ui-sans-serif, system-ui, sans-serif;
   --font-sans-light: "Murs Gothic Key Light", "Murs Gothic Key Regular",
     ui-sans-serif, system-ui, sans-serif;
@@ -65,13 +73,15 @@
 }
 
 [data-theme="sternenko-fund"].dark {
+  color-scheme: dark;
+
   --background: oklch(0.222 0 0);
   --foreground: oklch(1 0 0);
   --card: oklch(0.269 0 0);
   --card-foreground: oklch(1 0 0);
   --popover: oklch(0.269 0 0);
   --popover-foreground: oklch(1 0 0);
-  --muted: oklch(0.269 0 0);
+  --muted: oklch(0.31 0 0);
   --muted-foreground: oklch(0.622 0 0);
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 12%);
@@ -84,4 +94,11 @@
   --accent: oklch(0.891 0.178 95.3);
   --accent-foreground: oklch(0.222 0 0);
   --destructive: oklch(0.704 0.191 22.216);
+
+  --chart-1: oklch(0.886 0.172 93.9);
+  --chart-2: oklch(0.702 0.193 39.2);
+  --chart-3: oklch(0.775 0.125 78);
+  --chart-4: oklch(0.787 0.11 216.6);
+  --chart-5: oklch(0.82 0.14 75);
+  --chart-6: oklch(0.62 0.15 75);
 }

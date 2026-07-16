@@ -75,6 +75,29 @@
     line-height: var(--line-height-heading, 0.9);
     font-synthesis: none;
   }
+  [data-theme="sternenko-fund"] [data-slot="button"][data-variant="default"] {
+    font-family: var(--font-subheading-black);
+    letter-spacing: var(--letter-spacing-subheading, -0.02em);
+    line-height: var(--line-height-subheading, 0.9);
+  }
+  [data-theme="sternenko-fund"] [data-slot="button"][data-variant="alternate"] {
+    font-family: var(--font-subheading-black);
+    letter-spacing: var(--letter-spacing-subheading, -0.02em);
+    line-height: var(--line-height-subheading, 0.9);
+    font-weight: 400;
+    font-synthesis: none;
+  }
+  [data-theme="sternenko-fund"]
+    [data-slot="button"]:is(
+      [data-variant="outline"],
+      [data-variant="ghost"],
+      [data-variant="secondary"],
+      [data-variant="link"]
+    ) {
+    font-family: var(--font-sans);
+    letter-spacing: var(--letter-spacing-body, -0.02em);
+    line-height: var(--line-height-body, 1.1);
+  }
   [data-theme="sternenko-fund"] :is(h3, h4) {
     font-family: var(--font-subheading-dark);
     font-weight: 400;

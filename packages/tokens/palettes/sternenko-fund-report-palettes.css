@@ -1,0 +1,95 @@
+/*
+ * Sternenko project report palettes.
+ *
+ * Colour combinations measured (sampled) from the monthly report screenshots of
+ * the foundation's projects. Each palette only remaps semantic colour tokens, so
+ * any Report/* component re-skins unchanged — scope it with the
+ * `data-report-palette` attribute on a wrapper (e.g. MonthlyReportBlock):
+ *
+ *   <section data-report-palette="nebesnyi"> ... </section>
+ *
+ * Canvas tokens: --foreground is the dark report canvas, --background the text
+ * on it (MonthlyReportBlock uses `bg-foreground text-background`); --primary is
+ * the accent card fill, --primary-foreground the text on it.
+ */
+
+/* Black-canvas palettes — fixed report surface tokens (independent of site light/dark). */
+[data-report-palette="shahedoriz"],
+[data-report-palette="nebesnyi"],
+[data-report-palette="donations"] {
+  --muted: oklch(1 0 0 / 8%);
+  --muted-foreground: oklch(1 0 0 / 55%);
+  --border: oklch(1 0 0 / 12%);
+}
+
+/* Шахедоріз / cover / загальний звіт — yellow on black (the base brand accent). */
+[data-report-palette="shahedoriz"] {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.265 0 0);
+  --primary: oklch(0.886 0.172 93.9); /* #FFD62E */
+  --primary-foreground: oklch(0.235 0 0);
+  --accent: oklch(0.886 0.172 93.9);
+  --accent-foreground: oklch(0.235 0 0);
+}
+
+/* Небесний русоріз — cyan on black. */
+[data-report-palette="nebesnyi"] {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.235 0 0);
+  --primary: oklch(0.787 0.11 216.6); /* #59CBE7 */
+  --primary-foreground: oklch(0.235 0 0);
+  --accent: oklch(0.787 0.11 216.6);
+  --accent-foreground: oklch(0.235 0 0);
+}
+
+/* Загальний звіт по донатах — orange accent + sage-green secondary on black. */
+[data-report-palette="donations"] {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.235 0 0);
+  --primary: oklch(0.702 0.193 39.2); /* #FE6A34 */
+  --primary-foreground: oklch(0.235 0 0);
+  --accent: oklch(0.643 0.051 131.7); /* #829474 sage */
+  --accent-foreground: oklch(0.235 0 0);
+}
+
+/* Поточний русоріз — olive surfaces on a dark-green canvas. */
+[data-report-palette="potochnyi"] {
+  --background: oklch(0.942 0.01 125.7); /* #EAEDE6 pale green */
+  --foreground: oklch(0.248 0.023 142.3); /* #1B241A dark green */
+  --card: oklch(0.942 0.01 125.7);
+  --card-foreground: oklch(0.248 0.023 142.3);
+  --muted: oklch(0.643 0.051 131.7);
+  --muted-foreground: oklch(0.248 0.023 142.3);
+  --primary: oklch(0.643 0.051 131.7); /* #829474 olive */
+  --primary-foreground: oklch(0.248 0.023 142.3);
+  --accent: oklch(0.643 0.051 131.7);
+  --accent-foreground: oklch(0.248 0.023 142.3);
+}
+
+/* FPV-закупівлі — khaki page, cream cards, dark-brown ink. */
+[data-report-palette="fpv"] {
+  --background: oklch(0.622 0.087 72.2); /* #A77E49 khaki */
+  --foreground: oklch(0.248 0.025 68.9); /* #291F14 dark brown */
+  --card: oklch(0.926 0.039 78.6); /* #F5E4CA cream */
+  --card-foreground: oklch(0.248 0.025 68.9);
+  --muted: oklch(0.926 0.039 78.6);
+  --muted-foreground: oklch(0.248 0.025 68.9);
+  --primary: oklch(0.248 0.025 68.9);
+  --primary-foreground: oklch(0.926 0.039 78.6);
+  --accent: oklch(0.926 0.039 78.6);
+  --accent-foreground: oklch(0.248 0.025 68.9);
+}
+
+/* ReDRONE — monochrome: light-grey page, black cards, white ink. */
+[data-report-palette="redrone"] {
+  --background: oklch(0.894 0 0); /* #DCDCDC */
+  --foreground: oklch(0.226 0 0); /* #1C1C1C */
+  --card: oklch(0.226 0 0);
+  --card-foreground: oklch(1 0 0);
+  --muted: oklch(0.894 0 0);
+  --muted-foreground: oklch(0.226 0 0);
+  --primary: oklch(0.226 0 0);
+  --primary-foreground: oklch(1 0 0);
+  --accent: oklch(0.226 0 0);
+  --accent-foreground: oklch(1 0 0);
+}

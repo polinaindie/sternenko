@@ -8,6 +8,16 @@ import "../../tokens/themes/default.css"
 import "../../tokens/themes/acme.css"
 import "../../tokens/themes/sharp.css"
 import "../../tokens/themes/sternenko-fund.css"
+import "../../tokens/palettes/sternenko-fund-report-palettes.css"
+
+// Storybook's Vite builder only defines `process.env.NODE_ENV` (not a global
+// `process`), so a bare `process.env.*` read throws and blanks the whole preview
+// in dev. Shim a minimal `process` so the read is safe. In the brand-locked
+// build the token below is statically replaced by Vite `define`, so this shim
+// only affects `storybook dev`.
+if (typeof process === "undefined") {
+  ;(globalThis as Record<string, unknown>).process = { env: {} }
+}
 
 const BRAND_ONLY = process.env.STORYBOOK_BRAND_ONLY
 const DEFAULT_BRAND = BRAND_ONLY ?? "sternenko-fund"

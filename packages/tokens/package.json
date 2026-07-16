@@ -13,6 +13,7 @@
     "./themes/acme.css": "./themes/acme.css",
     "./themes/sharp.css": "./themes/sharp.css",
     "./themes/ukrainian-institute.css": "./themes/ukrainian-institute.css",
-    "./themes/sternenko-fund.css": "./themes/sternenko-fund.css"
+    "./themes/sternenko-fund.css": "./themes/sternenko-fund.css",
+    "./palettes/sternenko-fund-report-palettes.css": "./palettes/sternenko-fund-report-palettes.css"
   }
 }

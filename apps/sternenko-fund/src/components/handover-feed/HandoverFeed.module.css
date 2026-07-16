@@ -1,0 +1,342 @@
+/**
+ * HandoverFeed — maps to sternenko-fund / shadcn theme tokens.
+ *
+ * --background, --foreground       page chrome
+ * --card, --card-foreground        item cards
+ * --muted                          day header strip (surface step below card)
+ * --border                         hairlines
+ * --ring                           focus ring
+ * --radius-report                  12px card radius (--radius-md)
+ * --font-sans                      body type
+ * --font-subheading-dark           uppercase micro-labels (reports)
+ */
+
+.feed {
+  --hf-bg: var(--background);
+  --hf-text: var(--foreground);
+  --hf-card-bg: var(--card);
+  --hf-card-text: var(--card-foreground);
+  --hf-day-header-bg: var(--muted);
+  --hf-day-header-text: var(--foreground);
+  --hf-border: var(--border);
+  /* WCAG AA secondary on card: ≥4.5:1 vs --card in light & dark */
+  --hf-text-muted: color-mix(in oklch, var(--card-foreground) 82%, transparent);
+  --hf-label: color-mix(in oklch, var(--card-foreground) 90%, transparent);
+  --hf-accordion-bg: color-mix(in oklch, var(--card-foreground) 7%, var(--card));
+  --hf-tile-bg: color-mix(in oklch, var(--card-foreground) 10%, var(--card));
+  --hf-tile-border: color-mix(in oklch, var(--card-foreground) 10%, transparent);
+  --hf-chip-bg: color-mix(in oklch, var(--muted-foreground) 22%, transparent);
+  --hf-chip-text: color-mix(in oklch, var(--card-foreground) 95%, transparent);
+  --hf-focus-ring: var(--ring);
+  --hf-radius-card: var(--radius-report);
+  --hf-font: var(--font-sans);
+  --hf-font-label: var(--font-subheading-dark, var(--font-sans));
+
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-bottom: 3rem;
+  background: var(--hf-bg);
+  color: var(--hf-text);
+  font-family: var(--hf-font);
+  font-weight: 400;
+}
+
+/* ── Day group ── */
+
+.dayGroup + .dayGroup {
+  margin-top: 1.5rem;
+}
+
+.dayGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sentinel {
+  height: 1px;
+  margin: 0;
+  pointer-events: none;
+}
+
+.dayHeader {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.625rem var(--page-gutter, 1rem);
+  background: var(--hf-day-header-bg);
+  color: var(--hf-day-header-text);
+  border-bottom: var(--stroke-1, 1px) solid var(--hf-border);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: box-shadow 0.15s ease;
+}
+
+.dayHeaderStuck {
+  box-shadow: 0 2px 8px color-mix(in oklch, var(--foreground) 12%, transparent);
+}
+
+.dayHeaderDate {
+  font-variant-numeric: tabular-nums;
+}
+
+.dayHeaderTotal {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.dayItems {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0 var(--page-gutter, 1rem);
+  list-style: none;
+}
+
+/* ── Item card ── */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border: var(--stroke-1, 1px) solid var(--hf-border);
+  border-radius: var(--hf-radius-card);
+  background: var(--hf-card-bg);
+  color: var(--hf-card-text);
+  overflow: hidden;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+/* Mobile: vertical stack; tablet+: name | sum row */
+.cardHead {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.productName {
+  margin: 0;
+  font-size: 1.0625rem; /* 17px */
+  font-weight: 500;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.amountBlock {
+  min-width: 0;
+}
+
+.amountTotal {
+  margin: 0;
+  font-size: 1.625rem; /* 26px */
+  font-weight: 500;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.amountSub {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem; /* 14px */
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--hf-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.metaBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  margin-top: 1.25rem;
+}
+
+.metaField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.microLabel {
+  font-family: var(--hf-font-label);
+  font-size: 0.75rem; /* 12px */
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--hf-label);
+  line-height: 1.25;
+}
+
+.chip {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--hf-radius-card);
+  background: var(--hf-chip-bg);
+  color: var(--hf-chip-text);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.recipient {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+/* ── Attachments accordion ── */
+
+.accordion {
+  margin-top: 1.25rem;
+  border-top: var(--stroke-1, 1px) solid var(--hf-border);
+  background: var(--hf-accordion-bg);
+}
+
+.accordionTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 3rem; /* 48px */
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--hf-card-text);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.accordionTrigger:focus-visible {
+  outline: 2px solid var(--hf-focus-ring);
+  outline-offset: -2px;
+}
+
+.accordionTriggerLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.accordionTriggerIcon {
+  flex-shrink: 0;
+  width: 1.125rem;
+  height: 1.125rem;
+  opacity: 0.88;
+}
+
+.accordionTriggerCount {
+  color: var(--hf-text-muted);
+  font-weight: 400;
+}
+
+.accordionChevron {
+  flex-shrink: 0;
+  width: 1.125rem;
+  height: 1.125rem;
+  color: var(--hf-text-muted);
+  transition: transform 0.2s ease;
+}
+
+.accordionChevronOpen {
+  transform: rotate(180deg);
+}
+
+.accordionPanel {
+  padding: 0 1rem 1rem;
+}
+
+.attachmentGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
+  gap: 0.5rem;
+}
+
+.attachmentTile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  min-height: 4.75rem; /* 76px */
+  padding: 0.625rem 0.5rem;
+  border: var(--stroke-1, 1px) solid var(--hf-tile-border);
+  border-radius: calc(var(--hf-radius-card) - 2px);
+  background: var(--hf-tile-bg);
+  color: var(--hf-card-text);
+  font-family: inherit;
+  font-weight: 400;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.attachmentTile:focus-visible {
+  outline: 2px solid var(--hf-focus-ring);
+  outline-offset: 2px;
+}
+
+.attachmentTileIcon {
+  width: 1.5rem; /* 24px */
+  height: 1.5rem;
+  flex-shrink: 0;
+}
+
+.attachmentTileLabel {
+  font-family: var(--hf-font-label);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.25;
+  color: var(--hf-label);
+}
+
+/* ── Tablet+ (≥768px / --breakpoint-md) ── */
+
+@media (min-width: 48rem) {
+  .dayHeader {
+    padding-inline: var(--page-gutter-md, 1.5rem);
+  }
+
+  .dayItems {
+    padding-inline: var(--page-gutter-md, 1.5rem);
+  }
+
+  .cardHead {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .productName {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .amountBlock {
+    flex-shrink: 0;
+    text-align: right;
+  }
+}

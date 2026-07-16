@@ -1,4 +1,5 @@
 import {
+  FUNDRAISING_TO_PROJECT,
   FUNDRAISINGS,
   ISSUANCE_PROJECT_LINES,
   ISSUANCE_PROPERTY_CATEGORIES,
@@ -8,16 +9,20 @@ import {
   type IssuanceRow,
 } from "../mock-data"
 import {
+  ISSUANCE_REPORTING_END,
+  ISSUANCE_REPORTING_START,
+} from "../data/issuance-reporting"
+import {
   clampIncomeRange,
-  defaultIncomePeriod,
-  formatPeriodLabel,
-  isDefaultIncomePeriod,
+  isSameIncomePeriod,
 } from "./income-analytics"
+import { computeFilterAvailability } from "./filter-availability"
 
 export type IssuanceFilters = {
   from: Date
   to: Date
   nameQuery: string
+  projects: IssuanceProjectLine[]
   fundraisings: string[]
   units: string[]
   categories: IssuancePropertyCategory[]
@@ -26,12 +31,7 @@ export type IssuanceFilters = {
 export type IssuanceFilterChip = {
   id: string
   label: string
-  type:
-    | "period"
-    | "name"
-    | "fundraising"
-    | "unit"
-    | "category"
+  type: "name" | "project" | "fundraising" | "unit" | "category"
 }
 
 function parseIssuanceDate(value: string): Date {
@@ -39,12 +39,21 @@ function parseIssuanceDate(value: string): Date {
   return new Date(year!, (month ?? 1) - 1, day ?? 1)
 }
 
+export function defaultIssuancePeriod(): { from: Date; to: Date } {
+  return clampIncomeRange(ISSUANCE_REPORTING_START, ISSUANCE_REPORTING_END)
+}
+
+export function isDefaultIssuancePeriod(from: Date, to: Date): boolean {
+  return isSameIncomePeriod({ from, to }, defaultIssuancePeriod())
+}
+
 export function createDefaultIssuanceFilters(): IssuanceFilters {
-  const { from, to } = defaultIncomePeriod()
+  const { from, to } = defaultIssuancePeriod()
   return {
     from,
     to,
     nameQuery: "",
+    projects: [...ISSUANCE_PROJECT_LINES],
     fundraisings: [...FUNDRAISINGS],
     units: [...ISSUANCE_UNITS],
     categories: [...ISSUANCE_PROPERTY_CATEGORIES],
@@ -52,8 +61,8 @@ export function createDefaultIssuanceFilters(): IssuanceFilters {
 }
 
 export function hasActiveIssuanceFilters(filters: IssuanceFilters): boolean {
-  if (!isDefaultIncomePeriod(filters.from, filters.to)) return true
   if (filters.nameQuery.trim()) return true
+  if (filters.projects.length < ISSUANCE_PROJECT_LINES.length) return true
   if (filters.fundraisings.length < FUNDRAISINGS.length) return true
   if (filters.units.length < ISSUANCE_UNITS.length) return true
   if (filters.categories.length < ISSUANCE_PROPERTY_CATEGORIES.length) return true
@@ -73,9 +82,34 @@ export function filterIssuanceRows(
     const ms = parseIssuanceDate(row.date).getTime()
     if (ms < fromMs || ms > toMs) return false
     if (query && !row.productName.toLowerCase().includes(query)) return false
-    if (!filters.fundraisings.includes(row.fundraising)) return false
-    if (!filters.units.includes(row.unit)) return false
-    if (!filters.categories.includes(row.category)) return false
+    if (
+      filters.projects.length > 0 &&
+      filters.projects.length < ISSUANCE_PROJECT_LINES.length &&
+      !filters.projects.includes(row.project)
+    ) {
+      return false
+    }
+    if (
+      filters.fundraisings.length > 0 &&
+      filters.fundraisings.length < FUNDRAISINGS.length &&
+      !filters.fundraisings.includes(row.fundraising)
+    ) {
+      return false
+    }
+    if (
+      filters.units.length > 0 &&
+      filters.units.length < ISSUANCE_UNITS.length &&
+      !filters.units.includes(row.unit)
+    ) {
+      return false
+    }
+    if (
+      filters.categories.length > 0 &&
+      filters.categories.length < ISSUANCE_PROPERTY_CATEGORIES.length &&
+      !filters.categories.includes(row.category)
+    ) {
+      return false
+    }
     return true
   })
 }
@@ -83,17 +117,15 @@ export function filterIssuanceRows(
 export function buildIssuanceFilterChips(filters: IssuanceFilters): IssuanceFilterChip[] {
   const chips: IssuanceFilterChip[] = []
 
-  if (!isDefaultIncomePeriod(filters.from, filters.to)) {
-    chips.push({
-      id: "period",
-      label: formatPeriodLabel(filters.from, filters.to),
-      type: "period",
-    })
-  }
-
   const name = filters.nameQuery.trim()
   if (name) {
     chips.push({ id: "name", label: `«${name}»`, type: "name" })
+  }
+
+  if (filters.projects.length < ISSUANCE_PROJECT_LINES.length) {
+    for (const project of filters.projects) {
+      chips.push({ id: `project:${project}`, label: project, type: "project" })
+    }
   }
 
   if (filters.fundraisings.length < FUNDRAISINGS.length) {
@@ -121,13 +153,16 @@ export function removeIssuanceFilterChip(
   filters: IssuanceFilters,
   chip: IssuanceFilterChip
 ): IssuanceFilters {
-  if (chip.type === "period") {
-    const { from, to } = defaultIncomePeriod()
-    return { ...filters, from, to }
-  }
-
   if (chip.type === "name") {
     return { ...filters, nameQuery: "" }
+  }
+
+  if (chip.type === "project") {
+    const next = filters.projects.filter((item) => item !== chip.label)
+    return {
+      ...filters,
+      projects: next.length === 0 ? [...ISSUANCE_PROJECT_LINES] : next,
+    }
   }
 
   if (chip.type === "fundraising") {
@@ -157,7 +192,8 @@ export function removeIssuanceFilterChip(
   return filters
 }
 
-export type IssuanceProjectRequestBreakdownItem = {
+export type IssuanceRequestBreakdownItem = {
+  fundraising: (typeof FUNDRAISINGS)[number]
   project: IssuanceProjectLine
   count: number
   amountUah: number
@@ -196,29 +232,31 @@ export function formatRequestCountCaption(count: number): string {
   return "запитів"
 }
 
-/** Кількість закритих запитів (рядків видачі) за проєктами після фільтрів. */
-export function summarizeClosedRequestsByProject(
+/** Кількість закритих запитів (рядків видачі) за зборами після фільтрів. */
+export function summarizeClosedRequestsByFundraising(
   rows: IssuanceRow[]
-): IssuanceProjectRequestBreakdownItem[] {
+): IssuanceRequestBreakdownItem[] {
   if (rows.length === 0) return []
 
-  const counts = new Map<IssuanceProjectLine, number>()
-  const amounts = new Map<IssuanceProjectLine, number>()
-  for (const project of ISSUANCE_PROJECT_LINES) {
-    counts.set(project, 0)
-    amounts.set(project, 0)
+  const counts = new Map<(typeof FUNDRAISINGS)[number], number>()
+  const amounts = new Map<(typeof FUNDRAISINGS)[number], number>()
+  for (const fundraising of FUNDRAISINGS) {
+    counts.set(fundraising, 0)
+    amounts.set(fundraising, 0)
   }
   for (const row of rows) {
-    counts.set(row.project, (counts.get(row.project) ?? 0) + 1)
-    amounts.set(row.project, (amounts.get(row.project) ?? 0) + row.total)
+    const fundraising = row.fundraising as (typeof FUNDRAISINGS)[number]
+    counts.set(fundraising, (counts.get(fundraising) ?? 0) + 1)
+    amounts.set(fundraising, (amounts.get(fundraising) ?? 0) + row.total)
   }
 
   const grandTotal = rows.length
-  const items = ISSUANCE_PROJECT_LINES.map((project) => ({
-    project,
-    count: counts.get(project) ?? 0,
-    amountUah: amounts.get(project) ?? 0,
-    share: Math.round(((counts.get(project) ?? 0) / grandTotal) * 100),
+  const items = FUNDRAISINGS.map((fundraising) => ({
+    fundraising,
+    project: FUNDRAISING_TO_PROJECT[fundraising],
+    count: counts.get(fundraising) ?? 0,
+    amountUah: amounts.get(fundraising) ?? 0,
+    share: Math.round(((counts.get(fundraising) ?? 0) / grandTotal) * 100),
   }))
 
   const shareTotal = items.reduce((sum, item) => sum + item.share, 0)
@@ -227,8 +265,25 @@ export function summarizeClosedRequestsByProject(
     top.share += 100 - shareTotal
   }
 
-  return [...items].sort((left, right) => {
-    if (left.count !== right.count) return right.count - left.count
-    return left.project.localeCompare(right.project, "uk")
+  return [...items]
+    .filter((item) => item.count > 0)
+    .sort((left, right) => {
+      if (left.count !== right.count) return right.count - left.count
+      return left.fundraising.localeCompare(right.fundraising, "uk")
+    })
+}
+
+export function computeIssuanceFilterAvailability(
+  rows: readonly IssuanceRow[],
+  period: { from: Date; to: Date }
+) {
+  return computeFilterAvailability({
+    rows,
+    period,
+    getRowDate: (row) => parseIssuanceDate(row.date),
+    getProject: (row) => row.project,
+    getFundraiser: (row) => row.fundraising,
+    allProjects: ISSUANCE_PROJECT_LINES,
+    allFundraisers: FUNDRAISINGS,
   })
 }
