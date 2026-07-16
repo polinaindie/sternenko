@@ -1,4 +1,4 @@
-import { cpSync, mkdirSync, rmSync, watch } from "node:fs"
+import { cpSync, mkdirSync, rmSync, watch, writeFileSync } from "node:fs"
 import { spawn } from "node:child_process"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
@@ -15,6 +15,23 @@ function syncDistToPreview() {
 rmSync(previewRoot, { recursive: true, force: true })
 mkdirSync(appRoot, { recursive: true })
 syncDistToPreview()
+
+writeFileSync(
+  path.join(previewRoot, "index.html"),
+  `<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0; url=/sternenko/" />
+    <script>location.replace("/sternenko/")</script>
+    <title>Звіти — БФ «Спільнота Стерненка»</title>
+  </head>
+  <body>
+    <p><a href="/sternenko/">Перейти до звітів</a></p>
+  </body>
+</html>
+`
+)
 
 let syncTimer = null
 watch(dist, { recursive: true }, () => {
