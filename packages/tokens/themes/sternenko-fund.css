@@ -70,6 +70,10 @@
   --radius: 0;
   --border-width: 1px;
   --shadow-card: none;
+
+  /* Wide desktop (1920+): content + nav share a 1600px cap. */
+  --container-max: 100rem; /* 1600px */
+  --container-content-max: var(--container-max);
 }
 
 [data-theme="sternenko-fund"].dark {
