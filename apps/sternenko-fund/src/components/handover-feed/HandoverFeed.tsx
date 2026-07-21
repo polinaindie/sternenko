@@ -78,6 +78,20 @@ const ATTACHMENT_META: Record<
   payment: { label: "Платіж", Icon: IconReceipt },
 }
 
+function readSiteHeaderOffsetPx(): number {
+  const raw = getComputedStyle(document.documentElement)
+    .getPropertyValue("--site-header-offset")
+    .trim()
+  if (!raw) return 62
+  if (raw.endsWith("rem")) {
+    const rem = parseFloat(raw)
+    const root = parseFloat(getComputedStyle(document.documentElement).fontSize)
+    return Number.isFinite(rem) && Number.isFinite(root) ? rem * root : 62
+  }
+  const px = parseFloat(raw)
+  return Number.isFinite(px) ? px : 62
+}
+
 function StickyDayHeader({
   date,
   totalUAH,
@@ -92,15 +106,26 @@ function StickyDayHeader({
     const sentinel = sentinelRef.current
     if (!sentinel) return
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry) setIsStuck(!entry.isIntersecting)
-      },
-      { threshold: 0, rootMargin: "-1px 0px 0px 0px" }
-    )
+    let observer: IntersectionObserver | null = null
 
-    observer.observe(sentinel)
-    return () => observer.disconnect()
+    const connect = () => {
+      observer?.disconnect()
+      const offset = readSiteHeaderOffsetPx()
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry) setIsStuck(!entry.isIntersecting)
+        },
+        { threshold: 0, rootMargin: `-${offset + 1}px 0px 0px 0px` }
+      )
+      observer.observe(sentinel)
+    }
+
+    connect()
+    window.addEventListener("resize", connect)
+    return () => {
+      window.removeEventListener("resize", connect)
+      observer?.disconnect()
+    }
   }, [])
 
   return (

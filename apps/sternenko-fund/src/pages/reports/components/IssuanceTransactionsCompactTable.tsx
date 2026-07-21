@@ -11,6 +11,7 @@ import type {
 } from "./AttachmentViewer"
 import { FundraisingTag } from "./FundraisingTag"
 import { AttachmentButton } from "./report-ui"
+import { StickyDateHeader } from "./StickyDateHeader"
 import type { IssuanceRow } from "../mock-data"
 
 type IssuanceTransactionsCompactTableProps = {
@@ -242,14 +243,7 @@ export function IssuanceTransactionsCompactTable({
     >
       {dateGroups.map((group) => (
         <section key={group.date} className="flex flex-col gap-3">
-          <h3
-            className={cn(
-              "sticky top-0 z-10 -mx-px border-b border-[var(--report-border)] bg-[var(--report-surface)] px-3 py-2",
-              "text-sm font-medium tracking-[0.02em] text-[var(--report-surface-foreground)] tabular-nums"
-            )}
-          >
-            {group.date}
-          </h3>
+          <StickyDateHeader date={group.date} />
           <ul className="flex flex-col gap-3">
             {group.rows.map((row) => (
               <li key={row.id} className="min-w-0">
