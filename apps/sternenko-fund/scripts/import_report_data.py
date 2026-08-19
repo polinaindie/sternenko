@@ -21,9 +21,9 @@ ACCOUNT_TO_SOURCE = {
     "Моно UAH ЗСУ": "Monobank",
     "Моно UAH Операційний": "Monobank",
     "Приват UAH Операційний": "ПриватБанк",
-    "Приват EUR ЗСУ": "Рахунки в різних валютах",
-    "Приват PLN ЗСУ": "Рахунки в різних валютах",
-    "Поточний рахунок + Конверт": "Portmone",
+    "Приват EUR ЗСУ": "Валютний рахунок",
+    "Приват PLN ЗСУ": "Валютний рахунок",
+    "Поточний рахунок + Конверт": "Гривневий рахунок",
 }
 
 FX_TO_UAH = {
@@ -203,11 +203,19 @@ def infer_category(name: str) -> str:
     return "БК"
 
 
+AWAITING_MARKER = "awaiting"
+
+
+def is_awaiting_report(value: str) -> bool:
+    """`awaiting` у реєстрі — документ ще очікується, а не відсутній назавжди."""
+    return value.strip().lower() == AWAITING_MARKER
+
+
 def is_placeholder_url(value: str) -> bool:
     normalized = value.strip().lower()
     return normalized in {
         "",
-        "awaiting",
+        AWAITING_MARKER,
         "example.com",
         "http://example.com",
         "https://example.com",
@@ -309,6 +317,9 @@ def import_issuance_rows(csv_rows: list[dict[str, str]]) -> tuple[list[dict], st
         date = parse_issuance_date(normalize_issuance_field(row["Дата"]))
         category = infer_category(product_name)
         code = normalize_issuance_field(row["Код запису"])
+        media_raw = normalize_issuance_field(row["Фото/Відео звіт"])
+        act_raw = normalize_issuance_field(row["Акт прийому-передачі"])
+        payment_raw = normalize_issuance_field(row["Платіжний документ"])
 
         month, day, year = normalize_issuance_field(row["Дата"]).split("-")
         parsed = datetime(2000 + int(year), int(month), int(day))
@@ -331,17 +342,20 @@ def import_issuance_rows(csv_rows: list[dict[str, str]]) -> tuple[list[dict], st
                 "unit": unit,
                 "category": category,
                 "attachments": {
-                    "media": media_attachment(
-                        normalize_issuance_field(row["Фото/Відео звіт"]), product_name
-                    ),
+                    "media": media_attachment(media_raw, product_name),
                     "act": document_attachment(
-                        normalize_issuance_field(row["Акт прийому-передачі"]),
+                        act_raw,
                         f"Акт видачі — {product_name} від {date}",
                     ),
                     "payment": document_attachment(
-                        normalize_issuance_field(row["Платіжний документ"]),
+                        payment_raw,
                         f"Платіжний документ — {product_name}",
                     ),
+                },
+                "pendingAttachments": {
+                    "media": is_awaiting_report(media_raw),
+                    "act": is_awaiting_report(act_raw),
+                    "payment": is_awaiting_report(payment_raw),
                 },
             }
         )

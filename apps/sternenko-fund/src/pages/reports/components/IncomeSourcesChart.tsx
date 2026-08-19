@@ -50,8 +50,8 @@ import {
 const CHART_COLORS = [
   "#FE6A34", // Monobank — помаранчевий (donations)
   "#FFD62E", // ПриватБанк — жовтий (shahedoriz)
-  "#59CBE7", // Portmone — блакитний (nebesnyi)
-  "#829474", // Рахунки в різних валютах — оливковий (potochnyi)
+  "#59CBE7", // Гривневий рахунок — блакитний (nebesnyi)
+  "#829474", // Валютний рахунок — оливковий (potochnyi)
 ] as const
 
 const GRANULARITY_LABEL: Record<ChartGranularity, string> = {
@@ -93,7 +93,10 @@ function xAxisRotatedMarginX(granularity: ChartGranularity): number {
 }
 /** Підпис «dd.mm.yy» (~12px); при багатьох днях — −45° і крок раз на 3 дні. */
 const X_LABEL_MIN_PX = 52
+/** Тижневий «dd.mm.yy–dd.mm.yy» (~120px горизонтально) — раніше поріг 52px лишав підписи горизонтальними і вони злипались. */
+const X_LABEL_MIN_PX_WEEK = 120
 const X_LABEL_TARGET_PX = 80
+const X_LABEL_TARGET_PX_WEEK = 120
 /** Крок підписів осі X у режимі «день», коли дні займають усю ширину графіка. */
 const X_DAY_LABEL_STEP = 3
 /** Верхні кути стовпців — однакові, гостріші за --radius-report (4px). Низ завжди 0. */
@@ -533,7 +536,9 @@ export function IncomeSourcesChart({
   const fillsViewport = barLayout.fillsViewport
   const categoryWidth = barLayout.categoryWidth
 
-  const rotateXLabels = categoryWidth < X_LABEL_MIN_PX
+  const xLabelMinPx =
+    granularity === "week" ? X_LABEL_MIN_PX_WEEK : X_LABEL_MIN_PX
+  const rotateXLabels = categoryWidth < xLabelMinPx
   const xAxisHeight = xAxisHeightForGranularity(granularity, rotateXLabels)
   const rotatedMarginX = rotateXLabels
     ? xAxisRotatedMarginX(granularity)
@@ -590,13 +595,20 @@ export function IncomeSourcesChart({
       )
     : bucketCount * finalCategoryWidth
 
-  const maxLabels = Math.max(2, Math.floor(plotWidth / X_LABEL_TARGET_PX))
+  const xLabelTargetPx =
+    granularity === "week" ? X_LABEL_TARGET_PX_WEEK : X_LABEL_TARGET_PX
+  const maxLabels = Math.max(2, Math.floor(plotWidth / xLabelTargetPx))
   const tickInterval = Math.max(0, Math.ceil(bucketCount / maxLabels) - 1)
+  /** Крок тижневих підписів — не показуємо всі діапазони, коли вони не вміщаються. */
+  const weekLabelStep = Math.max(1, Math.ceil(bucketCount / maxLabels))
 
   /** Явний список підписів — надійніше за interval при кастомному tick. */
   const xAxisTicks =
     granularity === "week"
-      ? data.map((row) => row.period).filter(isDisplayablePeriodLabel)
+      ? data
+          .filter((_, index) => index % weekLabelStep === 0)
+          .map((row) => row.period)
+          .filter(isDisplayablePeriodLabel)
       : granularity === "day" && rotateXLabels
         ? data
             .filter((_, index) => index % X_DAY_LABEL_STEP === 0)
@@ -644,7 +656,7 @@ export function IncomeSourcesChart({
 
   return (
     <figure
-      className="flex w-full min-w-0 flex-col gap-2"
+      className="flex w-full min-w-0 flex-col gap-6"
       aria-describedby={descriptionId}
     >
       <figcaption className="sr-only">Джерела надходжень, гривня</figcaption>

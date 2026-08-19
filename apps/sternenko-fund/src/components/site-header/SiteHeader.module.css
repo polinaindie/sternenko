@@ -205,7 +205,7 @@
   .navMenu {
     display: none;
     position: fixed;
-    top: var(--site-header-offset, 3.875rem);
+    top: var(--site-header-offset, 4.75rem);
     right: 0;
     left: 0;
     flex-direction: column;

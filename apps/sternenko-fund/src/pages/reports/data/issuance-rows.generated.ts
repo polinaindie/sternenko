@@ -24,6 +24,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -49,6 +54,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV Зенітний цифровий дрон «Дикий шершень» 10 дюймів"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -74,6 +84,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FiberKrab 13” 25км"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -99,6 +114,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV Квадрокоптер ODIN10 SSE"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -124,6 +144,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — \"FPV дрон «Horizon 10’’-О-15 км» (оптика)\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -149,6 +174,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон \"Enterprise 10\" (оптика)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -174,6 +204,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV Коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -199,6 +234,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV Коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -224,6 +264,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон Winfly Hunter"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -249,6 +294,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -274,6 +324,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV Коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -299,6 +354,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 10 дюймів денний КОЛОС 10\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -324,6 +384,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон Winfly Hunter"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -349,6 +414,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — \"FPV дрон «Horizon 10’’-О-15 км» (оптика)\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -374,6 +444,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -399,6 +474,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Літак-перехоплювач “Тарас П”"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -424,6 +504,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -449,6 +534,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FiberKrab 13” 25км"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -474,6 +564,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — \"FPV дрон «Horizon 10’’-О-20 км» (оптика)\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -499,6 +594,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV BESHKЕТ 10X4 FO Dual"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -524,6 +624,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон \"Enterprise 10\" (оптика)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -549,6 +654,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон \"Enterprise 10\" (оптика)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -574,6 +684,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — STRIX (ReDrone)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -599,6 +714,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — STRIX (ReDrone)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -619,6 +739,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
       "media": [],
       "act": [],
       "payment": []
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": true
     }
   },
   {
@@ -644,6 +769,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV Коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -669,6 +799,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон \"Enterprise 10\" (оптика)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -694,6 +829,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — \"FPV дрон «Horizon 10’’-О-20 км» (оптика)\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -719,6 +859,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — \"FPV дрон «Horizon 10’’-О-20 км» (оптика)\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -744,6 +889,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — ReDrone"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -769,6 +919,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон-перехоплювач, Sting з цифровою тепловізійною камерою Hornet Vision"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -794,6 +949,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV Зенітний цифровий дрон «Дикий шершень» 10 дюймів"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -819,6 +979,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV Зенітний цифровий дрон «Дикий шершень» 10 дюймів"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -844,6 +1009,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -869,6 +1039,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Літак-перехоплювач “Тарас П”"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -894,6 +1069,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -919,6 +1099,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон Winfly Hunter"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -944,6 +1129,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — \"FPV дрон «Horizon 10’’-О-20 км» (оптика)\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -969,6 +1159,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон \"Enterprise 10\" (оптика)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -994,6 +1189,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон \"Enterprise 10\" (оптика)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1019,6 +1219,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — ReDrone"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1044,6 +1249,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FiberKrab 13” 25км"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1069,6 +1279,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — \"FPV дрон \"\"Enterprise 11\"\" (оптика)\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -1094,6 +1309,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Strix Air Long Range"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1119,6 +1339,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон Winfly Hunter"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1144,6 +1369,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — ReDrone"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1164,6 +1394,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
       "media": [],
       "act": [],
       "payment": []
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": true,
+      "payment": true
     }
   },
   {
@@ -1189,6 +1424,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Безпілотний авіаційний комплекс \"Сокіл\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1214,6 +1454,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV аналоговий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -1239,6 +1484,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV Квадрокоптер ODIN10 SSE"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1264,6 +1514,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — БПАк \"Shturm-15\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1289,6 +1544,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — ReDrone"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1314,6 +1574,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -1339,6 +1604,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон-перехоплювач, Sting з цифровою тепловізійною камерою Hornet Vision"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1364,6 +1634,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1389,6 +1664,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FiberKrab 13” 25км"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1414,6 +1694,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон \"\"Enterprise 11\"\" (оптика)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1439,6 +1724,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1464,6 +1754,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон «Horizon 10’’-О-20 км» (оптика)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1489,6 +1784,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV Квадрокоптер ODIN10 SSE"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1514,6 +1814,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — ReDrone"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1539,6 +1844,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон-перехоплювач, Sting з цифровою тепловізійною камерою"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -1564,6 +1874,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1589,6 +1904,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон \"\"Enterprise 11\"\" (оптика)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1614,6 +1934,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FiberKrab 13” 25км"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -1639,6 +1964,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1664,6 +1994,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1689,6 +2024,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон Winfly Hunter"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1714,6 +2054,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — STRIX (ReDrone)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1739,6 +2084,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон-перехоплювач, Sting з цифровою тепловізійною камерою Hornet Vision"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -1764,6 +2114,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1789,6 +2144,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV Коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1814,6 +2174,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1839,6 +2204,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -1864,6 +2234,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон «Horizon 10’’-О-20 км» (оптика)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -1889,6 +2264,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — STRIX (ReDrone)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1914,6 +2294,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон-перехоплювач, Sting з цифровою тепловізійною камерою"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -1939,6 +2324,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1964,6 +2354,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон \"\"Enterprise 11\"\" (оптика)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -1989,6 +2384,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — ReDrone комплектуючі"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2014,6 +2414,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV Зенітний цифровий дрон «Дикий шершень» 10 дюймів"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2039,6 +2444,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV Зенітний цифровий дрон «Дикий шершень» 10 дюймів"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2064,6 +2474,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV Квадрокоптер ODIN10 SSE"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2089,6 +2504,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — STRIX (ReDrone)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -2114,6 +2534,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — ReDrone"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2139,6 +2564,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -2164,6 +2594,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Літак-перехоплювач “Тарас П”"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2189,6 +2624,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — БпЛА «****** ********* *******»"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -2214,6 +2654,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2239,6 +2684,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — \"FPV дрон «Horizon 10’’-О-15 км» (оптика)\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2264,6 +2714,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — \"FPV дрон «Horizon 10’’-О-15 км» (оптика)\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2289,6 +2744,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — \"FPV дрон «Horizon 10’’-О-20 км» (оптика)\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2314,6 +2774,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2339,6 +2804,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2364,6 +2834,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, носій ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2389,6 +2864,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — STRIX (ReDrone)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2414,6 +2894,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2439,6 +2924,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2464,6 +2954,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — \"FPV дрон «Horizon 10’’-О-15 км» (оптика)\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -2489,6 +2984,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2514,6 +3014,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон Winfly Hunter"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -2539,6 +3044,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон Winfly Hunter"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2564,6 +3074,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, носій ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2584,6 +3099,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
       "media": [],
       "act": [],
       "payment": []
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": true
     }
   },
   {
@@ -2609,6 +3129,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV аналоговий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -2634,6 +3159,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — \"FPV дрон «Horizon 10’’-О-15 км» (оптика)\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2659,6 +3189,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV Зенітний цифровий дрон «Дикий шершень» 10 дюймів"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2684,6 +3219,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2709,6 +3249,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — STRIX (ReDrone)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2734,6 +3279,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — ReDrone"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2759,6 +3309,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2784,6 +3339,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2809,6 +3369,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Strix Digital"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2834,6 +3399,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Strix Digital носій"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2859,6 +3429,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Інфраструктура Strix Digital (наземка + комплектуючі)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -2884,6 +3459,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Strix Digital"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2909,6 +3489,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Strix Digital носій"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2934,6 +3519,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Інфраструктура Strix Digital (наземка + комплектуючі)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -2959,6 +3549,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Strix Digital"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -2984,6 +3579,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Strix Digital носій"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3009,6 +3609,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Інфраструктура Strix Digital (наземка + комплектуючі)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3034,6 +3639,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Strix Digital"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3059,6 +3669,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Strix Digital носій"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3084,6 +3699,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Інфраструктура Strix Digital (наземка + комплектуючі)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3109,6 +3729,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Strix Digital"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -3134,6 +3759,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Strix Digital носій"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3159,6 +3789,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Інфраструктура Strix Digital (наземка + комплектуючі)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3184,6 +3819,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Rusopad HD"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3209,6 +3849,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Rusopad HD носій"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -3234,6 +3879,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Інфраструктура Rusopad(наземка + комплектуючі)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3259,6 +3909,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Rusopad HD"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3284,6 +3939,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Rusopad HD носій"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -3309,6 +3969,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Інфраструктура Rusopad(наземка + комплектуючі)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3334,6 +3999,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Rusopad HD"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3359,6 +4029,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Rusopad HD носій"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -3384,6 +4059,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Інфраструктура Rusopad(наземка + комплектуючі)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -3409,6 +4089,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Rusopad HD"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3434,6 +4119,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Rusopad HD носій"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3459,6 +4149,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Інфраструктура Rusopad(наземка + комплектуючі)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3484,6 +4179,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Rusopad HD"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3509,6 +4209,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Rusopad HD носій"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3534,6 +4239,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Інфраструктура Rusopad(наземка + комплектуючі)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3559,6 +4269,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3584,6 +4299,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -3609,6 +4329,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -3634,6 +4359,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3659,6 +4389,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3684,6 +4419,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3709,6 +4449,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -3734,6 +4479,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3759,6 +4509,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3784,6 +4539,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3809,6 +4569,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3834,6 +4599,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3859,6 +4629,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3884,6 +4659,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3909,6 +4689,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3934,6 +4719,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3959,6 +4749,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -3984,6 +4779,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4009,6 +4809,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -4034,6 +4839,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4059,6 +4869,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -4084,6 +4899,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4109,6 +4929,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -4134,6 +4959,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV цифровий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -4159,6 +4989,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4184,6 +5019,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів нічний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4209,6 +5049,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4234,6 +5079,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -4259,6 +5109,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -4284,6 +5139,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -4309,6 +5169,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4334,6 +5199,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4359,6 +5229,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4384,6 +5259,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4409,6 +5289,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4434,6 +5319,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4459,6 +5349,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4484,6 +5379,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4509,6 +5409,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4534,6 +5439,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4559,6 +5469,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4584,6 +5499,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4609,6 +5529,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4634,6 +5559,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4659,6 +5589,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4684,6 +5619,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора + проп."
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4709,6 +5649,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4734,6 +5679,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4759,6 +5709,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -4784,6 +5739,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4809,6 +5769,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4834,6 +5799,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4859,6 +5829,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4884,6 +5859,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4909,6 +5889,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Дрон квадро 20 дюймів денний, ретранслятора"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -4934,6 +5919,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4959,6 +5949,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -4984,6 +5979,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — Літак-перехоплювач “Тарас П”"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -5009,6 +6009,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV аналоговий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -5034,6 +6039,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV аналоговий коптер Hornet F10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -5059,6 +6069,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV Зенітний цифровий дрон «Дикий шершень» 10 дюймів"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -5084,6 +6099,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV Зенітний цифровий дрон «Дикий шершень» 10 дюймів"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -5109,6 +6129,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -5134,6 +6159,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -5159,6 +6189,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — \"FPV дрон «Horizon 10’’-О-15 км» (оптика)\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -5184,6 +6219,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — \"FPV дрон «Horizon 10’’-О-20 км» (оптика)\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -5209,6 +6249,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — \"FPV дрон «Horizon 10’’-О-15 км» (оптика)\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -5234,6 +6279,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон \"Enterprise 10\" (оптика)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -5259,6 +6309,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — БпЛА «****** **** ********»"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -5284,6 +6339,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — STRIX (ReDrone)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -5309,6 +6369,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — ReDrone"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -5334,6 +6399,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -5359,6 +6429,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV-дрон аналоговий \"Дикий шершень 10\" з ініціацією"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -5384,6 +6459,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -5409,6 +6489,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — \"FPV дрон «Horizon 10’’-О-20 км» (оптика)\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -5434,6 +6519,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — ReDrone"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -5459,6 +6549,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -5484,6 +6579,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -5509,6 +6609,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — \"FPV дрон «Horizon 10’’-О-20 км» (оптика)\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -5534,6 +6639,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — ReDrone"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -5559,6 +6669,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -5584,6 +6699,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -5609,6 +6729,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — \"FPV дрон «Horizon 10’’-О-20 км» (оптика)\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -5634,6 +6759,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -5659,6 +6789,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — STRIX (ReDrone)"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -5684,6 +6819,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — ReDrone комплектуючі"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -5709,6 +6849,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV дрон-перехоплювач, аналоговий, тепловізійний, швидкісний Sting з ініціацією"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": true,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -5734,6 +6879,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -5759,6 +6909,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — FPV SHURIKEN 10"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": true,
+      "payment": false
     }
   },
   {
@@ -5784,6 +6939,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — \"FPV дрон «Horizon 10’’-О-20 км» (оптика)\""
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   },
   {
@@ -5809,6 +6969,11 @@ export const ISSUANCE_IMPORTED_ROWS = [
           "alt": "Платіжний документ — ReDrone комплектуючі"
         }
       ]
+    },
+    "pendingAttachments": {
+      "media": false,
+      "act": false,
+      "payment": false
     }
   }
 ] as const

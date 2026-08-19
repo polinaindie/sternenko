@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { cn } from "@workspace/ui/lib/utils"
 import { Container } from "@workspace/ui/layout/container"
@@ -43,17 +43,33 @@ function NavMenuLink({
 
 export function SiteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const headerRef = useRef<HTMLElement>(null)
 
+  // Keep --site-header-offset in sync with the real fixed header height so
+  // page padding / sticky tops clear the bar on every breakpoint (incl. 1920+).
   useEffect(() => {
-    document.documentElement.style.setProperty(
-      "--site-header-offset",
-      mobileOpen ? "5.25rem" : "3.875rem"
-    )
+    const header = headerRef.current
+    if (!header) return
+
+    const syncOffset = () => {
+      const height = Math.ceil(header.getBoundingClientRect().height)
+      document.documentElement.style.setProperty(
+        "--site-header-offset",
+        `${height}px`
+      )
+    }
+
+    syncOffset()
+    const observer = new ResizeObserver(syncOffset)
+    observer.observe(header)
+    window.addEventListener("resize", syncOffset)
 
     return () => {
+      observer.disconnect()
+      window.removeEventListener("resize", syncOffset)
       document.documentElement.style.removeProperty("--site-header-offset")
     }
-  }, [mobileOpen])
+  }, [])
 
   useEffect(() => {
     if (!mobileOpen) return
@@ -67,7 +83,7 @@ export function SiteHeader() {
   }, [mobileOpen])
 
   return (
-    <header className={styles.navComponent} role="banner">
+    <header ref={headerRef} className={styles.navComponent} role="banner">
       <Container className={styles.navContainer}>
           <a href={homeHref} className={styles.navBrand}>
             <img

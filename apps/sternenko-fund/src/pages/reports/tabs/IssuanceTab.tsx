@@ -669,6 +669,7 @@ export function IssuanceTab() {
                             iconClassName="size-4"
                             compact
                             available={row.attachments.media.length > 0}
+                            pending={row.pendingAttachments.media}
                             onClick={() => openMedia(row.productName, row.attachments.media)}
                           />
                         </ReportTableCell>
@@ -679,6 +680,7 @@ export function IssuanceTab() {
                             iconClassName="size-4"
                             compact
                             available={row.attachments.act.length > 0}
+                            pending={row.pendingAttachments.act}
                             onClick={() =>
                               openDocument("act", row.productName, row.attachments.act)
                             }
@@ -691,6 +693,7 @@ export function IssuanceTab() {
                             iconClassName="size-4"
                             compact
                             available={row.attachments.payment.length > 0}
+                            pending={row.pendingAttachments.payment}
                             onClick={() =>
                               openDocument("payment", row.productName, row.attachments.payment)
                             }

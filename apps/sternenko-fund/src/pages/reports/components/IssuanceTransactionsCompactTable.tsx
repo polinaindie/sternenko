@@ -133,6 +133,7 @@ function AttachmentsColumn({
           icon={ImagesIcon}
           iconClassName="size-5"
           available={row.attachments.media.length > 0}
+          pending={row.pendingAttachments.media}
           onClick={() => onOpenMedia(row.productName, row.attachments.media)}
         />
       </AttachmentTile>
@@ -142,6 +143,7 @@ function AttachmentsColumn({
           icon={FileTextIcon}
           iconClassName="size-5"
           available={row.attachments.act.length > 0}
+          pending={row.pendingAttachments.act}
           onClick={() => onOpenDocument("act", row.productName, row.attachments.act)}
         />
       </AttachmentTile>
@@ -151,6 +153,7 @@ function AttachmentsColumn({
           icon={ReceiptIcon}
           iconClassName="size-5"
           available={row.attachments.payment.length > 0}
+          pending={row.pendingAttachments.payment}
           onClick={() =>
             onOpenDocument("payment", row.productName, row.attachments.payment)
           }

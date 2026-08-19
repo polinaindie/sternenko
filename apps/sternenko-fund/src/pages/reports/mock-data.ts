@@ -63,16 +63,16 @@ export function activeFundraisingsForYear(
 export const INCOME_SOURCES = [
   "Monobank",
   "ПриватБанк",
-  "Portmone",
-  "Рахунки в різних валютах",
+  "Гривневий рахунок",
+  "Валютний рахунок",
 ] as const
 
 /** Slug keys for chart/CSS — labels may contain spaces or Cyrillic. */
 export const INCOME_SOURCE_CHART_KEY: Record<(typeof INCOME_SOURCES)[number], string> = {
   Monobank: "monobank",
   "ПриватБанк": "privatbank",
-  Portmone: "portmone",
-  "Рахунки в різних валютах": "foreignAccounts",
+  "Гривневий рахунок": "uahAccount",
+  "Валютний рахунок": "fxAccount",
 }
 
 export const INCOME_CHART_KEYS = INCOME_SOURCES.map(
@@ -85,6 +85,13 @@ export type IssuanceAttachments = {
   media: TransferMediaItem[]
   act: DocumentAttachmentItem[]
   payment: DocumentAttachmentItem[]
+}
+
+/** Документ ще не завантажено, але звіт очікується (`awaiting` у реєстрі видач). */
+export type IssuanceAttachmentsPending = {
+  media: boolean
+  act: boolean
+  payment: boolean
 }
 
 export type IssuanceRow = {
@@ -102,6 +109,7 @@ export type IssuanceRow = {
   unit: string
   category: IssuancePropertyCategory
   attachments: IssuanceAttachments
+  pendingAttachments: IssuanceAttachmentsPending
 }
 
 /** Лінійки проєктів для зведеного розподілу закупівель (не прив’язано до періоду на сторінці). */

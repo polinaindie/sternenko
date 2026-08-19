@@ -37,8 +37,8 @@ describe("resolveIncomeChartSources", () => {
 
   it("повертає обрані джерела в канонічному порядку, навіть без даних", () => {
     expect(
-      resolveIncomeChartSources(["Portmone", "Monobank"])
-    ).toEqual(["Monobank", "Portmone"])
+      resolveIncomeChartSources(["Гривневий рахунок", "Monobank"])
+    ).toEqual(["Monobank", "Гривневий рахунок"])
   })
 })
 

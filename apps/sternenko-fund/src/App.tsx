@@ -11,7 +11,7 @@ export function App() {
         Перейти до вмісту
       </a>
       <SiteHeader />
-      <div style={{ paddingTop: "var(--site-header-offset, 4.875rem)" }}>
+      <div style={{ paddingTop: "var(--site-header-offset, 4.75rem)" }}>
         <ReportsPage />
       </div>
     </>

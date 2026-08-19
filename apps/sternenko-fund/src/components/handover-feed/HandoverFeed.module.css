@@ -62,7 +62,7 @@
 
 .dayHeader {
   position: sticky;
-  top: var(--site-header-offset, 3.875rem);
+  top: var(--site-header-offset, 4.75rem);
   z-index: 10;
   display: flex;
   align-items: center;

@@ -41,7 +41,7 @@ const ROWS = [
     id: "3",
     at: "18.06.26, 09:38:00",
     atTs: 1718696280000,
-    source: "Рахунки в різних валютах",
+    source: "Валютний рахунок",
     amount: 100,
     currency: "EUR",
     amountUah: 4500,

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 
 import { cn } from "@workspace/ui/lib/utils"
 
-const STICKY_DATE_TOP = "top-[var(--site-header-offset,3.875rem)]"
+const STICKY_DATE_TOP = "top-[var(--site-header-offset,4.75rem)]"
 
 function readSiteHeaderOffsetPx(): number {
   const raw = getComputedStyle(document.documentElement)

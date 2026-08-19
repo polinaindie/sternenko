@@ -1,6 +1,13 @@
 import { createContext, useContext, useId } from "react"
+import { ClockIcon } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { ChartGranularity } from "../mock-data"
@@ -78,7 +85,7 @@ export function FilterPopoverApplyButton({
       type="button"
       className={cn(
         siteControlClass,
-        "h-8 w-full min-w-0 px-2 text-sm whitespace-nowrap [font-family:var(--font-display-black)] font-black",
+        "h-8 w-full min-w-0 px-2 text-sm whitespace-nowrap [font-family:var(--font-display-dark)] normal-case",
         className
       )}
       {...props}
@@ -344,6 +351,7 @@ export function AttachmentButton({
   iconClassName = "size-4",
   compact = false,
   available,
+  pending = false,
   onClick,
 }: {
   label: string
@@ -351,22 +359,38 @@ export function AttachmentButton({
   iconClassName?: string
   compact?: boolean
   available: boolean
+  /** Документ ще очікується — годинник замість порожньої клітинки. */
+  pending?: boolean
   onClick?: () => void
 }) {
   const sizeClass = compact ? "size-8" : "size-9"
 
   if (!available) {
+    if (!pending) {
+      return <span aria-hidden className={cn("inline-flex", sizeClass)} />
+    }
+
     return (
-      <span
-        aria-hidden
-        title="Немає документа"
-        className={cn(
-          "inline-flex select-none items-center justify-center text-muted-foreground/35",
-          sizeClass
-        )}
-      >
-        —
-      </span>
+      <TooltipProvider delayDuration={200}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span
+              role="img"
+              tabIndex={0}
+              aria-label={`${label} — документ очікується`}
+              className={cn(
+                "inline-flex cursor-default select-none items-center justify-center text-muted-foreground/60 outline-none focus-visible:ring-2 focus-visible:ring-foreground/30",
+                sizeClass
+              )}
+            >
+              <ClockIcon className={iconClassName} />
+            </span>
+          </TooltipTrigger>
+          <TooltipContent side="top" sideOffset={6} hideArrow>
+            Документ очікується
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     )
   }
 
