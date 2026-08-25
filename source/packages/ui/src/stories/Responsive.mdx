@@ -1,0 +1,128 @@
+import { Meta } from "@storybook/addon-docs/blocks"
+
+<Meta title="Responsive" />
+
+# Responsive rules
+
+The skeleton is **mobile-first**. Components own their adaptive behavior; pages
+compose them with a small set of layout primitives and a single breakpoint
+contract. Brand themes never change layout — only color, radius, font and shadow.
+
+## Breakpoints
+
+One source of truth lives in `packages/tokens/themes/base.css` and is wired into
+Tailwind via `globals.css` `@theme`. JavaScript reads the same `--breakpoint-md`
+token via `useIsMobile`, so CSS and JS never drift.
+
+| Token               | Value  | Tailwind | Use for                                              |
+| ------------------- | ------ | -------- | ---------------------------------------------------- |
+| `--breakpoint-xs`   | 480px  | `xs:`    | large phones (iPhone Pro Max, Galaxy Ultra)          |
+| `--breakpoint-sm`   | 640px  | `sm:`    | small tablets portrait, phones in landscape          |
+| `--breakpoint-md`   | 768px  | `md:`    | iPad Mini/Air portrait, 1 → 2 column grids           |
+| `--breakpoint-lg`   | 1024px | `lg:`    | iPad Pro, laptops, split layouts                     |
+| `--breakpoint-xl`   | 1280px | `xl:`    | standard desktop (most common 1366–1536px)           |
+| `--breakpoint-2xl`  | 1536px | `2xl:`   | wide monitors, max-width containers                  |
+| `--breakpoint-3xl`  | 1920px | `3xl:`   | Full HD — loose spacing and typography on large screens |
+
+### What changed (2026)
+
+- **`xs` (480px)** — modern flagships are already 430–480px wide (iPhone 16 Pro
+  Max = 430pt). Without `xs`, there is a large gap between the mobile base and
+  `sm` where nothing happens.
+- **`2xl` (1536px)** — the most popular desktop range today (1366–1536px), so a
+  dedicated token is required, not optional.
+- **`3xl` (1920px)** — Full HD remains the standard for large monitors; here
+  you mainly control max-width containers and loose spacing, not radical layout
+  shifts.
+
+### Viewport vs container queries
+
+With widespread `@container` support, **viewport breakpoints are for page-level
+layout** — column counts, shell padding, split views. **Component behavior**
+(cards, forms, navigation) should prefer container queries so the component
+adapts to its parent, not the window width.
+
+```tsx
+// Page-level — viewport breakpoints
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" />
+
+// Component-level — container queries (already used in Card, Field, …)
+<div className="@container/card">
+  <div className="flex flex-col @sm/card:flex-row" />
+</div>
+```
+
+## Mobile-first principle
+
+Write the base (smallest) layout with **no prefix**, then escalate up with
+`xs:` / `sm:` / `md:` / `lg:` / `xl:` / `2xl:` / `3xl:`. Never start from
+desktop and shrink down.
+
+```tsx
+// Good — base is mobile, escalate upward
+<div className="flex flex-col gap-4 md:flex-row md:items-center" />
+
+// Avoid — desktop-first, fights the cascade
+<div className="flex flex-row md:flex-col" />
+```
+
+## Layout primitives
+
+Gutters are three-step: `--page-gutter` (mobile) → `--page-gutter-md` (`md:`) →
+`--page-gutter-lg` (`lg:`). Default brands keep `lg` equal to `md`.
+
+Use these from `@workspace/ui/layout/*` instead of repeating shell/padding
+classes on every page.
+
+| Primitive    | Import                              | Role                                                        |
+| ------------ | ----------------------------------- | ----------------------------------------------------------- |
+| `PageShell`  | `@workspace/ui/layout/page-shell`   | Full-height themed canvas (`min-h-svh`, background tokens).  |
+| `Container`  | `@workspace/ui/layout/container`    | Centers content, caps at `--container-max`, applies gutters (`--page-gutter` → `md` → `lg`). |
+| `ContentContainer` | `@workspace/ui/layout/content-container` | Inner reading column (`--container-content-max`, optional `--content-inner-padding`). |
+| `SplitSection` | `@workspace/ui/layout/split-section` | Programme aside + body columns (`--content-aside-width`, `--content-column-gap`). |
+| `Stack`      | `@workspace/ui/layout/stack`        | Vertical flow with a consistent gap.                        |
+| `Grid`       | `@workspace/ui/layout/grid`         | One column by default; escalate with `md:grid-cols-*`.       |
+
+```tsx
+import { PageShell } from "@workspace/ui/layout/page-shell"
+import { Container } from "@workspace/ui/layout/container"
+import { Stack } from "@workspace/ui/layout/stack"
+
+export function Page() {
+  return (
+    <PageShell>
+      <Container>
+        <Stack>{/* page sections */}</Stack>
+      </Container>
+    </PageShell>
+  )
+}
+```
+
+## Who owns what
+
+| Concern                          | Lives in            | Example                                  |
+| -------------------------------- | ------------------- | ---------------------------------------- |
+| Adaptive component behavior      | Skeleton (`ui`)     | Sidebar collapses to a Sheet on mobile.  |
+| Hiding secondary UI on small     | Skeleton (`ui`)     | Pagination labels `hidden sm:block`.     |
+| Page composition & column counts | App pages / blocks  | `grid-cols-1 md:grid-cols-3`.            |
+| Color, radius, font, shadow      | Theme (`tokens`)    | `[data-theme="acme"]` overrides.         |
+
+## Page patterns
+
+- **Stack to row:** `flex flex-col` → `sm:flex-row` for toolbars and headers.
+- **Grids:** start `grid-cols-1`, escalate `md:grid-cols-2` / `lg:grid-cols-3`.
+- **Page padding:** prefer `Container` gutters; for full-bleed blocks use
+  `p-6 md:p-10`.
+- **Split layouts:** hide the decorative half on mobile —
+  `hidden lg:flex` with `lg:grid-cols-2`.
+- **Fullscreen blocks:** set `parameters: { layout: "fullscreen" }` in the story
+  so the canvas matches the real viewport.
+
+## Do not
+
+- Build separate `MobileButton` / `DesktopButton` components — one component,
+  responsive classes.
+- Hardcode pixel paddings on pages instead of `Container` gutters.
+- Introduce custom breakpoints without adding a token to `base.css`.
+- Put layout differences inside a brand theme — themes are visual only.

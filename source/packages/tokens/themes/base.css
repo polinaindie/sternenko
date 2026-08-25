@@ -1,0 +1,80 @@
+/*
+ * Base primitives — structural tokens shared by every theme.
+ * These map directly to the Figma kit variables and stay constant across
+ * brands (only colors / radius / font-family change per brand theme).
+ * Imported once, before any brand theme.
+ */
+:root {
+  /* Typography (Figma: size/sm, leading/5, weight/medium, ...) */
+  --font-size-sm: 0.875rem; /* 14px — Figma size/sm */
+  --line-height-sm: 1.25rem; /* 20px — Figma leading/5 */
+  --font-size-base: 1rem; /* 16px */
+  --line-height-base: 1.5rem; /* 24px */
+  --font-weight-medium: 500; /* Figma weight/medium */
+
+  /* Spacing (Figma: py-4, mr-2,5) */
+  --spacing-2-5: 0.625rem; /* 10px — Figma mr-2,5 */
+  --spacing-4: 1rem; /* 16px — Figma py-4 */
+
+  /* Stroke scale (Figma: stroke-1, stroke-2) */
+  --stroke-1: 1px;
+  --stroke-2: 2px;
+
+  /* Breakpoints — single source of truth for page-level layout (2026 device landscape).
+   * Mirror rem values in packages/ui/src/styles/globals.css @theme for Tailwind.
+   * Read by JS (useIsMobile). */
+  --breakpoint-xs: 30rem; /* 480px — large phones (iPhone Pro Max, Galaxy Ultra) */
+  --breakpoint-sm: 40rem; /* 640px — small tablets portrait, phones landscape */
+  --breakpoint-md: 48rem; /* 768px — iPad Mini/Air portrait, 1 → 2 columns */
+  --breakpoint-lg: 64rem; /* 1024px — iPad Pro, laptops, split layouts */
+  --breakpoint-xl: 80rem; /* 1280px — standard desktop */
+  --breakpoint-2xl: 96rem; /* 1536px — wide monitors, max-width containers */
+  --breakpoint-3xl: 120rem; /* 1920px — Full HD, loose spacing & type scale */
+
+  /* Page layout primitives (Container / PageShell). */
+  --container-max: 80rem; /* 1280px content cap */
+  --container-content-max: var(--container-max); /* inner reading column */
+  --content-inner-padding: 0px;
+  --content-aside-width: 16rem;
+  --content-column-gap: 2rem;
+  --page-gutter: 1rem; /* horizontal padding on mobile */
+  --page-gutter-md: 1.5rem; /* horizontal padding from md up */
+  --page-gutter-lg: var(--page-gutter-md); /* desktop gutters — override per product */
+
+  /* Radius scale — linear 4px step (aligned to 8px grid).
+   * xs 4 · sm 8 · md 12 · lg 16 · xl 20 · 2xl 24 */
+  --radius-step: 0.25rem;
+  --radius-xs: calc(var(--radius-step) * 1);
+  --radius-sm: calc(var(--radius-step) * 2);
+  --radius-md: calc(var(--radius-step) * 3);
+  --radius-lg: calc(var(--radius-step) * 4);
+  --radius-xl: calc(var(--radius-step) * 5);
+  --radius-2xl: calc(var(--radius-step) * 6);
+
+  /* Concentric nesting: R_inner = R_outer − inset (canonical inset = 8px). */
+  --radius-inset: var(--radius-sm);
+  --radius-inner: max(0px, calc(var(--radius-lg) - var(--radius-inset)));
+
+  /* Report / dashboard surfaces (bento cards, social report blocks).
+   * Kept separate from --radius so report modules stay rounded even when a
+   * brand sets sharp site corners (e.g. Sternenko site UI uses --radius: 0). */
+  --radius-report: var(--radius-md);
+  --radius-report-lg: var(--radius-lg);
+  --radius-report-inset: var(--radius-inset);
+  --radius-report-inner: calc(var(--radius-report) - var(--radius-report-inset));
+  --radius-report-lg-inner: calc(var(--radius-report-lg) - var(--radius-report-inset));
+
+  /* Report table header — stable on both site light and dark themes. */
+  --report-header: oklch(0.235 0 0);
+  --report-header-foreground: oklch(1 0 0);
+
+  /* Report table body — light paper surface on dark site chrome. */
+  --report-surface: oklch(1 0 0);
+  --report-surface-foreground: oklch(0.222 0 0);
+  --report-row-odd: oklch(1 0 0);
+  --report-row-even: oklch(1 0 0);
+  --report-row-hover: oklch(0.975 0 0);
+  --report-highlight: oklch(0.965 0 0);
+  --report-highlight-foreground: oklch(0.222 0 0);
+  --report-border: oklch(0.222 0 0 / 12%);
+}

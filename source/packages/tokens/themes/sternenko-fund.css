@@ -1,0 +1,108 @@
+/*
+ * Sternenko Fund (БФ «Спільнота Стерненка») brand theme.
+ *
+ * Brandbook -> token mapping:
+ *   Yellow Energy #FFD62E  -> --primary / --ring
+ *   Black #1E1E1E          -> --foreground, text on yellow
+ *   Grey #898989           -> --muted-foreground
+ *   White #FFFFFF          -> --background
+ *
+ * Typography (brandbook «Шрифт»):
+ *   Wide Black             -> h1
+ *   Wide Dark              -> h2, .font-heading
+ *   Narrow Dark            -> h3–h4
+ *   Narrow Black           -> h5–h6
+ *   Key Regular / Light    -> body
+ *   letter-spacing         -> -2%
+ *   line-height headings   -> 80–100%
+ *   line-height body       -> 100–120%
+ */
+[data-theme="sternenko-fund"] {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.222 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.222 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.222 0 0);
+  --muted: oklch(0.965 0 0);
+  --muted-foreground: oklch(0.622 0 0);
+  --border: oklch(0.222 0 0 / 12%);
+  --input: oklch(0.222 0 0 / 12%);
+
+  --primary: oklch(0.891 0.178 95.3);
+  --primary-foreground: oklch(0.222 0 0);
+  --ring: oklch(0.891 0.178 95.3);
+
+  --secondary: oklch(0.965 0 0);
+  --secondary-foreground: oklch(0.222 0 0);
+  --accent: oklch(0.891 0.178 95.3);
+  --accent-foreground: oklch(0.222 0 0);
+
+  --destructive: oklch(0.577 0.245 27.325);
+
+  /* Chart — жовтий / помаранч / коричневий / cyan / amber (2 відтінки) на чорному. */
+  --chart-1: oklch(0.886 0.172 93.9); /* #FFD62E yellow */
+  --chart-2: oklch(0.702 0.193 39.2); /* #FE6A34 orange */
+  --chart-3: oklch(0.775 0.125 78); /* golden brown */
+  --chart-4: oklch(0.787 0.11 216.6); /* #59CBE7 cyan */
+  --chart-5: oklch(0.82 0.14 75); /* light amber — криптовалюта */
+  --chart-6: oklch(0.62 0.15 75); /* dark amber — PayPal, той самий hue */
+
+  --font-sans: "Murs Gothic Key Regular", ui-sans-serif, system-ui, sans-serif;
+  --font-sans-light: "Murs Gothic Key Light", "Murs Gothic Key Regular",
+    ui-sans-serif, system-ui, sans-serif;
+  --font-display-black: "Murs Gothic Wide Black", "Murs Gothic Key Regular",
+    ui-sans-serif, system-ui, sans-serif;
+  --font-display-dark: "Murs Gothic Wide Dark", "Murs Gothic Wide Black",
+    "Murs Gothic Key Regular", ui-sans-serif, system-ui, sans-serif;
+  --font-subheading-dark: "Murs Gothic Narrow Dark", "Murs Gothic Wide Dark",
+    ui-sans-serif, system-ui, sans-serif;
+  --font-subheading-black: "Murs Gothic Narrow Black", "Murs Gothic Narrow Dark",
+    ui-sans-serif, system-ui, sans-serif;
+
+  --letter-spacing-body: -0.02em;
+  --letter-spacing-heading: -0.02em;
+  --letter-spacing-subheading: -0.02em;
+  --line-height-body: 1.1;
+  --line-height-heading: 0.9;
+  --line-height-subheading: 0.9;
+
+  --radius: 0;
+  --border-width: 1px;
+  --shadow-card: none;
+
+  /* Wide desktop (1920+): content + nav share a 1600px cap. */
+  --container-max: 100rem; /* 1600px */
+  --container-content-max: var(--container-max);
+}
+
+[data-theme="sternenko-fund"].dark {
+  color-scheme: dark;
+
+  --background: oklch(0.222 0 0);
+  --foreground: oklch(1 0 0);
+  --card: oklch(0.269 0 0);
+  --card-foreground: oklch(1 0 0);
+  --popover: oklch(0.269 0 0);
+  --popover-foreground: oklch(1 0 0);
+  --muted: oklch(0.31 0 0);
+  --muted-foreground: oklch(0.622 0 0);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 12%);
+
+  --primary: oklch(0.891 0.178 95.3);
+  --primary-foreground: oklch(0.222 0 0);
+  --ring: oklch(0.891 0.178 95.3);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(1 0 0);
+  --accent: oklch(0.891 0.178 95.3);
+  --accent-foreground: oklch(0.222 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+
+  --chart-1: oklch(0.886 0.172 93.9);
+  --chart-2: oklch(0.702 0.193 39.2);
+  --chart-3: oklch(0.775 0.125 78);
+  --chart-4: oklch(0.787 0.11 216.6);
+  --chart-5: oklch(0.82 0.14 75);
+  --chart-6: oklch(0.62 0.15 75);
+}

@@ -1,0 +1,11 @@
+.wrapper {
+  min-height: 100dvh;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.header {
+  padding: 1rem var(--page-gutter, 1rem);
+  border-bottom: 1px solid var(--border);
+  font-weight: 500;
+}

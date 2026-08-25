@@ -1,0 +1,46 @@
+{
+  "name": "sternenko-fund",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "import:data": "python3 scripts/import_report_data.py",
+    "predev": "pnpm import:data",
+    "dev": "vite",
+    "prebuild": "pnpm import:data",
+    "build": "vite build",
+    "check": "tsc -b",
+    "lint": "eslint",
+    "format": "prettier --write \"**/*.{ts,tsx}\"",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tabler/icons-react": "^3.44.0",
+    "@workspace/tokens": "workspace:*",
+    "@workspace/ui": "workspace:*",
+    "date-fns": "^4.4.0",
+    "lucide-react": "^1.18.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "recharts": "3.8.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10",
+    "@tailwindcss/vite": "^4",
+    "@types/node": "^24",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6",
+    "eslint": "^10",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17",
+    "typescript": "~6",
+    "typescript-eslint": "^8",
+    "vite": "^8",
+    "vitest": "^4.1.9"
+  }
+}

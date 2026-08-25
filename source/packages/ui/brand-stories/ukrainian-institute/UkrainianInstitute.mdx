@@ -1,0 +1,116 @@
+import { Meta } from "@storybook/addon-docs/blocks"
+
+<Meta title="Ukrainian Institute" tags={["ukrainian-institute"]} />
+
+# Український інститут — Insight UA reference
+
+Tokens for the **Український інститут** brand are calibrated against
+[Insight UA](https://insight.ui.org.ua) — the Institute's cultural discovery
+platform. Brand colours and typeface come from the
+[official identity](https://ui.org.ua/ui-logo/); spacing, breakpoints and type
+scale are measured from Insight's production CSS.
+
+Select **Brand → Український інститут** in the toolbar (default) and open
+**Overview → Insight Layout** or **Blocks → Insight Programme → Fedir Yakymenko**.
+
+## Breakpoints (Insight UA)
+
+Insight uses three main cut-offs. They align closely with our skeleton tokens:
+
+| Insight UA | Our token | Value  | Typical use on Insight                          |
+| ---------- | --------- | ------ | ----------------------------------------------- |
+| `≤767px`   | base      | mobile | 12px gutters, 14px base type, single column     |
+| `≤1023px`  | `md`      | 768px+ | 24px gutters, 64px header, 2-column grids       |
+| `≤1028px`  | `lg`      | 1024px+| 40px gutters, 3-column waterfall, wide hero     |
+| desktop    | —         | 1440px | `.container { max-width: 1440px }`              |
+
+Our `lg` (1024px) is one step past Insight's 1028px tablet-landscape token —
+close enough for shared components without a custom breakpoint.
+
+## Layout
+
+| Token               | Insight UA value | Notes                                      |
+| ------------------- | ---------------- | ------------------------------------------ |
+| `--container-max`   | `90rem` (1440px) | `.container`, `.events-container`          |
+| `--page-gutter`     | `0.75rem` (12px) | mobile padding                             |
+| `--page-gutter-md`  | `1.5rem` (24px)  | tablet (`≤1023px` rules)                   |
+| `--page-gutter-lg`  | `2.5rem` (40px)  | desktop `.container` padding               |
+
+`Container` applies all three gutters: base → `md:` → `lg:`.
+
+## Typography
+
+Insight sets `letter-spacing: -0.04em` on headings and scales type down on
+mobile by setting `html { font-size: 14px }` below 768px.
+
+| Role        | Desktop              | Mobile (≤767px)        |
+| ----------- | -------------------- | ---------------------- |
+| Body        | 16px / 1.375         | 14px / 1.214           |
+| H1 (hero)   | 73–80px, bold        | 38–54px                |
+| H2          | 36px                 | 20px                   |
+| H3          | 32px                 | 24px                   |
+| Nav links   | 18px bold            | 14px bold              |
+| Footer copy | 20px                 | 16px                   |
+
+Heading tracking (`-0.04em`) is applied globally when
+`data-theme="ukrainian-institute"` is active.
+
+## Colour
+
+| Surface            | Hex       | Token              |
+| ------------------ | --------- | ------------------ |
+| Page canvas        | `#f0ede6` | `--background`     |
+| Body text          | `#000000` | `--foreground`     |
+| Cards / popovers   | `#ffffff` | `--card`           |
+| Secondary copy     | `#656565` | `--muted-foreground` |
+| Brand orange       | `#ff6500` | `--primary`        |
+| Link accent        | `#ff6501` | maps to `--primary` |
+| Highlight (hero)   | `#ffd400` | product-only accent |
+
+Borders on Insight use `rgba(0, 0, 0, 0.16)` — mapped to `--border`.
+
+## Chrome sizes
+
+| Element        | Desktop | Tablet (≤1023px) |
+| -------------- | ------- | ---------------- |
+| Header height  | 90px    | 64px             |
+| Main offset    | 90px    | 65px             |
+| Logo           | 213×27  | same             |
+
+## Shape
+
+The brandbook specifies **sharp corners** (`--radius: 0`). Insight's marketing
+UI uses small radii on buttons (6px) and cards (4px) — mapped as
+`--product-radius` for programme/article blocks.
+
+## Programme page (`/programmes-and-projects/*`)
+
+Measured from
+[Fedir Yakymenko](https://insight.ui.org.ua/programmes-and-projects/fedir-yakymenko).
+
+| Pattern | Insight class | Our primitive / token |
+| ------- | ------------- | --------------------- |
+| Inner column | `.container__wr` | `ContentContainer` + `--container-content-max` (1300px) |
+| Aside + body | `.page-event__body-wr` | `SplitSection` + `--content-aside-width` (359px) + `--content-column-gap` (85px) |
+| Breadcrumbs | `.page-event__breadcrumbs` | 10px bold, `/` separators, hidden on mobile |
+| Topic tag | `.page-event__topics-round` | `--topic-indicator-size` (24px) + topic colour |
+| Page title | `.page-event__title` | 80px bold → 54px mobile |
+| CTA button | `.ui-button-outline-black` | `InsightButton` variant `outline-black` — 6px radius, 12×32px, orange icon |
+| More panel CTA | `.ui-button-default-black` | `InsightButton` variant `solid-black` (white on mobile) |
+| Recommended card | `.event-preview` | `InsightEventCard` — topic dot, poster, hover arrow, title |
+| Dividers | `#dbdbdb` borders | `--border-divider` |
+| Aside caption | `.page-event__body-aside-description` | `--text-caption` (#787773), 20px |
+| Section title | `.page-event__body-title` | `--font-size-section-title` (36px bold) |
+| Article body | `.event-text` | `--font-size-lead` (20px / 24px line) |
+| Quote | `.event-quote` | 4px radius, `bg-foreground/4`, 24px bold |
+| Gallery | `.blok-gallery` | 3-col grid, 12px gap, 4px image radius |
+| Video embed | `.project-gallery iframe` | 16:9 aspect ratio |
+| More panel | `.page-event__more` | `--surface-panel` (#e8e4dc), mobile → black |
+| Recommended | `.recommended-events` | black panel, 48px title, 4px radius |
+
+## Stories to check
+
+1. **Blocks → Insight Programme → Fedir Yakymenko** — full article layout.
+2. **Overview → Insight Layout** — home hero + content section with real gutters.
+3. **Overview → Panel** — component skin on cream background.
+4. Any **Block** with `layout: "fullscreen"` — verify container width at 1440px.

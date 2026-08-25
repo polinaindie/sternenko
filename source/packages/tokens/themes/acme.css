@@ -1,0 +1,28 @@
+/* Acme brand — red primary, pill corners, Geist, soft elevation. */
+[data-theme="acme"] {
+  --primary: oklch(0.55 0.22 25);
+  --primary-foreground: oklch(0.985 0 0);
+  --ring: oklch(0.55 0.22 25);
+  --secondary: oklch(0.96 0.02 25);
+  --secondary-foreground: oklch(0.255 0.05 25);
+  --accent: oklch(0.95 0.03 25);
+  --accent-foreground: oklch(0.255 0.05 25);
+  --destructive: oklch(0.577 0.245 27.325);
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --radius: 1rem;
+  --border-width: 1px;
+  --shadow-card:
+    0 8px 24px -6px oklch(0.55 0.22 25 / 0.25),
+    0 2px 6px -2px oklch(0 0 0 / 0.1);
+}
+
+[data-theme="acme"].dark {
+  --primary: oklch(0.62 0.21 25);
+  --primary-foreground: oklch(0.985 0 0);
+  --ring: oklch(0.62 0.21 25);
+  --secondary: oklch(0.3 0.03 25);
+  --secondary-foreground: oklch(0.985 0 0);
+  --accent: oklch(0.3 0.04 25);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+}

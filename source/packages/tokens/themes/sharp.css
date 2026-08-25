@@ -1,0 +1,26 @@
+/* Sharp corporate brand — blue primary, tight corners, flat, thicker borders. */
+[data-theme="sharp"] {
+  --primary: oklch(0.45 0.15 250);
+  --primary-foreground: oklch(0.985 0 0);
+  --ring: oklch(0.45 0.15 250);
+  --secondary: oklch(0.96 0.02 250);
+  --secondary-foreground: oklch(0.25 0.04 250);
+  --accent: oklch(0.95 0.03 250);
+  --accent-foreground: oklch(0.25 0.04 250);
+  --destructive: oklch(0.577 0.245 27.325);
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --radius: 0.25rem;
+  --border-width: 2px;
+  --shadow-card: none;
+}
+
+[data-theme="sharp"].dark {
+  --primary: oklch(0.62 0.16 250);
+  --primary-foreground: oklch(0.985 0 0);
+  --ring: oklch(0.62 0.16 250);
+  --secondary: oklch(0.3 0.03 250);
+  --secondary-foreground: oklch(0.985 0 0);
+  --accent: oklch(0.3 0.04 250);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+}

@@ -1,0 +1,56 @@
+import { Meta } from "@storybook/addon-docs/blocks"
+
+<Meta title="Introduction" />
+
+# Design System
+
+A reusable component library based on **shadcn/ui**, aligned with the
+[Figma shadcn kit](https://www.figma.com/design/QbrZMpnpDjla1QhoU5tTQL). The same
+components are re-skinned per brand by swapping CSS variables — no fork required.
+
+## Theming
+
+Use the toolbar at the top of the canvas to switch:
+
+- **Brand** — `Default`, `Acme`, `Sharp`, `Спільнота Стерненка` (sets `data-theme` on `<html>`)
+- **Appearance** — `Light` / `Dark` (toggles the `.dark` class)
+
+Components never hardcode colors; they read tokens like `--primary`, `--border`,
+`--radius`, `--font-sans`. A brand is just a CSS file overriding those variables
+under `[data-theme="..."]`.
+
+| Theme   | Primary | Radius   | Font  | Shadow       |
+|---------|---------|----------|-------|--------------|
+| Default | neutral | 0.625rem | Inter | soft         |
+| Acme    | red     | 1rem     | Geist | soft, tinted |
+| Sharp   | blue    | 0.25rem  | IBM Plex / system | flat |
+| Спільнота Стерненка | yellow `#FFD62E` | 0 (sharp) | Murs Gothic | flat |
+
+The **Спільнота Стерненка** theme follows the SSF brandbook — yellow energy accent,
+black text, Murs Gothic type scale (Wide / Narrow / Key cuts).
+
+## Component coverage
+
+Phased rollout toward ~80% of the practical kit. Full mapping in
+`docs/figma-inventory.md`.
+
+| Wave | Components | Status |
+|------|------------|--------|
+| P0 — foundation | button, input, label, checkbox, accordion, badge, avatar, card, dialog, tabs, tooltip, select, dropdown-menu, separator | done |
+| P1 — next wave | radio-group, switch, textarea, popover, sonner, sheet, breadcrumb | done |
+| P2 — high value | table, pagination, field (forms), calendar, command, sidebar, alert, alert-dialog | done |
+| P3 — rounding | progress, slider, toggle, toggle-group, collapsible, scroll-area, hover-card, aspect-ratio, input-otp | done |
+| Extended | carousel, chart, context-menu, drawer, menubar, navigation-menu, and the example Blocks | done |
+
+50+ component files plus composed Blocks, all exercised under the brand +
+appearance toolbars.
+
+## Building a site
+
+The skeleton is meant to be reused across client projects. Two guides cover the
+workflow:
+
+- **Responsive** — the mobile-first rules, breakpoint tokens and layout
+  primitives (`PageShell`, `Container`, `Stack`, `Grid`).
+- `docs/new-client-checklist.md` — turn a brandbook into one theme file plus one
+  app with `pnpm create-theme`, then compose pages from the kit.

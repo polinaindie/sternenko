@@ -1,0 +1,7 @@
+import{i as e}from"./preload-helper-xPQekRTU.js";import{t}from"./iframe-DquaFbOf.js";import{n,t as r}from"./utils-D8qMR3V9.js";import{E as i,t as a}from"./lucide-react-eNzqWCSt.js";function o({className:e,...t}){return(0,s.jsx)(i,{role:`status`,"aria-label":`Loading`,className:r(`size-4 animate-spin`,e),...t})}var s,c=e((()=>{n(),a(),s=t(),o.__docgenInfo={description:``,methods:[],displayName:`Spinner`}})),l,u,d,f,p;e((()=>{c(),l=t(),u={title:`Components/Spinner`,component:o,tags:[`autodocs`],render:()=>(0,l.jsx)(o,{})},d={},f={render:()=>(0,l.jsxs)(`div`,{className:`flex items-center gap-4`,children:[(0,l.jsx)(o,{className:`size-4`}),(0,l.jsx)(o,{className:`size-6`}),(0,l.jsx)(o,{className:`size-8`})]})},d.parameters={...d.parameters,docs:{...d.parameters?.docs,source:{originalSource:`{}`,...d.parameters?.docs?.source}}},f.parameters={...f.parameters,docs:{...f.parameters?.docs,source:{originalSource:`{
+  render: () => <div className="flex items-center gap-4">
+      <Spinner className="size-4" />
+      <Spinner className="size-6" />
+      <Spinner className="size-8" />
+    </div>
+}`,...f.parameters?.docs?.source}}},p=[`Default`,`Sizes`]}))();export{d as Default,f as Sizes,p as __namedExportsOrder,u as default};

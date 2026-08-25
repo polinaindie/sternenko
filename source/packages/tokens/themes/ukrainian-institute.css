@@ -1,0 +1,128 @@
+/*
+ * Ukrainian Institute (Український інститут) brand theme.
+ *
+ * Brand identity: https://ui.org.ua/ui-logo/ (Логотип та айдентика)
+ * Product reference: https://insight.ui.org.ua (Insight UA — layout & type scale)
+ *
+ * Brandbook -> token mapping:
+ *   Orange darkest #ff6500  -> --primary / --ring
+ *   Orange lightest #ecd9d2 -> --secondary
+ *   Violet lightest #e4c0ec -> --accent
+ *   Black #000000           -> --foreground
+ *   Cream #f0ede6           -> --background (Insight UA canvas)
+ *   Font Ukrainian Institute -> --font-sans
+ *   Sharp corners (0 radius) -> --radius
+ *   Flat elevation           -> --shadow-card: none
+ *
+ * Insight UA layout (measured from production CSS):
+ *   Container max 1440px, gutters 12 / 24 / 40px, header 90px (64px tablet).
+ *
+ * Colors use oklch(). Surface/foreground pairs target WCAG 2.2 AA.
+ */
+[data-theme="ukrainian-institute"] {
+  /* Surfaces — Insight UA warm canvas on white cards. */
+  --background: oklch(0.941 0.009 91.5); /* #f0ede6 */
+  --foreground: oklch(0 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0 0 0);
+  --muted: oklch(0.941 0.009 91.5);
+  --muted-foreground: oklch(0.49 0 0); /* #656565 — footer / secondary copy */
+  --border: oklch(0 0 0 / 16%);
+  --input: oklch(0 0 0 / 16%);
+
+  /* Primary — brand orange (#ff6500). Black text on this orange clears AA. */
+  --primary: oklch(0.695 0.205 43.2);
+  --primary-foreground: oklch(0 0 0);
+  --ring: oklch(0.695 0.205 43.2);
+
+  /* Secondary — orange lightest (#ecd9d2). */
+  --secondary: oklch(0.899 0.023 41.4);
+  --secondary-foreground: oklch(0 0 0);
+
+  /* Accent — violet lightest (#e4c0ec), supporting palette colour. */
+  --accent: oklch(0.852 0.071 320.1);
+  --accent-foreground: oklch(0.461 0.174 315.8);
+
+  /* Destructive — error/delete actions. */
+  --destructive: oklch(0.577 0.245 27.325);
+
+  /* Typography — Ukrainian Institute (self-hosted in ukrainian-institute-fonts.css). */
+  --font-sans: "Ukrainian Institute", ui-sans-serif, system-ui, sans-serif;
+  --font-size-base: 1rem; /* 16px — drops to 14px below md via html rule below */
+  --line-height-base: 1.375; /* Insight body line-height */
+  --letter-spacing-heading: -0.04em;
+
+  /* Layout — Insight UA .container / .search-container gutters. */
+  --container-max: 90rem; /* 1440px */
+  --container-content-max: 81.25rem; /* 1300px — .container__wr */
+  --content-inner-padding: 0px;
+  --content-aside-width: 22.4375rem; /* 359px */
+  --content-column-gap: 5.3125rem; /* 85px */
+  --page-gutter: 0.75rem; /* 12px — ≤767px */
+  --page-gutter-md: 1.5rem; /* 24px — 768–1023px */
+  --page-gutter-lg: 2.5rem; /* 40px — desktop */
+
+  /* Programme / article page (insight.ui.org.ua/programmes-and-projects/*). */
+  --border-divider: oklch(0.87 0 0); /* #dbdbdb */
+  --surface-panel: oklch(0.92 0.01 85); /* #e8e4dc — “more” CTA panel */
+  --text-caption: oklch(0.54 0.01 85); /* #787773 — aside captions */
+  --product-radius: 4px;
+  --product-button-radius: 6px;
+  --product-button-padding-y: 0.75rem; /* 12px */
+  --product-button-padding-x: 2rem; /* 32px */
+  --product-button-hover: rgba(102, 90, 62, 0.1);
+  --font-size-breadcrumb: 0.625rem; /* 10px */
+  --font-size-lead: 1.25rem; /* 20px article body */
+  --font-size-section-title: 2.25rem; /* 36px — .page-event__body-title */
+  --font-size-programme-title: 5rem; /* 80px — .page-event__title */
+  --font-size-recommended-title: 3rem; /* 48px */
+  --topic-indicator-size: 1.5rem; /* 24px colour dot */
+
+  /* Shape & elevation — brand uses sharp corners and flat surfaces. */
+  --radius: 0;
+  --border-width: 1px;
+  --shadow-card: none;
+}
+
+/* Mobile base size matches Insight UA (html 14px below 768px). */
+html[data-theme="ukrainian-institute"] {
+  font-size: 16px;
+  line-height: 1.375;
+}
+
+@media (max-width: 47.9375rem) {
+  html[data-theme="ukrainian-institute"] {
+    font-size: 14px;
+    line-height: 1.2142857143;
+  }
+}
+
+@media (min-width: 64rem) {
+  [data-theme="ukrainian-institute"] {
+    --content-inner-padding: 1.375rem; /* 22px — .container__wr side padding */
+  }
+}
+
+/* Dark mode — black backgrounds per logo guidelines; brighten orange for legibility. */
+[data-theme="ukrainian-institute"].dark {
+  --background: oklch(0 0 0);
+  --foreground: oklch(1 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(1 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(1 0 0);
+  --muted: oklch(0.205 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --border: oklch(1 0 0 / 16%);
+  --input: oklch(1 0 0 / 16%);
+  --primary: oklch(0.695 0.205 43.2);
+  --primary-foreground: oklch(0 0 0);
+  --ring: oklch(0.695 0.205 43.2);
+  --secondary: oklch(0.593 0.005 17.3);
+  --secondary-foreground: oklch(1 0 0);
+  --accent: oklch(0.461 0.174 315.8);
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+}

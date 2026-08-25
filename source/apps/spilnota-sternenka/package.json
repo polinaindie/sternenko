@@ -1,0 +1,14 @@
+{
+  "name": "spilnota-sternenka",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Статичний Storybook дизайн-системи — тема «Спільнота Стерненка»",
+  "scripts": {
+    "build": "pnpm --filter @workspace/ui build-storybook:sternenko && node ../../scripts/export-storybook.mjs spilnota-sternenka",
+    "preview": "vite preview --outDir dist --port 6007 --host",
+    "dev": "pnpm preview"
+  },
+  "devDependencies": {
+    "vite": "^8"
+  }
+}
