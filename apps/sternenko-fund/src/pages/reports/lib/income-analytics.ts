@@ -214,15 +214,42 @@ export function hasActiveIncomeFilters(filters: IncomeFilters): boolean {
 export type IncomeFilterChip = {
   id: string
   label: string
+  /** Скільки зі знайдених надходжень належить цьому значенню; сума чіпсів виміру дорівнює загальній кількості. */
+  count: number
   type: "source" | "amount" | "project" | "fundraising"
 }
 
-export function buildIncomeFilterChips(filters: IncomeFilters): IncomeFilterChip[] {
+function countIncomeRowsByValue(
+  rows: readonly IncomeTransaction[],
+  getValue: (row: IncomeTransaction) => string | null
+): Map<string, number> {
+  const counts = new Map<string, number>()
+
+  for (const row of rows) {
+    const value = getValue(row)
+    if (!value) continue
+    counts.set(value, (counts.get(value) ?? 0) + 1)
+  }
+
+  return counts
+}
+
+/** `rows` — це вже відфільтрований результат, тож чіпс показує свою частку того, що видно в таблиці. */
+export function buildIncomeFilterChips(
+  filters: IncomeFilters,
+  rows: readonly IncomeTransaction[]
+): IncomeFilterChip[] {
   const chips: IncomeFilterChip[] = []
 
   if (filters.sources.length < INCOME_SOURCES.length) {
+    const counts = countIncomeRowsByValue(rows, (row) => row.source)
     for (const source of filters.sources) {
-      chips.push({ id: `source:${source}`, label: source, type: "source" })
+      chips.push({
+        id: `source:${source}`,
+        label: source,
+        count: counts.get(source) ?? 0,
+        type: "source",
+      })
     }
   }
 
@@ -236,6 +263,7 @@ export function buildIncomeFilterChips(filters: IncomeFilters): IncomeFilterChip
       chips.push({
         id: "amount",
         label: amountPreset.label,
+        count: rows.length,
         type: "amount",
       })
     } else {
@@ -244,18 +272,21 @@ export function buildIncomeFilterChips(filters: IncomeFilters): IncomeFilterChip
         chips.push({
           id: "amount",
           label: `${formatReportNumber(amountMin)} – ${formatReportNumber(amountMax)}${UAH_SUFFIX}`,
+          count: rows.length,
           type: "amount",
         })
       } else if (amountMin != null) {
         chips.push({
           id: "amount:min",
           label: `від ${formatReportNumber(amountMin)}${UAH_SUFFIX}`,
+          count: rows.length,
           type: "amount",
         })
       } else if (amountMax != null) {
         chips.push({
           id: "amount:max",
           label: `до ${formatReportNumber(amountMax)}${UAH_SUFFIX}`,
+          count: rows.length,
           type: "amount",
         })
       }
@@ -263,20 +294,26 @@ export function buildIncomeFilterChips(filters: IncomeFilters): IncomeFilterChip
   }
 
   if (filters.projects.length < ISSUANCE_PROJECT_LINES.length) {
+    const counts = countIncomeRowsByValue(rows, (row) =>
+      resolveIncomeProject(row)
+    )
     for (const project of filters.projects) {
       chips.push({
         id: `project:${project}`,
         label: project,
+        count: counts.get(project) ?? 0,
         type: "project",
       })
     }
   }
 
   if (filters.fundraisings.length < FUNDRAISINGS.length) {
+    const counts = countIncomeRowsByValue(rows, (row) => row.fundraising)
     for (const fundraising of filters.fundraisings) {
       chips.push({
         id: `fundraising:${fundraising}`,
         label: fundraising,
+        count: counts.get(fundraising) ?? 0,
         type: "fundraising",
       })
     }

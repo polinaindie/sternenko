@@ -1,9 +1,10 @@
 import {
-  FUNDRAISING_TO_PROJECT,
   FUNDRAISINGS,
   ISSUANCE_PROJECT_LINES,
+  ISSUANCE_PROJECT_OPTIONS,
   ISSUANCE_PROPERTY_CATEGORIES,
   ISSUANCE_UNITS,
+  toIssuanceProjectLine,
   type IssuanceProjectLine,
   type IssuancePropertyCategory,
   type IssuanceRow,
@@ -12,10 +13,7 @@ import {
   ISSUANCE_REPORTING_END,
   ISSUANCE_REPORTING_START,
 } from "../data/issuance-reporting"
-import {
-  clampIncomeRange,
-  isSameIncomePeriod,
-} from "./income-analytics"
+import { clampIncomeRange, isSameIncomePeriod } from "./income-analytics"
 import { computeFilterAvailability } from "./filter-availability"
 
 export type IssuanceFilters = {
@@ -31,12 +29,25 @@ export type IssuanceFilters = {
 export type IssuanceFilterChip = {
   id: string
   label: string
+  /** Скільки зі знайдених записів належить цьому значенню; сума чіпсів одного виміру дорівнює загальній кількості. */
+  count: number
   type: "name" | "project" | "fundraising" | "unit" | "category"
+}
+
+export type IssuanceResultPayload = {
+  rows: IssuanceRow[]
+  /** ISO calendar dates with records for the applied non-date filters. */
+  activeDates: string[]
 }
 
 function parseIssuanceDate(value: string): Date {
   const [day, month, year] = value.split(".").map(Number)
   return new Date(year!, (month ?? 1) - 1, day ?? 1)
+}
+
+function issuanceDateToIso(value: string): string {
+  const [day, month, year] = value.split(".")
+  return `${year}-${month}-${day}`
 }
 
 export function defaultIssuancePeriod(): { from: Date; to: Date } {
@@ -47,25 +58,121 @@ export function isDefaultIssuancePeriod(from: Date, to: Date): boolean {
   return isSameIncomePeriod({ from, to }, defaultIssuancePeriod())
 }
 
+function formatIssuanceDate(date: Date, includeYear: boolean): string {
+  const day = String(date.getDate()).padStart(2, "0")
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  return includeYear ? `${day}.${month}.${date.getFullYear()}` : `${day}.${month}`
+}
+
+export function formatIssuancePeriod(from: Date, to: Date): string {
+  const sameDay =
+    from.getFullYear() === to.getFullYear() &&
+    from.getMonth() === to.getMonth() &&
+    from.getDate() === to.getDate()
+
+  if (sameDay) return formatIssuanceDate(from, true)
+
+  const sameYear = from.getFullYear() === to.getFullYear()
+  return `${formatIssuanceDate(from, !sameYear)} – ${formatIssuanceDate(to, !sameYear)}`
+}
+
+function quotedValues(values: readonly string[]): string {
+  return values.map((value) => `«${value}»`).join(", ")
+}
+
+export function buildIssuanceEmptyStateMessage(
+  filters: Pick<
+    IssuanceFilters,
+    "from" | "to" | "nameQuery" | "projects" | "units"
+  >
+): string {
+  const parts = [`За ${formatIssuancePeriod(filters.from, filters.to)}`]
+
+  if (filters.projects.length === 1) {
+    parts.push(`по проєкту ${quotedValues(filters.projects)}`)
+  } else if (filters.projects.length > 1) {
+    parts.push(
+      `по обраних проєктах (${filters.projects.length.toLocaleString("uk-UA")}): ${quotedValues(filters.projects)}`
+    )
+  }
+
+  if (filters.units.length === 1) {
+    parts.push(`у підрозділі ${quotedValues(filters.units)}`)
+  } else if (filters.units.length > 1) {
+    parts.push(
+      `у підрозділах (${filters.units.length.toLocaleString("uk-UA")}): ${quotedValues(filters.units)}`
+    )
+  }
+
+  const query = filters.nameQuery.trim()
+  parts.push(
+    query
+      ? `нічого не знайдено за запитом «${query}»`
+      : "закупівель не було"
+  )
+
+  return parts.join(" ")
+}
+
 export function createDefaultIssuanceFilters(): IssuanceFilters {
   const { from, to } = defaultIssuancePeriod()
   return {
     from,
     to,
     nameQuery: "",
-    projects: [...ISSUANCE_PROJECT_LINES],
+    projects: [],
     fundraisings: [...FUNDRAISINGS],
-    units: [...ISSUANCE_UNITS],
+    units: [],
     categories: [...ISSUANCE_PROPERTY_CATEGORIES],
   }
 }
 
+/** Чи обрано бодай один параметр фільтрації — разом з періодом. */
+export function hasIssuanceFilterSelection(filters: IssuanceFilters): boolean {
+  return (
+    hasActiveIssuanceFilters(filters) ||
+    !isDefaultIssuancePeriod(filters.from, filters.to)
+  )
+}
+
+function sameFilterValues(a: readonly string[], b: readonly string[]): boolean {
+  if (a.length !== b.length) return false
+  const left = [...a].sort()
+  const right = [...b].sort()
+  return left.every((value, index) => value === right[index])
+}
+
+export function isSameIssuanceFilters(
+  a: IssuanceFilters,
+  b: IssuanceFilters
+): boolean {
+  return (
+    isSameIncomePeriod({ from: a.from, to: a.to }, { from: b.from, to: b.to }) &&
+    a.nameQuery.trim() === b.nameQuery.trim() &&
+    sameFilterValues(a.projects, b.projects) &&
+    sameFilterValues(a.fundraisings, b.fundraisings) &&
+    sameFilterValues(a.units, b.units) &&
+    sameFilterValues(a.categories, b.categories)
+  )
+}
+
+/** Активність будь-якого виміру, крім періоду. */
 export function hasActiveIssuanceFilters(filters: IssuanceFilters): boolean {
   if (filters.nameQuery.trim()) return true
-  if (filters.projects.length < ISSUANCE_PROJECT_LINES.length) return true
+  if (
+    filters.projects.length > 0 &&
+    filters.projects.length < ISSUANCE_PROJECT_OPTIONS.length
+  )
+    return true
   if (filters.fundraisings.length < FUNDRAISINGS.length) return true
-  if (filters.units.length < ISSUANCE_UNITS.length) return true
-  if (filters.categories.length < ISSUANCE_PROPERTY_CATEGORIES.length) return true
+  if (
+    filters.units.length > 0 &&
+    filters.units.length < ISSUANCE_UNITS.length
+  ) {
+    return true
+  }
+  if (filters.categories.length < ISSUANCE_PROPERTY_CATEGORIES.length)
+    return true
   return false
 }
 
@@ -73,7 +180,6 @@ export function filterIssuanceRows(
   rows: IssuanceRow[],
   filters: IssuanceFilters
 ): IssuanceRow[] {
-  const query = filters.nameQuery.trim().toLowerCase()
   const { from, to } = clampIncomeRange(filters.from, filters.to)
   const fromMs = from.getTime()
   const toMs = to.getTime()
@@ -81,68 +187,214 @@ export function filterIssuanceRows(
   return rows.filter((row) => {
     const ms = parseIssuanceDate(row.date).getTime()
     if (ms < fromMs || ms > toMs) return false
-    if (query && !row.productName.toLowerCase().includes(query)) return false
-    if (
-      filters.projects.length > 0 &&
-      filters.projects.length < ISSUANCE_PROJECT_LINES.length &&
-      !filters.projects.includes(row.project)
-    ) {
-      return false
-    }
-    if (
-      filters.fundraisings.length > 0 &&
-      filters.fundraisings.length < FUNDRAISINGS.length &&
-      !filters.fundraisings.includes(row.fundraising)
-    ) {
-      return false
-    }
-    if (
-      filters.units.length > 0 &&
-      filters.units.length < ISSUANCE_UNITS.length &&
-      !filters.units.includes(row.unit)
-    ) {
-      return false
-    }
-    if (
-      filters.categories.length > 0 &&
-      filters.categories.length < ISSUANCE_PROPERTY_CATEGORIES.length &&
-      !filters.categories.includes(row.category)
-    ) {
-      return false
-    }
-    return true
+    return matchesIssuanceDimensions(row, filters)
   })
 }
 
-export function buildIssuanceFilterChips(filters: IssuanceFilters): IssuanceFilterChip[] {
+function matchesIssuanceDimensions(
+  row: IssuanceRow,
+  filters: IssuanceFilters
+): boolean {
+  const query = filters.nameQuery.trim().toLowerCase()
+  if (query && !row.productName.toLowerCase().includes(query)) return false
+  if (
+    filters.projects.length > 0 &&
+    filters.projects.length < ISSUANCE_PROJECT_OPTIONS.length
+  ) {
+    const project = toIssuanceProjectLine(row.project)
+    if (!project || !filters.projects.includes(project)) return false
+  }
+  if (
+    filters.fundraisings.length > 0 &&
+    filters.fundraisings.length < FUNDRAISINGS.length &&
+    !filters.fundraisings.includes(row.fundraising)
+  ) {
+    return false
+  }
+  if (
+    filters.units.length > 0 &&
+    filters.units.length < ISSUANCE_UNITS.length &&
+    !filters.units.includes(row.unit)
+  ) {
+    return false
+  }
+  if (
+    filters.categories.length > 0 &&
+    filters.categories.length < ISSUANCE_PROPERTY_CATEGORIES.length &&
+    !filters.categories.includes(row.category)
+  ) {
+    return false
+  }
+  return true
+}
+
+/** Дати з даними за всіма вимірами, крім самого періоду. */
+export function collectIssuanceActiveDates(
+  rows: readonly IssuanceRow[],
+  filters: IssuanceFilters
+): string[] {
+  const activeDates = new Set<string>()
+
+  for (const row of rows) {
+    if (matchesIssuanceDimensions(row, filters)) {
+      activeDates.add(issuanceDateToIso(row.date))
+    }
+  }
+
+  return [...activeDates].sort()
+}
+
+/**
+ * Endpoint-shaped result: table rows respect the date range, while activeDates
+ * span the dataset and respect only the currently applied dimensions.
+ */
+export function filterIssuanceResult(
+  rows: IssuanceRow[],
+  filters: IssuanceFilters
+): IssuanceResultPayload {
+  return {
+    rows: filterIssuanceRows(rows, filters),
+    activeDates: collectIssuanceActiveDates(rows, filters),
+  }
+}
+
+export type IssuanceCrossAvailability = {
+  projects: ReadonlySet<string>
+  units: ReadonlySet<string>
+}
+
+/**
+ * Проєкт і підрозділ — незалежні виміри однієї видачі, тож кожен вимір
+ * рахується без урахування власного вибору: інакше опції глушили б самі себе.
+ */
+export function computeIssuanceCrossAvailability(
+  rows: readonly IssuanceRow[],
+  filters: Pick<
+    IssuanceFilters,
+    "from" | "to" | "nameQuery" | "projects" | "units"
+  >
+): IssuanceCrossAvailability {
+  const { from, to } = clampIncomeRange(filters.from, filters.to)
+  const fromMs = from.getTime()
+  const toMs = to.getTime()
+  const query = filters.nameQuery.trim().toLowerCase()
+  const projectPicks = new Set<string>(filters.projects)
+  const unitPicks = new Set<string>(filters.units)
+
+  const projects = new Set<string>()
+  const units = new Set<string>()
+
+  for (const row of rows) {
+    const ms = parseIssuanceDate(row.date).getTime()
+    if (ms < fromMs || ms > toMs) continue
+    if (query && !row.productName.toLowerCase().includes(query)) continue
+
+    if (unitPicks.size === 0 || unitPicks.has(row.unit)) {
+      projects.add(row.project)
+    }
+    if (projectPicks.size === 0 || projectPicks.has(row.project)) {
+      units.add(row.unit)
+    }
+  }
+
+  return { projects, units }
+}
+
+/** Вже обране ніколи не глушимо — інакше людина не зможе зняти власний фільтр. */
+export function unavailableIssuanceOptions(
+  options: readonly string[],
+  available: ReadonlySet<string>,
+  selected: readonly string[]
+): string[] {
+  const keep = new Set(selected)
+  return options.filter((option) => !available.has(option) && !keep.has(option))
+}
+
+function countIssuanceRowsByValue(
+  rows: readonly IssuanceRow[],
+  getValue: (row: IssuanceRow) => string | null
+): Map<string, number> {
+  const counts = new Map<string, number>()
+
+  for (const row of rows) {
+    const value = getValue(row)
+    if (!value) continue
+    counts.set(value, (counts.get(value) ?? 0) + 1)
+  }
+
+  return counts
+}
+
+/** `rows` — це вже відфільтрований результат, тож чіпс показує свою частку того, що видно в таблиці. */
+export function buildIssuanceFilterChips(
+  filters: IssuanceFilters,
+  rows: readonly IssuanceRow[]
+): IssuanceFilterChip[] {
   const chips: IssuanceFilterChip[] = []
 
   const name = filters.nameQuery.trim()
   if (name) {
-    chips.push({ id: "name", label: `«${name}»`, type: "name" })
+    chips.push({
+      id: "name",
+      label: `«${name}»`,
+      count: rows.length,
+      type: "name",
+    })
   }
 
-  if (filters.projects.length < ISSUANCE_PROJECT_LINES.length) {
+  if (
+    filters.projects.length > 0 &&
+    filters.projects.length < ISSUANCE_PROJECT_OPTIONS.length
+  ) {
+    const counts = countIssuanceRowsByValue(rows, (row) =>
+      toIssuanceProjectLine(row.project)
+    )
     for (const project of filters.projects) {
-      chips.push({ id: `project:${project}`, label: project, type: "project" })
+      chips.push({
+        id: `project:${project}`,
+        label: project,
+        count: counts.get(project) ?? 0,
+        type: "project",
+      })
     }
   }
 
   if (filters.fundraisings.length < FUNDRAISINGS.length) {
+    const counts = countIssuanceRowsByValue(rows, (row) => row.fundraising)
     for (const fundraising of filters.fundraisings) {
-      chips.push({ id: `fundraising:${fundraising}`, label: fundraising, type: "fundraising" })
+      chips.push({
+        id: `fundraising:${fundraising}`,
+        label: fundraising,
+        count: counts.get(fundraising) ?? 0,
+        type: "fundraising",
+      })
     }
   }
 
-  if (filters.units.length < ISSUANCE_UNITS.length) {
+  if (
+    filters.units.length > 0 &&
+    filters.units.length < ISSUANCE_UNITS.length
+  ) {
+    const counts = countIssuanceRowsByValue(rows, (row) => row.unit)
     for (const unit of filters.units) {
-      chips.push({ id: `unit:${unit}`, label: unit, type: "unit" })
+      chips.push({
+        id: `unit:${unit}`,
+        label: unit,
+        count: counts.get(unit) ?? 0,
+        type: "unit",
+      })
     }
   }
 
   if (filters.categories.length < ISSUANCE_PROPERTY_CATEGORIES.length) {
+    const counts = countIssuanceRowsByValue(rows, (row) => row.category)
     for (const category of filters.categories) {
-      chips.push({ id: `category:${category}`, label: category, type: "category" })
+      chips.push({
+        id: `category:${category}`,
+        label: category,
+        count: counts.get(category) ?? 0,
+        type: "category",
+      })
     }
   }
 
@@ -161,7 +413,7 @@ export function removeIssuanceFilterChip(
     const next = filters.projects.filter((item) => item !== chip.label)
     return {
       ...filters,
-      projects: next.length === 0 ? [...ISSUANCE_PROJECT_LINES] : next,
+      projects: next,
     }
   }
 
@@ -177,7 +429,7 @@ export function removeIssuanceFilterChip(
     const next = filters.units.filter((item) => item !== chip.label)
     return {
       ...filters,
-      units: next.length === 0 ? [...ISSUANCE_UNITS] : next,
+      units: next,
     }
   }
 
@@ -193,7 +445,6 @@ export function removeIssuanceFilterChip(
 }
 
 export type IssuanceRequestBreakdownItem = {
-  fundraising: (typeof FUNDRAISINGS)[number]
   project: IssuanceProjectLine
   count: number
   amountUah: number
@@ -232,36 +483,41 @@ export function formatRequestCountCaption(count: number): string {
   return "запитів"
 }
 
-/** Кількість закритих запитів (рядків видачі) за зборами після фільтрів. */
-export function summarizeClosedRequestsByFundraising(
+/**
+ * Кількість закритих запитів (рядків видачі) за лінійками проєктів — тим самим
+ * словником, що в чипсах фільтрів і колонці «Проєкт».
+ */
+export function summarizeClosedRequestsByProject(
   rows: IssuanceRow[]
 ): IssuanceRequestBreakdownItem[] {
   if (rows.length === 0) return []
 
-  const counts = new Map<(typeof FUNDRAISINGS)[number], number>()
-  const amounts = new Map<(typeof FUNDRAISINGS)[number], number>()
-  for (const fundraising of FUNDRAISINGS) {
-    counts.set(fundraising, 0)
-    amounts.set(fundraising, 0)
+  const counts = new Map<IssuanceProjectLine, number>()
+  const amounts = new Map<IssuanceProjectLine, number>()
+  for (const project of ISSUANCE_PROJECT_LINES) {
+    counts.set(project, 0)
+    amounts.set(project, 0)
   }
   for (const row of rows) {
-    const fundraising = row.fundraising as (typeof FUNDRAISINGS)[number]
-    counts.set(fundraising, (counts.get(fundraising) ?? 0) + 1)
-    amounts.set(fundraising, (amounts.get(fundraising) ?? 0) + row.total)
+    const project = toIssuanceProjectLine(row.project)
+    if (!project) continue
+    counts.set(project, (counts.get(project) ?? 0) + 1)
+    amounts.set(project, (amounts.get(project) ?? 0) + row.total)
   }
 
   const grandTotal = rows.length
-  const items = FUNDRAISINGS.map((fundraising) => ({
-    fundraising,
-    project: FUNDRAISING_TO_PROJECT[fundraising],
-    count: counts.get(fundraising) ?? 0,
-    amountUah: amounts.get(fundraising) ?? 0,
-    share: Math.round(((counts.get(fundraising) ?? 0) / grandTotal) * 100),
+  const items = ISSUANCE_PROJECT_LINES.map((project) => ({
+    project,
+    count: counts.get(project) ?? 0,
+    amountUah: amounts.get(project) ?? 0,
+    share: Math.round(((counts.get(project) ?? 0) / grandTotal) * 100),
   }))
 
   const shareTotal = items.reduce((sum, item) => sum + item.share, 0)
   if (shareTotal !== 100) {
-    const top = items.reduce((best, item) => (item.count > best.count ? item : best))
+    const top = items.reduce((best, item) =>
+      item.count > best.count ? item : best
+    )
     top.share += 100 - shareTotal
   }
 
@@ -269,7 +525,7 @@ export function summarizeClosedRequestsByFundraising(
     .filter((item) => item.count > 0)
     .sort((left, right) => {
       if (left.count !== right.count) return right.count - left.count
-      return left.fundraising.localeCompare(right.fundraising, "uk")
+      return left.project.localeCompare(right.project, "uk")
     })
 }
 

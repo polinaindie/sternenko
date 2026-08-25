@@ -216,10 +216,17 @@ export function ReportPagination({
   )
 }
 
-export function EmptyReportState({ message }: { message: string }) {
+export function EmptyReportState({
+  message,
+  children,
+}: {
+  message: string
+  children?: React.ReactNode
+}) {
   return (
-    <div className="text-muted-foreground flex min-h-32 flex-col items-center justify-center gap-2 rounded-[var(--radius-report)] border border-dashed border-border bg-card p-8 text-center text-sm">
-      <p>{message}</p>
+    <div className="text-foreground flex min-h-32 flex-col items-center justify-center gap-4 rounded-[var(--radius-report)] border border-dashed border-border bg-card p-8 text-center text-sm">
+      <p className="max-w-3xl">{message}</p>
+      {children}
     </div>
   )
 }

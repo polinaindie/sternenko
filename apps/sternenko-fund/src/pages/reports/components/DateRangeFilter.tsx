@@ -1,9 +1,13 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { uk } from "date-fns/locale"
 import { CalendarIcon } from "lucide-react"
 import type { DateRange as DayPickerDateRange } from "react-day-picker"
 
 import { Button } from "@workspace/ui/components/button"
-import { Calendar } from "@workspace/ui/components/calendar"
+import {
+  Calendar,
+  calendarActivityMarkClass,
+} from "@workspace/ui/components/calendar"
 import {
   Popover,
   PopoverContent,
@@ -38,6 +42,8 @@ type DateRangeFilterProps = {
   reportingEnd?: Date
   /** Повний період з імпортованого документа — сірий підпис, вужчий вибір — білий. */
   isDefaultPeriod?: boolean
+  /** ISO dates returned alongside the applied result. */
+  activeDates?: readonly string[]
 }
 
 export function DateRangeFilter({
@@ -47,11 +53,20 @@ export function DateRangeFilter({
   reportingStart = INCOME_REPORTING_START,
   reportingEnd = INCOME_REPORTING_END,
   isDefaultPeriod = false,
+  activeDates,
 }: DateRangeFilterProps) {
   const controlId = useFilterControlId(id)
   const [open, setOpen] = useState(false)
   const [visibleMonth, setVisibleMonth] = useState(() => value.from)
   const [calendarRange, setCalendarRange] = useState<DayPickerDateRange>()
+  const activeDateValues = useMemo(
+    () =>
+      (activeDates ?? []).map((isoDate) => {
+        const [year, month, day] = isoDate.split("-").map(Number)
+        return new Date(year!, month! - 1, day!)
+      }),
+    [activeDates]
+  )
 
   const clampToReporting = (from: Date, to: Date) =>
     clampReportingRange(from, to, reportingStart, reportingEnd)
@@ -108,7 +123,10 @@ export function DateRangeFilter({
             !isDefaultPeriod && siteFilterTriggerActiveClass
           )}
         >
-          <CalendarIcon className="size-4 shrink-0 opacity-60" />
+          <CalendarIcon
+            className="size-4 shrink-0 opacity-60"
+            aria-hidden="true"
+          />
           <span className="truncate">{formatPeriodLabel(value.from, value.to)}</span>
         </Button>
       </PopoverTrigger>
@@ -122,24 +140,50 @@ export function DateRangeFilter({
             onSelect={handleSelect}
             month={visibleMonth}
             onMonthChange={setVisibleMonth}
+            locale={uk}
             captionLayout="dropdown"
             fromYear={reportingStart.getFullYear()}
             toYear={reportingEnd.getFullYear()}
-            disabled={{
-              before: reportingStart,
-              after: reportingEnd,
+            modifiers={{
+              has_data: activeDateValues,
+              boundary_disabled: [
+                { before: reportingStart },
+                { after: reportingEnd },
+              ],
             }}
             classNames={{ root: "w-full min-w-0" }}
           />
 
           <div className="flex w-full flex-wrap gap-2">
-            <Button type="button" size="sm" variant="secondary" className="min-w-0 flex-1" onClick={selectVisibleMonth}>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="border-foreground/50 dark:border-foreground/40 min-w-0 flex-1 rounded-none"
+              onClick={selectVisibleMonth}
+            >
               За обраний місяць
             </Button>
-            <Button type="button" size="sm" variant="secondary" className="min-w-0 flex-1" onClick={selectVisibleYear}>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="border-foreground/50 dark:border-foreground/40 min-w-0 flex-1 rounded-none"
+              onClick={selectVisibleYear}
+            >
               За обраний рік
             </Button>
           </div>
+
+          {activeDates ? (
+            <p className="text-foreground/70 flex items-start gap-2 pt-1 text-xs leading-snug">
+              <span
+                aria-hidden="true"
+                className={cn(calendarActivityMarkClass, "mt-2 w-3")}
+              />
+              <span>Є дані про закупівлі за обраними параметрами</span>
+            </p>
+          ) : null}
         </div>
       </PopoverContent>
     </Popover>

@@ -29,20 +29,23 @@ import { FilterChips } from "../components/FilterChips"
 import { ReportFiltersPanel } from "../components/ReportFiltersPanel"
 import { FundraisingTag } from "../components/FundraisingTag"
 import { IssuanceSnapshotSection } from "../components/IssuanceSnapshotSection"
-import {
-  MultiSelectFilter,
-  PROJECT_UNAVAILABLE_TOOLTIP,
-} from "../components/MultiSelectFilter"
+import { MultiSelectFilter } from "../components/MultiSelectFilter"
 import { NameSearchFilter } from "../components/NameSearchFilter"
-import { EmptyReportState, ReportPagination } from "../components/ReportPagination"
+import {
+  EmptyReportState,
+  ReportPagination,
+} from "../components/ReportPagination"
 import { IssuanceTransactionsCompactTable } from "../components/IssuanceTransactionsCompactTable"
+import { StickyFilterBar } from "../components/StickyFilterBar"
 import {
   AttachmentButton,
   FilterApplyButton,
   FilterField,
-  reportFiltersToWidgetsGapClass,
+  FilterPopoverResetButton,
   reportIssuanceDesktopGridClass,
-  reportIssuanceFilterGroupClass,
+  reportIssuanceFilterFieldsGridClass,
+  reportIssuanceFilterHalfClass,
+  reportIssuanceFilterHalfWithApplyClass,
 } from "../components/report-ui"
 import {
   reportTxBodyRow,
@@ -60,21 +63,18 @@ import {
   reportTxTableClassName,
 } from "../components/report-transaction-table-styles"
 import {
-  ISSUANCE_REPORTING_END,
-  ISSUANCE_REPORTING_START,
-} from "../data/issuance-reporting"
-import {
-  inactiveOptions,
-  pruneProjectFundraiserFilters,
-} from "../lib/filter-availability"
-import {
   buildIssuanceFilterChips,
-  computeIssuanceFilterAvailability,
+  buildIssuanceEmptyStateMessage,
+  collectIssuanceActiveDates,
   createDefaultIssuanceFilters,
-  filterIssuanceRows,
+  filterIssuanceResult,
+  hasActiveIssuanceFilters,
+  hasIssuanceFilterSelection,
   isDefaultIssuancePeriod,
+  isSameIssuanceFilters,
   removeIssuanceFilterChip,
   type IssuanceFilterChip,
+  type IssuanceFilters,
 } from "../lib/issuance-analytics"
 import {
   computeIssuanceDateCells,
@@ -82,10 +82,10 @@ import {
 } from "../lib/issuance-table-dates"
 import { cycleColumnSort, resolveSortKey } from "../lib/table-sort"
 import {
-  FUNDRAISINGS,
-  ISSUANCE_PROJECT_LINES,
+  ISSUANCE_PROJECT_OPTIONS,
   ISSUANCE_ROWS,
   ISSUANCE_UNITS,
+  REPORTS_DATA_UPDATED_AT,
 } from "../mock-data"
 
 /** Заголовки — один рядок, повна назва стовпця без обрізання (типографіка — reportTableHeadClass). */
@@ -121,7 +121,7 @@ const issuanceCellWrap = reportTxCellWrap
 /** Дата — середній сірий, як коментар; вирівнювання з першим товаром у групі. */
 const issuanceCellDate = cn(
   issuanceCellWrap,
-  "max-w-[6.5rem] border-r border-[var(--report-border)] !align-top tabular-nums whitespace-nowrap",
+  "max-w-[6.5rem] border-r border-[var(--report-border)] !align-top whitespace-nowrap tabular-nums",
   reportTxCellCommentTone
 )
 const issuanceBodyRow = reportTxBodyRow
@@ -129,23 +129,19 @@ const issuanceBodyRow = reportTxBodyRow
 const issuanceDayGroupStartRow =
   "border-t border-[var(--report-border)] [&>td]:pt-5"
 const issuanceHeaderDivider = reportTxHeaderDivider
-const issuanceHeadQuantity = cn(
-  issuanceHeadSortable,
-  "!px-2 max-w-[4.5rem]"
-)
-const issuanceCellQuantity =
-  "max-w-[4.5rem] whitespace-nowrap tabular-nums"
+const issuanceHeadQuantity = cn(issuanceHeadSortable, "max-w-[4.5rem] !px-2")
+const issuanceCellQuantity = "max-w-[4.5rem] whitespace-nowrap tabular-nums"
 const issuanceHeadUnitPrice = cn(
   issuanceHeadSortable,
-  "!px-1.5 max-w-[calc(9ch+2.5rem)]"
+  "max-w-[calc(9ch+2.5rem)] !px-1.5"
 )
 const issuanceCellUnitPrice = cn(
-  "max-w-[calc(9ch+2.5rem)] text-right tabular-nums whitespace-nowrap",
+  "max-w-[calc(9ch+2.5rem)] text-right whitespace-nowrap tabular-nums",
   reportTxCellCommentTone
 )
 const issuanceHeadTotal = cn(
   issuanceHeadSortable,
-  "!px-1.5 md:!px-2 max-w-[calc(10ch+2.5rem)]"
+  "max-w-[calc(10ch+2.5rem)] !px-1.5 md:!px-2"
 )
 const issuanceCellTotal = cn(
   "max-w-[calc(10ch+2.5rem)]",
@@ -188,11 +184,62 @@ function parseIssuanceDate(date: string): number {
   return new Date(year, month - 1, day).getTime()
 }
 
+const ISSUANCE_EARLIEST_RECORD_DATE = new Date(
+  Math.min(...ISSUANCE_ROWS.map((row) => parseIssuanceDate(row.date)))
+)
+const REPORTS_LAST_REFRESH_DATE = (() => {
+  const refreshedAt = new Date(REPORTS_DATA_UPDATED_AT)
+  return new Date(
+    refreshedAt.getFullYear(),
+    refreshedAt.getMonth(),
+    refreshedAt.getDate()
+  )
+})()
+
 type ViewerState = {
   title: string
   kind: AttachmentKind
   mediaItems?: TransferMediaItem[]
   documentItems?: DocumentAttachmentItem[]
+}
+
+function initialIssuanceFiltersFromUrl(): {
+  filters: ReturnType<typeof createDefaultIssuanceFilters>
+  dropped: string[]
+} {
+  const filters = createDefaultIssuanceFilters()
+  if (typeof window === "undefined") return { filters, dropped: [] }
+
+  const params = new URLSearchParams(window.location.search)
+  const requestedProjects = [
+    ...params.getAll("project"),
+    ...params.getAll("projects"),
+  ]
+  const requestedUnits = [...params.getAll("unit"), ...params.getAll("units")]
+  const projects = requestedProjects.filter((value) =>
+    (ISSUANCE_PROJECT_OPTIONS as readonly string[]).includes(value)
+  ) as typeof filters.projects
+  const units = requestedUnits.filter((value) =>
+    (ISSUANCE_UNITS as readonly string[]).includes(value)
+  )
+  const dropped = [
+    ...requestedProjects.filter(
+      (value) =>
+        !(ISSUANCE_PROJECT_OPTIONS as readonly string[]).includes(value)
+    ),
+    ...requestedUnits.filter(
+      (value) => !(ISSUANCE_UNITS as readonly string[]).includes(value)
+    ),
+  ]
+
+  return {
+    filters: {
+      ...filters,
+      projects: requestedProjects.length > 0 ? projects : filters.projects,
+      units: requestedUnits.length > 0 ? units : filters.units,
+    },
+    dropped,
+  }
 }
 
 /** Кому передали: номер підрозділу жирним, назва — звичайно. */
@@ -208,73 +255,78 @@ function RecipientCell({ value }: { value: string }) {
           <span className="font-medium text-[var(--report-surface-foreground)]">
             {unitMatch[1]}
           </span>{" "}
-          <span className="whitespace-normal break-words">{unitMatch[2]}</span>
+          <span className="break-words whitespace-normal">{unitMatch[2]}</span>
         </>
       ) : (
-        <span className="whitespace-normal break-words">{unit}</span>
+        <span className="break-words whitespace-normal">{unit}</span>
       )}
     </span>
   )
 }
 
 export function IssuanceTab() {
-  const [draftFilters, setDraftFilters] = useState(createDefaultIssuanceFilters)
-  const [appliedFilters, setAppliedFilters] = useState(createDefaultIssuanceFilters)
+  const [initialFilters] = useState(initialIssuanceFiltersFromUrl)
+  const [draftFilters, setDraftFilters] = useState(initialFilters.filters)
+  const [appliedFilters, setAppliedFilters] = useState(initialFilters.filters)
+  const [pendingFilters, setPendingFilters] = useState<IssuanceFilters | null>(
+    null
+  )
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(15)
-  const [activeSortKey, setActiveSortKey] = useState<IssuanceSortKey | null>(null)
+  const [activeSortKey, setActiveSortKey] = useState<IssuanceSortKey | null>(
+    null
+  )
   const [sortDir, setSortDir] = useState<SortDirection>(DEFAULT_SORT_DIR)
   const sortKey = resolveSortKey(activeSortKey, DEFAULT_SORT_KEY)
   const [viewer, setViewer] = useState<ViewerState | null>(null)
   const [filtersOpen, setFiltersOpen] = useState(false)
 
-  const filteredRows = useMemo(
-    () => filterIssuanceRows(ISSUANCE_ROWS, appliedFilters),
+  const issuanceResult = useMemo(
+    () => filterIssuanceResult(ISSUANCE_ROWS, appliedFilters),
     [appliedFilters]
+  )
+  const filteredRows = issuanceResult.rows
+
+  /** Без інших фільтрів крапки позначили б майже кожен день і нічого не пояснювали б. */
+  const calendarActiveDates = useMemo(
+    () =>
+      hasActiveIssuanceFilters(draftFilters)
+        ? collectIssuanceActiveDates(ISSUANCE_ROWS, draftFilters)
+        : undefined,
+    [draftFilters]
   )
 
   const activeFilterChips = useMemo(
-    () => buildIssuanceFilterChips(appliedFilters),
-    [appliedFilters]
+    () => buildIssuanceFilterChips(appliedFilters, filteredRows),
+    [appliedFilters, filteredRows]
   )
+
+  /**
+   * Порожня чернетка нічого не фільтрує, але коли вона розійшлася з застосованим
+   * станом — кнопка потрібна, щоб зняти фільтри й повернути повну таблицю.
+   */
+  const applyDisabled =
+    !hasIssuanceFilterSelection(draftFilters) &&
+    isSameIssuanceFilters(draftFilters, appliedFilters)
 
   const activeFilterCount =
     activeFilterChips.length +
     (isDefaultIssuancePeriod(appliedFilters.from, appliedFilters.to) ? 0 : 1)
-
-  const filterAvailability = useMemo(
-    () =>
-      computeIssuanceFilterAvailability(ISSUANCE_ROWS, {
-        from: appliedFilters.from,
-        to: appliedFilters.to,
-      }),
-    [appliedFilters.from, appliedFilters.to]
-  )
-
-  const draftFilterAvailability = useMemo(
-    () =>
-      computeIssuanceFilterAvailability(ISSUANCE_ROWS, {
-        from: draftFilters.from,
-        to: draftFilters.to,
-      }),
-    [draftFilters.from, draftFilters.to]
-  )
-
-  const inactiveProjects = useMemo(
-    () =>
-      inactiveOptions(
-        ISSUANCE_PROJECT_LINES,
-        filtersOpen
-          ? draftFilterAvailability.activeProjects
-          : filterAvailability.activeProjects
-      ),
-    [filterAvailability.activeProjects, draftFilterAvailability.activeProjects, filtersOpen]
-  )
+  const isLoading = pendingFilters !== null
+  const visibleRows = isLoading ? [] : filteredRows
+  const resultFilters = pendingFilters ?? appliedFilters
+  const emptyMessage = buildIssuanceEmptyStateMessage(resultFilters)
 
   useEffect(() => {
-    if (!filtersOpen) return
-    setDraftFilters(appliedFilters)
-  }, [filtersOpen, appliedFilters])
+    if (!pendingFilters) return
+
+    const timer = window.setTimeout(() => {
+      setAppliedFilters(pendingFilters)
+      setPendingFilters(null)
+    }, 0)
+
+    return () => window.clearTimeout(timer)
+  }, [pendingFilters])
 
   useEffect(() => {
     setPage(1)
@@ -326,55 +378,29 @@ export function IssuanceTab() {
   )
 
   const applyFilters = () => {
-    const availability = computeIssuanceFilterAvailability(ISSUANCE_ROWS, {
-      from: draftFilters.from,
-      to: draftFilters.to,
-    })
-    const pruned = pruneProjectFundraiserFilters(
-      draftFilters,
-      ISSUANCE_PROJECT_LINES,
-      FUNDRAISINGS,
-      availability
-    )
-    setAppliedFilters(pruned)
-    setDraftFilters(pruned)
+    if (applyDisabled) return
+    setPendingFilters(draftFilters)
     setPage(1)
     setFiltersOpen(false)
   }
 
   const applyDesktopFilters = () => {
-    setAppliedFilters(draftFilters)
-    setPage(1)
-  }
-
-  const handlePeriodChange = ({ from, to }: { from: Date; to: Date }) => {
-    const availability = computeIssuanceFilterAvailability(ISSUANCE_ROWS, { from, to })
-    const applyPeriod = (current: typeof draftFilters) =>
-      pruneProjectFundraiserFilters(
-        { ...current, from, to },
-        ISSUANCE_PROJECT_LINES,
-        FUNDRAISINGS,
-        availability
-      )
-    setDraftFilters(applyPeriod)
-    setAppliedFilters(applyPeriod)
+    if (applyDisabled) return
+    setPendingFilters(draftFilters)
     setPage(1)
   }
 
   const cancelFilters = () => {
-    setDraftFilters(appliedFilters)
     setFiltersOpen(false)
   }
 
   const handleFiltersOpenChange = (open: boolean) => {
-    if (!open) {
-      setDraftFilters(appliedFilters)
-    }
     setFiltersOpen(open)
   }
 
   const clearFilters = () => {
     const defaults = createDefaultIssuanceFilters()
+    setPendingFilters(null)
     setDraftFilters(defaults)
     setAppliedFilters(defaults)
     setPage(1)
@@ -383,6 +409,7 @@ export function IssuanceTab() {
 
   const removeFilterChip = (chip: IssuanceFilterChip) => {
     const next = removeIssuanceFilterChip(appliedFilters, chip)
+    setPendingFilters(null)
     setDraftFilters(next)
     setAppliedFilters(next)
     setPage(1)
@@ -413,11 +440,18 @@ export function IssuanceTab() {
   return (
     <>
       <Stack className="w-full min-w-0 gap-4 md:gap-6 lg:gap-10">
-        <Stack className="gap-3">
+        {initialFilters.dropped.length > 0 ? (
+          <p role="status" className="text-sm text-foreground">
+            Не знайдено й пропущено: {initialFilters.dropped.join(", ")}
+          </p>
+        ) : null}
+
+        <Stack className="gap-3 lg:hidden">
           <ReportFiltersPanel
             open={filtersOpen}
             onOpenChange={handleFiltersOpenChange}
             activeFilterCount={activeFilterCount}
+            applyDisabled={applyDisabled}
             onApply={applyFilters}
             onCancel={cancelFilters}
             onClearAll={clearFilters}
@@ -436,8 +470,9 @@ export function IssuanceTab() {
                 onChange={({ from, to }) =>
                   setDraftFilters((current) => ({ ...current, from, to }))
                 }
-                reportingStart={ISSUANCE_REPORTING_START}
-                reportingEnd={ISSUANCE_REPORTING_END}
+                reportingStart={ISSUANCE_EARLIEST_RECORD_DATE}
+                reportingEnd={REPORTS_LAST_REFRESH_DATE}
+                activeDates={calendarActiveDates}
                 isDefaultPeriod={isDefaultIssuancePeriod(
                   draftFilters.from,
                   draftFilters.to
@@ -446,14 +481,13 @@ export function IssuanceTab() {
             </FilterField>
             <FilterField label="Проєкт">
               <MultiSelectFilter
-                options={ISSUANCE_PROJECT_LINES}
+                options={ISSUANCE_PROJECT_OPTIONS}
                 selected={draftFilters.projects}
                 onChange={(projects) =>
                   setDraftFilters((current) => ({ ...current, projects }))
                 }
-                disabledOptions={inactiveProjects}
-                disabledOptionTooltip={PROJECT_UNAVAILABLE_TOOLTIP}
-                placeholder="Усі проєкти"
+                placeholder="Обрати проєкти"
+                allSelectedLabel="Усі проєкти"
               />
             </FilterField>
             <FilterField label="Підрозділи">
@@ -463,88 +497,133 @@ export function IssuanceTab() {
                 onChange={(units) =>
                   setDraftFilters((current) => ({ ...current, units }))
                 }
-                placeholder="Усі"
+                placeholder="Обрати підрозділи"
+                allSelectedLabel="Усі підрозділи"
+                searchable
+                searchPlaceholder="Пошук підрозділу"
               />
             </FilterField>
           </ReportFiltersPanel>
 
-          <div className={cn("hidden lg:flex lg:flex-col", reportFiltersToWidgetsGapClass)}>
-            <div className={cn("grid gap-y-3", reportIssuanceDesktopGridClass)}>
-              <div className={reportIssuanceFilterGroupClass}>
-                <FilterField label="Найменування" className="min-w-0 flex-1">
-                  <NameSearchFilter
-                    value={draftFilters.nameQuery}
-                    onChange={(nameQuery) =>
-                      setDraftFilters((current) => ({ ...current, nameQuery }))
-                    }
-                    onSubmit={applyDesktopFilters}
-                  />
-                </FilterField>
-                <FilterField label="Дата видачі" className="min-w-0 flex-1">
-                  <DateRangeFilter
-                    value={{ from: appliedFilters.from, to: appliedFilters.to }}
-                    onChange={handlePeriodChange}
-                    reportingStart={ISSUANCE_REPORTING_START}
-                    reportingEnd={ISSUANCE_REPORTING_END}
-                    isDefaultPeriod={isDefaultIssuancePeriod(
-                      appliedFilters.from,
-                      appliedFilters.to
-                    )}
-                  />
-                </FilterField>
-              </div>
-              <div className={reportIssuanceFilterGroupClass}>
-                <FilterField label="Проєкт" className="min-w-0 flex-1">
-                  <MultiSelectFilter
-                    options={ISSUANCE_PROJECT_LINES}
-                    selected={draftFilters.projects}
-                    onChange={(projects) =>
-                      setDraftFilters((current) => ({ ...current, projects }))
-                    }
-                    disabledOptions={inactiveProjects}
-                    disabledOptionTooltip={PROJECT_UNAVAILABLE_TOOLTIP}
-                    placeholder="Усі проєкти"
-                  />
-                </FilterField>
-                <FilterField label="Підрозділи" className="min-w-0 flex-1">
-                  <MultiSelectFilter
-                    options={ISSUANCE_UNITS}
-                    selected={draftFilters.units}
-                    onChange={(units) =>
-                      setDraftFilters((current) => ({ ...current, units }))
-                    }
-                    placeholder="Усі"
-                  />
-                </FilterField>
-                <FilterApplyButton className="shrink-0 self-end" onClick={applyDesktopFilters} />
-              </div>
-              {activeFilterChips.length > 0 ? (
-                <FilterChips
-                  chips={activeFilterChips}
-                  onRemove={removeFilterChip}
-                  onClear={clearFilters}
-                  clearLabel="Очистити всі"
-                  className="col-span-2"
-                />
-              ) : null}
-            </div>
-            <div className={reportIssuanceDesktopGridClass}>
-              <IssuanceSnapshotSection bare rows={filteredRows} />
-            </div>
-          </div>
-
-          <FilterChips
-            chips={activeFilterChips}
-            onRemove={removeFilterChip}
-            className="lg:hidden"
-          />
+          <FilterChips chips={activeFilterChips} onRemove={removeFilterChip} />
         </Stack>
 
-        <IssuanceSnapshotSection rows={filteredRows} className="lg:hidden" />
+        <StickyFilterBar className="hidden lg:block">
+          <div className={cn("gap-y-3", reportIssuanceFilterFieldsGridClass)}>
+            <div className={reportIssuanceFilterHalfClass}>
+              <FilterField label="Найменування">
+                <NameSearchFilter
+                  value={draftFilters.nameQuery}
+                  onChange={(nameQuery) =>
+                    setDraftFilters((current) => ({ ...current, nameQuery }))
+                  }
+                  onSubmit={applyDesktopFilters}
+                />
+              </FilterField>
+              <FilterField label="Дата видачі">
+                <DateRangeFilter
+                  value={{ from: draftFilters.from, to: draftFilters.to }}
+                  onChange={({ from, to }) =>
+                    setDraftFilters((current) => ({ ...current, from, to }))
+                  }
+                  reportingStart={ISSUANCE_EARLIEST_RECORD_DATE}
+                  reportingEnd={REPORTS_LAST_REFRESH_DATE}
+                  activeDates={calendarActiveDates}
+                  isDefaultPeriod={isDefaultIssuancePeriod(
+                    draftFilters.from,
+                    draftFilters.to
+                  )}
+                />
+              </FilterField>
+            </div>
+            <div className={reportIssuanceFilterHalfWithApplyClass}>
+              <FilterField label="Проєкт">
+                <MultiSelectFilter
+                  options={ISSUANCE_PROJECT_OPTIONS}
+                  selected={draftFilters.projects}
+                  onChange={(projects) =>
+                    setDraftFilters((current) => ({ ...current, projects }))
+                  }
+                  placeholder="Обрати проєкти"
+                  allSelectedLabel="Усі проєкти"
+                />
+              </FilterField>
+              <FilterField label="Підрозділи">
+                <MultiSelectFilter
+                  options={ISSUANCE_UNITS}
+                  selected={draftFilters.units}
+                  onChange={(units) =>
+                    setDraftFilters((current) => ({ ...current, units }))
+                  }
+                  placeholder="Обрати підрозділи"
+                  allSelectedLabel="Усі підрозділи"
+                  searchable
+                  searchPlaceholder="Пошук підрозділу"
+                />
+              </FilterField>
+              <FilterApplyButton
+                className="shrink-0 self-end"
+                disabled={applyDisabled}
+                onClick={applyDesktopFilters}
+              />
+            </div>
+            {activeFilterChips.length > 0 ? (
+              <FilterChips
+                chips={activeFilterChips}
+                onRemove={removeFilterChip}
+                onClear={clearFilters}
+                clearLabel="Очистити всі"
+                className="col-span-full"
+              />
+            ) : null}
+          </div>
+        </StickyFilterBar>
+
+        <p
+          className="sr-only"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {isLoading
+            ? "Оновлюємо результати."
+            : `Знайдено записів: ${filteredRows.length.toLocaleString("uk-UA")}.`}
+        </p>
+
+        <div className={cn(reportIssuanceDesktopGridClass, "hidden lg:grid")}>
+          <IssuanceSnapshotSection
+            bare
+            rows={visibleRows}
+            isLoading={isLoading}
+            emptyMessage={emptyMessage}
+          />
+        </div>
+
+        <IssuanceSnapshotSection
+          rows={visibleRows}
+          isLoading={isLoading}
+          emptyMessage={emptyMessage}
+          className="lg:hidden"
+        />
 
         <Stack className="gap-3">
-          {pageRows.length === 0 ? (
-            <EmptyReportState message="За обраними фільтрами записів не знайдено." />
+          {isLoading ? (
+            <div
+              role="status"
+              aria-busy="true"
+              className="text-foreground flex min-h-32 items-center justify-center rounded-[var(--radius-report)] border border-border bg-card p-8 text-sm"
+            >
+              Завантажуємо записи…
+            </div>
+          ) : pageRows.length === 0 ? (
+            <EmptyReportState message={emptyMessage}>
+              <FilterPopoverResetButton
+                className="h-10 w-auto px-4"
+                onClick={clearFilters}
+              >
+                Скинути всі фільтри
+              </FilterPopoverResetButton>
+            </EmptyReportState>
           ) : (
             <>
               <IssuanceTransactionsCompactTable
@@ -567,33 +646,43 @@ export function IssuanceTab() {
                     <ReportTableHeaderRow>
                       <ReportTableHeadSortable
                         label="Дата"
-                        sortDirection={activeSortKey === "date" ? sortDir : null}
+                        sortDirection={
+                          activeSortKey === "date" ? sortDir : null
+                        }
                         onCycleSort={() => cycleSort("date")}
                         className={cn(
-                          "!px-1.5 md:!px-2 max-w-[6.5rem] border-r border-[var(--report-border)]",
+                          "max-w-[6.5rem] border-r border-[var(--report-border)] !px-1.5 md:!px-2",
                           issuanceHeadSortable
                         )}
                       />
-                      <ReportTableHead className={cn("!px-1.5 md:!px-2", issuanceHead)}>
+                      <ReportTableHead
+                        className={cn("!px-1.5 md:!px-2", issuanceHead)}
+                      >
                         Найменування
                       </ReportTableHead>
                       <ReportTableHeadSortable
                         label="К-сть"
-                        sortDirection={activeSortKey === "quantity" ? sortDir : null}
+                        sortDirection={
+                          activeSortKey === "quantity" ? sortDir : null
+                        }
                         onCycleSort={() => cycleSort("quantity")}
                         align="right"
                         className={issuanceHeadQuantity}
                       />
                       <ReportTableHeadSortable
                         label="Вартість, ₴"
-                        sortDirection={activeSortKey === "unitPrice" ? sortDir : null}
+                        sortDirection={
+                          activeSortKey === "unitPrice" ? sortDir : null
+                        }
                         onCycleSort={() => cycleSort("unitPrice")}
                         align="right"
                         className={issuanceHeadUnitPrice}
                       />
                       <ReportTableHeadSortable
                         label="Сума, ₴"
-                        sortDirection={activeSortKey === "total" ? sortDir : null}
+                        sortDirection={
+                          activeSortKey === "total" ? sortDir : null
+                        }
                         onCycleSort={() => cycleSort("total")}
                         align="right"
                         className={issuanceHeadTotal}
@@ -601,7 +690,9 @@ export function IssuanceTab() {
                       <ReportTableHead className={issuanceHeadProject}>
                         Проєкт
                       </ReportTableHead>
-                      <ReportTableHead className={cn("!px-1.5 md:!px-2", issuanceHead)}>
+                      <ReportTableHead
+                        className={cn("!px-1.5 md:!px-2", issuanceHead)}
+                      >
                         Кому передали
                       </ReportTableHead>
                       <ReportTableHead className={issuanceHeadAttachment}>
@@ -609,97 +700,145 @@ export function IssuanceTab() {
                         <wbr />
                         відео
                       </ReportTableHead>
-                      <ReportTableHead className={issuanceHeadAttachment}>Акт</ReportTableHead>
-                      <ReportTableHead className={issuanceHeadAttachment}>Платіж</ReportTableHead>
+                      <ReportTableHead className={issuanceHeadAttachment}>
+                        Акт
+                      </ReportTableHead>
+                      <ReportTableHead className={issuanceHeadAttachment}>
+                        Платіж
+                      </ReportTableHead>
                     </ReportTableHeaderRow>
                   </ReportTableHeader>
                   <ReportTableBody>
                     {pageRows.map((row, rowIndex) => {
                       const dateCell = dateCellPlacements.get(row.id)
                       const showDaySeparator =
-                        dateCell?.isDayGroupStart && !(page === 1 && rowIndex === 0)
-                      const dateGroupStriped = dateGroupStripes[rowIndex] ?? false
+                        dateCell?.isDayGroupStart &&
+                        !(page === 1 && rowIndex === 0)
+                      const dateGroupStriped =
+                        dateGroupStripes[rowIndex] ?? false
                       const dateGroupRowClass = dateGroupStriped
                         ? issuanceRowStripeClass
                         : reportTableRowSurfaceClass
                       return (
-                      <ReportTableRow
-                        key={row.id}
-                        striping="none"
-                        className={cn(
-                          issuanceBodyRow,
-                          showDaySeparator && issuanceDayGroupStartRow,
-                          dateGroupRowClass
-                        )}
-                      >
-                        {dateCell?.show ? (
+                        <ReportTableRow
+                          key={row.id}
+                          striping="none"
+                          className={cn(
+                            issuanceBodyRow,
+                            showDaySeparator && issuanceDayGroupStartRow,
+                            dateGroupRowClass
+                          )}
+                        >
+                          {dateCell?.show ? (
+                            <ReportTableCell
+                              rowSpan={
+                                dateCell.rowSpan > 1
+                                  ? dateCell.rowSpan
+                                  : undefined
+                              }
+                              className={cn(
+                                "!px-1.5 md:!px-2",
+                                issuanceCellDate,
+                                dateGroupRowClass
+                              )}
+                            >
+                              {row.date}
+                            </ReportTableCell>
+                          ) : null}
                           <ReportTableCell
-                            rowSpan={dateCell.rowSpan > 1 ? dateCell.rowSpan : undefined}
+                            className={cn("!px-1.5 md:!px-2", issuanceCellWrap)}
+                          >
+                            {row.productName}
+                          </ReportTableCell>
+                          <ReportTableCell
                             className={cn(
-                              "!px-1.5 md:!px-2",
-                              issuanceCellDate,
-                              dateGroupRowClass
+                              "!px-1 text-right",
+                              issuanceCellQuantity
                             )}
                           >
-                            {row.date}
+                            {row.quantity}
                           </ReportTableCell>
-                        ) : null}
-                        <ReportTableCell className={cn("!px-1.5 md:!px-2", issuanceCellWrap)}>
-                          {row.productName}
-                        </ReportTableCell>
-                        <ReportTableCell className={cn("!px-1 text-right", issuanceCellQuantity)}>
-                          {row.quantity}
-                        </ReportTableCell>
-                        <ReportTableCell className={cn("!px-1 text-right", issuanceCellUnitPrice)}>
-                          {formatReportNumber(row.unitPrice)}
-                        </ReportTableCell>
-                        <ReportTableCell className={cn("!px-1.5 md:!px-2 text-right", issuanceCellTotal)}>
-                          {formatReportNumber(row.total)}
-                        </ReportTableCell>
-                        <ReportTableCell className={issuanceCellProject}>
-                          <FundraisingTag name={row.project} variant="colored" />
-                        </ReportTableCell>
-                        <ReportTableCell className={cn("!px-1.5 md:!px-2", issuanceCellRecipient)}>
-                          <RecipientCell value={row.recipient} />
-                        </ReportTableCell>
-                        <ReportTableCell className={issuanceCellAttachment}>
-                          <AttachmentButton
-                            label="Переглянути фото та відео передачі"
-                            icon={ImagesIcon}
-                            iconClassName="size-4"
-                            compact
-                            available={row.attachments.media.length > 0}
-                            pending={row.pendingAttachments.media}
-                            onClick={() => openMedia(row.productName, row.attachments.media)}
-                          />
-                        </ReportTableCell>
-                        <ReportTableCell className={issuanceCellAttachment}>
-                          <AttachmentButton
-                            label="Переглянути акт видачі"
-                            icon={FileTextIcon}
-                            iconClassName="size-4"
-                            compact
-                            available={row.attachments.act.length > 0}
-                            pending={row.pendingAttachments.act}
-                            onClick={() =>
-                              openDocument("act", row.productName, row.attachments.act)
-                            }
-                          />
-                        </ReportTableCell>
-                        <ReportTableCell className={issuanceCellAttachment}>
-                          <AttachmentButton
-                            label="Переглянути платіжний документ"
-                            icon={ReceiptIcon}
-                            iconClassName="size-4"
-                            compact
-                            available={row.attachments.payment.length > 0}
-                            pending={row.pendingAttachments.payment}
-                            onClick={() =>
-                              openDocument("payment", row.productName, row.attachments.payment)
-                            }
-                          />
-                        </ReportTableCell>
-                      </ReportTableRow>
+                          <ReportTableCell
+                            className={cn(
+                              "!px-1 text-right",
+                              issuanceCellUnitPrice
+                            )}
+                          >
+                            {formatReportNumber(row.unitPrice)}
+                          </ReportTableCell>
+                          <ReportTableCell
+                            className={cn(
+                              "!px-1.5 text-right md:!px-2",
+                              issuanceCellTotal
+                            )}
+                          >
+                            {formatReportNumber(row.total)}
+                          </ReportTableCell>
+                          <ReportTableCell className={issuanceCellProject}>
+                            <FundraisingTag
+                              name={row.project}
+                              variant="colored"
+                            />
+                          </ReportTableCell>
+                          <ReportTableCell
+                            className={cn(
+                              "!px-1.5 md:!px-2",
+                              issuanceCellRecipient
+                            )}
+                          >
+                            <RecipientCell value={row.recipient} />
+                          </ReportTableCell>
+                          <ReportTableCell className={issuanceCellAttachment}>
+                            <AttachmentButton
+                              label="Переглянути фото та відео передачі"
+                              icon={ImagesIcon}
+                              iconClassName="size-4"
+                              compact
+                              available={row.attachments.media.length > 0}
+                              pending={row.pendingAttachments.media}
+                              onClick={() =>
+                                openMedia(
+                                  row.productName,
+                                  row.attachments.media
+                                )
+                              }
+                            />
+                          </ReportTableCell>
+                          <ReportTableCell className={issuanceCellAttachment}>
+                            <AttachmentButton
+                              label="Переглянути акт видачі"
+                              icon={FileTextIcon}
+                              iconClassName="size-4"
+                              compact
+                              available={row.attachments.act.length > 0}
+                              pending={row.pendingAttachments.act}
+                              onClick={() =>
+                                openDocument(
+                                  "act",
+                                  row.productName,
+                                  row.attachments.act
+                                )
+                              }
+                            />
+                          </ReportTableCell>
+                          <ReportTableCell className={issuanceCellAttachment}>
+                            <AttachmentButton
+                              label="Переглянути платіжний документ"
+                              icon={ReceiptIcon}
+                              iconClassName="size-4"
+                              compact
+                              available={row.attachments.payment.length > 0}
+                              pending={row.pendingAttachments.payment}
+                              onClick={() =>
+                                openDocument(
+                                  "payment",
+                                  row.productName,
+                                  row.attachments.payment
+                                )
+                              }
+                            />
+                          </ReportTableCell>
+                        </ReportTableRow>
                       )
                     })}
                   </ReportTableBody>
@@ -707,16 +846,18 @@ export function IssuanceTab() {
               </div>
             </>
           )}
-          <ReportPagination
-            page={page}
-            pageSize={pageSize}
-            total={filteredRows.length}
-            onPageChange={setPage}
-            onPageSizeChange={(size) => {
-              setPageSize(size)
-              setPage(1)
-            }}
-          />
+          {!isLoading ? (
+            <ReportPagination
+              page={page}
+              pageSize={pageSize}
+              total={filteredRows.length}
+              onPageChange={setPage}
+              onPageSizeChange={(size) => {
+                setPageSize(size)
+                setPage(1)
+              }}
+            />
+          ) : null}
         </Stack>
       </Stack>
 

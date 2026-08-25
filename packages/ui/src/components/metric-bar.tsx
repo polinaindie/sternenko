@@ -23,7 +23,9 @@ type MetricBarGroupContextValue = {
   stretchRows?: boolean
 }
 
-const MetricBarGroupContext = React.createContext<MetricBarGroupContextValue>({})
+const MetricBarGroupContext = React.createContext<MetricBarGroupContextValue>(
+  {}
+)
 
 function useMetricBarGroup(): MetricBarGroupContextValue {
   return React.useContext(MetricBarGroupContext)
@@ -60,7 +62,7 @@ function MetricBarValueBlock({
   return (
     <div
       className={cn(
-        "[font-family:var(--font-subheading-black)] flex w-full shrink-0 flex-col items-center gap-0.5 text-center text-sm leading-[0.9] tracking-[-0.02em]",
+        "flex w-full shrink-0 flex-col items-center gap-0.5 text-center [font-family:var(--font-subheading-black)] text-sm leading-[0.9] tracking-[-0.02em]",
         valueLabel ? "min-h-12" : undefined
       )}
     >
@@ -116,7 +118,7 @@ function MetricBar({
   const progressLabel = metricBarProgressLabel(percent, label)
 
   const percentLabel = (
-    <span className="[font-family:var(--font-display-dark)] shrink-0 text-base leading-[0.9] tracking-[-0.02em] tabular-nums md:text-lg">
+    <span className="shrink-0 [font-family:var(--font-display-dark)] text-base leading-[0.9] tracking-[-0.02em] tabular-nums md:text-lg">
       {percent}%
     </span>
   )
@@ -138,7 +140,10 @@ function MetricBar({
       <div
         data-slot="metric-bar"
         data-variant="solid"
-        className={cn("flex min-w-0 flex-1 flex-col items-center gap-2", className)}
+        className={cn(
+          "flex min-w-0 flex-1 flex-col items-center gap-2",
+          className
+        )}
         {...props}
       >
         {percentLabel}
@@ -166,7 +171,10 @@ function MetricBar({
     <div
       data-slot="metric-bar"
       data-variant="track"
-      className={cn("flex min-w-0 flex-1 flex-col items-center gap-2", className)}
+      className={cn(
+        "flex min-w-0 flex-1 flex-col items-center gap-2",
+        className
+      )}
       {...props}
     >
       {percentLabel}
@@ -202,6 +210,7 @@ function MetricBar({
 function MetricBarHorizontal({
   className,
   labelClassName,
+  valueClassName,
   percent,
   label,
   valueLabel,
@@ -212,6 +221,7 @@ function MetricBarHorizontal({
   trackClassName,
   trackHeight = METRIC_BAR_HORIZONTAL_TRACK_HEIGHT,
   renderFill,
+  renderTrack,
   ...props
 }: Omit<React.ComponentProps<"div">, "children"> & {
   percent: number
@@ -219,6 +229,7 @@ function MetricBarHorizontal({
   valueLabel?: React.ReactNode
   valueCaption?: React.ReactNode
   labelClassName?: string
+  valueClassName?: string
   variant?: MetricBarVariant
   fillColor?: string
   maxPercent?: number
@@ -226,6 +237,10 @@ function MetricBarHorizontal({
   trackClassName?: string
   trackHeight?: string
   renderFill?: (clampedPercent: number) => React.ReactNode
+  /** Обгортає весь трек — напр. тригером тултіпа. Робить трек фокусованим. */
+  renderTrack?: (
+    track: React.ReactElement<React.HTMLAttributes<HTMLElement>>
+  ) => React.ReactNode
 }) {
   const group = useMetricBarGroup()
   const resolvedVariant = variant ?? group.variant ?? "track"
@@ -244,7 +259,7 @@ function MetricBarHorizontal({
   const progressLabel = metricBarProgressLabel(percent, label)
 
   const percentLabel = (
-    <span className="[font-family:var(--font-display-dark)] shrink-0 text-sm leading-[0.9] tracking-[-0.02em] tabular-nums md:text-base">
+    <span className="shrink-0 [font-family:var(--font-display-dark)] text-sm leading-[0.9] tracking-[-0.02em] tabular-nums md:text-base">
       {percent}%
     </span>
   )
@@ -253,7 +268,7 @@ function MetricBarHorizontal({
     <div
       className={cn(
         resolvedVariant === "solid"
-          ? "w-[105px] max-w-[105px] shrink-0 justify-self-start text-left"
+          ? "w-max max-w-none shrink-0 justify-self-end text-right"
           : "w-[7.5rem] shrink-0 md:w-44",
         stretchRows && resolvedVariant === "solid" && "self-center",
         labelClassName
@@ -261,10 +276,10 @@ function MetricBarHorizontal({
     >
       <span
         className={cn(
-          "block tracking-[-0.02em] [overflow-wrap:anywhere]",
+          "block tracking-[-0.02em]",
           resolvedVariant === "solid"
-            ? "[font-family:var(--font-subheading-dark)] text-sm leading-4 md:text-base"
-            : "text-xs leading-[1.1] opacity-80"
+            ? "[font-family:var(--font-sans)] text-sm leading-[0.9] whitespace-nowrap text-muted-foreground"
+            : "text-xs leading-[1.1] [overflow-wrap:anywhere] opacity-80"
         )}
       >
         {label}
@@ -275,9 +290,9 @@ function MetricBarHorizontal({
   const valueBlock = valueLabel ? (
     <span
       className={cn(
-        "[font-family:var(--font-subheading-black)] shrink-0 text-sm leading-[0.9] tracking-[-0.02em] tabular-nums",
+        "shrink-0 [font-family:var(--font-subheading-black)] text-sm leading-[0.9] tracking-[-0.02em] tabular-nums",
         resolvedVariant === "solid"
-          ? "whitespace-nowrap text-right"
+          ? "text-right whitespace-nowrap"
           : "ml-3 w-24 text-right md:ml-4 md:w-28"
       )}
     >
@@ -301,6 +316,42 @@ function MetricBarHorizontal({
       />
     )
 
+    // renderTrack означає, що трек стає тригером — заливка буває завужчою за
+    // мінімальну ціль дотику, тож наведення й фокус вішаємо на весь рядок.
+    const solidTrack = (
+      <div
+        role="progressbar"
+        aria-label={progressLabel}
+        aria-valuenow={clamped}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        tabIndex={renderTrack ? 0 : undefined}
+        className={cn(
+          "group/bar relative w-full min-w-0 overflow-hidden",
+          stretchRows && "h-full min-h-8 self-stretch",
+          renderTrack &&
+            "outline-none focus-visible:ring-2 focus-visible:ring-background/60",
+          trackClassName ?? "bg-background/15"
+        )}
+        style={{
+          height: stretchRows ? undefined : solidTrackHeight,
+          borderRadius: METRIC_BAR_SOLID_RADIUS,
+        }}
+      >
+        {clamped > 0 ? (
+          <div
+            className="absolute inset-y-0 left-0 min-w-0"
+            style={{
+              width: `${fillWidth}%`,
+              minWidth: "2px",
+            }}
+          >
+            {solidBar}
+          </div>
+        ) : null}
+      </div>
+    )
+
     return (
       <div
         data-slot="metric-bar-horizontal"
@@ -311,55 +362,37 @@ function MetricBarHorizontal({
           className
         )}
         style={
-          group.sharedGrid ? undefined : { columnGap: METRIC_BAR_HORIZONTAL_LABEL_GAP }
+          group.sharedGrid
+            ? undefined
+            : { columnGap: METRIC_BAR_HORIZONTAL_LABEL_GAP }
         }
         {...props}
       >
         {labelBlock ?? <div aria-hidden />}
-        <div
-          role="progressbar"
-          aria-label={progressLabel}
-          aria-valuenow={clamped}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          className={cn(
-            "relative w-full min-w-0 overflow-hidden",
-            stretchRows && "h-full min-h-8 self-stretch",
-            trackClassName ?? "bg-background/15"
-          )}
-          style={{
-            height: stretchRows ? undefined : solidTrackHeight,
-            borderRadius: METRIC_BAR_SOLID_RADIUS,
-          }}
-        >
-          {clamped > 0 ? (
-            <div
-              className="absolute inset-y-0 left-0 min-w-0"
-              style={{
-                width: `${fillWidth}%`,
-                minWidth: "2px",
-              }}
-            >
-              {solidBar}
-            </div>
-          ) : null}
-        </div>
+        {renderTrack ? renderTrack(solidTrack) : solidTrack}
         <span
           className={cn(
-            "[font-family:var(--font-subheading-black)] shrink-0 whitespace-nowrap text-left text-sm leading-[0.9] tracking-[-0.02em] tabular-nums",
+            "shrink-0 text-left [font-family:var(--font-sans)] text-sm leading-[0.9] tracking-[-0.02em] whitespace-nowrap tabular-nums",
             stretchRows && "self-center",
-            resolvedVariant === "solid" && "justify-self-start"
+            resolvedVariant === "solid" && "justify-self-start",
+            valueClassName
           )}
         >
           {valueLabel ? (
             <>
               {valueLabel}
               {valueCaption ? (
-                <span className="opacity-80"> {valueCaption}</span>
+                <span className="[font-family:var(--font-sans)] text-muted-foreground">
+                  {" "}
+                  {valueCaption}
+                </span>
               ) : null}
             </>
           ) : null}
-          <span className="opacity-60"> ({percent}%)</span>
+          <span className="[font-family:var(--font-sans)] text-muted-foreground">
+            {" "}
+            ({percent}%)
+          </span>
         </span>
       </div>
     )

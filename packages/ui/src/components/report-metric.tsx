@@ -30,7 +30,7 @@ function formatCompactReportNumber(value: number): string {
 }
 
 const valueVariants = cva(
-  "[font-family:var(--font-display-black)] block py-0.5 leading-[1.05] tracking-[-0.02em] tabular-nums text-card-foreground",
+  "block py-0.5 [font-family:var(--font-display-black)] leading-[1.05] tracking-[-0.02em] text-card-foreground tabular-nums",
   {
     variants: {
       size: {
@@ -47,6 +47,7 @@ type DisplayMetricProps = React.ComponentProps<"div"> &
   VariantProps<typeof valueVariants> & {
     value: number | string
     label?: React.ReactNode
+    labelClassName?: string
     align?: "start" | "end"
     layout?: "stack" | "row"
     /** Префікс «≈» біля значення (приблизна оцінка). */
@@ -57,6 +58,7 @@ function DisplayMetric({
   className,
   value,
   label,
+  labelClassName,
   size = "default",
   align = "start",
   layout = "stack",
@@ -83,7 +85,12 @@ function DisplayMetric({
     </span>
   )
   const labelEl = label ? (
-    <span className="[font-family:var(--font-sans)] text-lg font-medium leading-[0.9] tracking-[-0.02em] text-card-foreground">
+    <span
+      className={cn(
+        "[font-family:var(--font-sans)] text-lg leading-[0.9] font-medium tracking-[-0.02em] text-card-foreground",
+        labelClassName
+      )}
+    >
       {label}
     </span>
   ) : null

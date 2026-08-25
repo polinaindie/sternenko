@@ -178,6 +178,19 @@ function Calendar({
   )
 }
 
+/**
+ * Смуга, а не крапка: сусідні дні зливаються в один штрих, тож місяць читається
+ * кількома лініями замість двох десятків окремих точок, що рябіли в очах.
+ * Жовтий на світлій картці дає 1.39:1, тож там межу тримає контурна рамка;
+ * на темній вона зайва — сам жовтий дає 10.9:1 (WCAG 1.4.11).
+ */
+const calendarActivityMarkClass =
+  "activity-mark h-0.5 shrink-0 rounded-none bg-primary !opacity-100 ring-1 ring-foreground/70 dark:ring-0"
+
+/** Смуга виходить із потоку, щоб число дня стояло на тій самій лінії, що й дні без даних. */
+const calendarActivityMarkInCellClass =
+  "pointer-events-none absolute inset-x-0 bottom-0"
+
 function CalendarDayButton({
   className,
   day,
@@ -186,6 +199,15 @@ function CalendarDayButton({
   ...props
 }: React.ComponentProps<typeof DayButton> & { locale?: Partial<Locale> }) {
   const defaultClassNames = getDefaultClassNames()
+  const hasData = Boolean(modifiers.has_data)
+  const boundaryDisabled = Boolean(modifiers.boundary_disabled)
+  const fallbackLabel = day.date.toLocaleDateString(locale?.code ?? "uk-UA", {
+    day: "numeric",
+    month: "long",
+  })
+  const accessibleLabel = hasData
+    ? `${props["aria-label"] ?? fallbackLabel}, є закупівлі`
+    : props["aria-label"]
 
   const ref = React.useRef<HTMLButtonElement>(null)
   React.useEffect(() => {
@@ -207,14 +229,48 @@ function CalendarDayButton({
       data-range-start={modifiers.range_start}
       data-range-end={modifiers.range_end}
       data-range-middle={modifiers.range_middle}
+      data-has-data={hasData}
       className={cn(
-        "relative isolate z-10 flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 rounded-none border-0 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-[3px] group-data-[focused=true]/day:ring-ring/50 data-[range-end=true]:rounded-none data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground data-[range-middle=true]:rounded-none data-[range-middle=true]:bg-muted data-[range-middle=true]:text-foreground data-[range-start=true]:rounded-none data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[selected-single=true]:rounded-none data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground dark:hover:text-foreground [&>span]:text-xs [&>span]:opacity-70",
+        "relative isolate z-10 flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 rounded-none border-0 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-[3px] group-data-[focused=true]/day:ring-ring/50 data-[range-end=true]:rounded-none data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground data-[range-middle=true]:rounded-none data-[range-middle=true]:bg-muted data-[range-middle=true]:text-foreground data-[range-start=true]:rounded-none data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[selected-single=true]:rounded-none data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground dark:hover:text-foreground [&[data-range-end=true]_.activity-mark]:bg-primary-foreground [&[data-range-end=true]_.activity-mark]:ring-0 [&[data-range-start=true]_.activity-mark]:bg-primary-foreground [&[data-range-start=true]_.activity-mark]:ring-0 [&[data-selected-single=true]_.activity-mark]:bg-primary-foreground [&[data-selected-single=true]_.activity-mark]:ring-0 [&>span]:text-xs [&>span]:opacity-70",
+        boundaryDisabled &&
+          "cursor-not-allowed text-muted-foreground opacity-50",
         defaultClassNames.day,
         className
       )}
       {...props}
-    />
+      disabled={boundaryDisabled ? false : props.disabled}
+      aria-disabled={boundaryDisabled || undefined}
+      aria-label={accessibleLabel}
+      onClick={(event) => {
+        if (boundaryDisabled) {
+          event.preventDefault()
+          return
+        }
+        props.onClick?.(event)
+      }}
+      onKeyDown={(event) => {
+        if (
+          boundaryDisabled &&
+          (event.key === "Enter" || event.key === " ")
+        ) {
+          event.preventDefault()
+          return
+        }
+        props.onKeyDown?.(event)
+      }}
+    >
+      {props.children}
+      {hasData ? (
+        <span
+          aria-hidden="true"
+          className={cn(
+            calendarActivityMarkClass,
+            calendarActivityMarkInCellClass
+          )}
+        />
+      ) : null}
+    </Button>
   )
 }
 
-export { Calendar, CalendarDayButton }
+export { Calendar, CalendarDayButton, calendarActivityMarkClass }

@@ -12,31 +12,31 @@ import {
   UAH_SUFFIX,
 } from "@workspace/ui/components/report-metric"
 import { ReportCard } from "@workspace/ui/components/report-card"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
   formatRequestCountCaption,
   type IssuanceRequestBreakdownItem,
 } from "../lib/issuance-analytics"
-import { buildIssuanceBreakdownFillColors } from "../lib/issuance-breakdown-colors"
-import { getProjectLineDisplayName } from "../lib/project-display"
+import { buildIssuanceBreakdownFillColors, ISSUANCE_BREAKDOWN_PROJECT_COLOR_KEY } from "../lib/issuance-breakdown-colors"
 import {
+  ChartCursorTooltip,
   ReportChartTooltipBody,
-  reportChartTooltipContentClass,
 } from "./ReportChartTooltip"
-import { KpiGrid, reportIssuanceDesktopGridClass, reportIssuanceSplitColumnClass, SectionTitle } from "./report-ui"
+import {
+  KpiGrid,
+  reportIssuanceDesktopGridClass,
+  reportIssuanceSplitColumnClass,
+  SectionTitle,
+} from "./report-ui"
 
 type IssuanceSnapshotBlockProps = {
   totalPurchaseAmountUah: number
   closedRequestsCount: number
   lossesUsd: number
   breakdown: IssuanceRequestBreakdownItem[]
+  emptyMessage: string
+  isLoading?: boolean
   /** Render KPI column + chart as grid siblings (no outer wrapper). */
   bare?: boolean
   className?: string
@@ -44,6 +44,9 @@ type IssuanceSnapshotBlockProps = {
 
 const issuanceChartShellClassName =
   "min-h-0 min-w-0 gap-8 self-stretch overflow-hidden rounded-[var(--radius-report-lg)]"
+
+/** --muted-foreground дає лише 3.67:1 на цій картці, тож приглушуємо через --foreground. */
+const kpiLabelClassName = "font-normal text-foreground/70"
 
 function BreakdownChart({
   breakdown,
@@ -60,7 +63,9 @@ function BreakdownChart({
   const fillColors = useMemo(
     () =>
       buildIssuanceBreakdownFillColors(
-        visibleBreakdown.map((item) => item.fundraising)
+        visibleBreakdown.map(
+          (item) => ISSUANCE_BREAKDOWN_PROJECT_COLOR_KEY[item.project]
+        )
       ),
     [visibleBreakdown]
   )
@@ -76,50 +81,42 @@ function BreakdownChart({
 
         return (
           <MetricBarHorizontal
-            key={item.fundraising}
+            key={item.project}
             percent={item.share}
-            label={item.fundraising}
+            label={item.project}
             valueLabel={formatReportNumber(item.count)}
-            valueCaption={formatRequestCountCaption(item.count)}
+            valueClassName="text-background"
             fillColor={fillColor}
-            trackClassName="bg-current text-white/10"
+            trackClassName="bg-current text-white/10 transition-colors hover:text-white/20"
             renderFill={() => (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div
-                    className="size-full w-full min-w-0 cursor-default outline-none focus-visible:ring-2 focus-visible:ring-foreground/30"
-                    style={{
-                      backgroundColor: fillColor,
-                      borderRadius: METRIC_BAR_SOLID_RADIUS,
-                    }}
-                    aria-label={`Закритих запитів: ${formatReportNumber(item.count)} ${formatRequestCountCaption(item.count)}; Сума закупівель: ${formatReportNumber(item.amountUah)}${UAH_SUFFIX}`}
-                  />
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  sideOffset={8}
-                  hideArrow
-                  className={reportChartTooltipContentClass}
-                >
+              <div
+                className="size-full w-full min-w-0 transition-[filter] group-hover/bar:brightness-110 group-focus-visible/bar:brightness-110"
+                style={{
+                  backgroundColor: fillColor,
+                  borderRadius: METRIC_BAR_SOLID_RADIUS,
+                }}
+              />
+            )}
+            renderTrack={(track) => (
+              <ChartCursorTooltip
+                body={
                   <ReportChartTooltipBody
-                    title={item.fundraising}
+                    title={item.project}
                     rows={[
                       {
-                        label: "Проєкт",
-                        value: getProjectLineDisplayName(item.project),
-                      },
-                      {
                         label: "Закритих запитів",
-                        value: `${formatReportNumber(item.count)} ${formatRequestCountCaption(item.count)}`,
+                        value: formatReportNumber(item.count),
                       },
                       {
-                        label: "Сума закупівель",
+                        label: "На суму",
                         value: `${formatReportNumber(item.amountUah)}${UAH_SUFFIX}`,
                       },
                     ]}
                   />
-                </TooltipContent>
-              </Tooltip>
+                }
+              >
+                {track}
+              </ChartCursorTooltip>
             )}
           />
         )
@@ -137,6 +134,8 @@ export function IssuanceSnapshotBlock({
   closedRequestsCount,
   lossesUsd,
   breakdown,
+  emptyMessage,
+  isLoading = false,
   bare = false,
   className,
 }: IssuanceSnapshotBlockProps) {
@@ -157,6 +156,7 @@ export function IssuanceSnapshotBlock({
         <CurrencyMetric
           amount={totalPurchaseAmountUah}
           label="сума закупівель, ₴"
+          labelClassName={kpiLabelClassName}
           size="sm"
         />
       </ReportCard>
@@ -167,6 +167,7 @@ export function IssuanceSnapshotBlock({
           compact
           size="sm"
           label="збитки ворогу, $"
+          labelClassName={kpiLabelClassName}
           approximate
         />
       </ReportCard>
@@ -174,6 +175,7 @@ export function IssuanceSnapshotBlock({
         <DisplayMetric
           value={closedRequestsCount}
           label={`загалом закритих ${formatRequestCountCaption(closedRequestsCount)}`}
+          labelClassName={kpiLabelClassName}
           size="sm"
         />
       </ReportCard>
@@ -184,16 +186,17 @@ export function IssuanceSnapshotBlock({
     <ReportCard
       tone="muted"
       data-report-palette="shahedoriz"
+      aria-busy={isLoading}
       className={cn(reportIssuanceSplitColumnClass, issuanceChartShellClassName)}
     >
-      <SectionTitle className="shrink-0 text-background">
-        Закритих запитів за проєктами та зборами
+      <SectionTitle className="shrink-0 [font-family:var(--font-display-black)] text-background">
+        Закритих запитів за проєктами
       </SectionTitle>
-      {visibleBreakdown.length > 0 ? (
+      {!isLoading && visibleBreakdown.length > 0 ? (
         <BreakdownChart breakdown={breakdown} />
       ) : (
-        <p className="text-sm opacity-70">
-          За обраними фільтрами немає даних для розподілу.
+        <p role="status" className="text-sm text-background">
+          {isLoading ? "Завантажуємо розподіл…" : emptyMessage}
         </p>
       )}
     </ReportCard>
@@ -201,27 +204,25 @@ export function IssuanceSnapshotBlock({
 
   if (bare) {
     return (
-      <TooltipProvider>
+      <>
         {kpiColumn}
         {chartColumn}
-      </TooltipProvider>
+      </>
     )
   }
 
   return (
-    <TooltipProvider>
-      <div
-        data-slot="issuance-snapshot-block"
-        className={cn(
-          reportIssuanceDesktopGridClass,
-          "grid-cols-1 gap-y-(--report-control-gap) md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-stretch",
-          className
-        )}
-      >
-        {kpiColumn}
-        {chartColumn}
-      </div>
-    </TooltipProvider>
+    <div
+      data-slot="issuance-snapshot-block"
+      className={cn(
+        reportIssuanceDesktopGridClass,
+        "grid-cols-1 gap-y-(--report-control-gap) md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-stretch",
+        className
+      )}
+    >
+      {kpiColumn}
+      {chartColumn}
+    </div>
   )
 }
 

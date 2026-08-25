@@ -1,9 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useId, useMemo, useRef, useState } from "react"
 import { createPortal } from "react-dom"
-import { ChevronDownIcon } from "lucide-react"
+import { ChevronDownIcon, SearchIcon } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@workspace/ui/components/input-group"
 import {
   Popover,
   PopoverContent,
@@ -13,6 +18,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import {
   filterPopoverContentClass,
+  siteControlClass,
   siteFilterTriggerActiveClass,
   siteFilterTriggerClass,
   useFilterControlId,
@@ -26,6 +32,8 @@ export const PROJECT_UNAVAILABLE_TOOLTIP =
 
 const CURSOR_TOOLTIP_OFFSET = 12
 const CURSOR_TOOLTIP_SHOW_DELAY_MS = 200
+/** Дотик не має «leave», тож підказка ховається сама. */
+const CURSOR_TOOLTIP_TOUCH_HIDE_MS = 4000
 
 const cursorTooltipClassName =
   "pointer-events-none fixed z-[100] max-w-[13rem] rounded-md bg-foreground px-2 py-1 text-[0.6875rem] leading-snug text-background shadow-md"
@@ -39,6 +47,10 @@ type MultiSelectFilterProps = {
   /** Shown on hover/focus for disabled options. */
   disabledOptionTooltip?: string
   placeholder?: string
+  allSelectedLabel?: string
+  /** Пошук за опціями всередині дропдауну. */
+  searchable?: boolean
+  searchPlaceholder?: string
   className?: string
   id?: string
 }
@@ -50,12 +62,36 @@ export type MultiSelectFilterPanelProps = {
   disabledOptions?: readonly string[]
   disabledOptionTooltip?: string
   placeholder?: string
+  searchable?: boolean
+  searchPlaceholder?: string
   listClassName?: string
+  listId?: string
+  onRequestClose?: () => void
+  /** @deprecated The list-level action always has its own divider. */
   showSelectAllDivider?: boolean
 }
 
-function isAllSelected(options: readonly string[], selected: string[]): boolean {
-  return selected.length === options.length
+function isAllSelected(
+  options: readonly string[],
+  selected: string[]
+): boolean {
+  return (
+    options.length > 0 && options.every((option) => selected.includes(option))
+  )
+}
+
+function normalizeOptionText(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .trim()
+    .toLocaleLowerCase("uk")
+}
+
+function matchesOptionQuery(option: string, query: string): boolean {
+  const needle = normalizeOptionText(query)
+  if (!needle) return true
+  return normalizeOptionText(option).includes(needle)
 }
 
 export function isFilterSelectionActive(
@@ -68,13 +104,14 @@ export function isFilterSelectionActive(
 export function selectionLabel(
   options: readonly string[],
   selected: string[],
-  placeholder: string
+  placeholder: string,
+  allSelectedLabel = placeholder
 ): string {
-  if (isAllSelected(options, selected)) return placeholder
   if (selected.length === 0) return placeholder
+  if (isAllSelected(options, selected)) return allSelectedLabel
   if (selected.length === 1) return selected[0]!
-  if (selected.length === 2) return `${selected[0]}, ${selected[1]}`
-  return `${selected[0]} +${selected.length - 1}`
+  if (selected.length <= 3) return selected.join(", ")
+  return `Обрано ${selected.length.toLocaleString("uk-UA")}`
 }
 
 type FilterOptionRowProps = {
@@ -83,6 +120,10 @@ type FilterOptionRowProps = {
   checked: boolean
   disabledOptionTooltip?: string
   onToggle: () => void
+  onRequestClose?: () => void
+  optionRef: (node: HTMLElement | null) => void
+  tabIndex: number
+  onFocus: () => void
 }
 
 function FilterOptionRow({
@@ -91,19 +132,38 @@ function FilterOptionRow({
   checked,
   disabledOptionTooltip,
   onToggle,
+  onRequestClose,
+  optionRef,
+  tabIndex,
+  onFocus,
 }: FilterOptionRowProps) {
   const [cursor, setCursor] = useState<{ x: number; y: number } | null>(null)
   const latestPointerRef = useRef({ x: 0, y: 0 })
   const showTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const clearShowTimer = () => {
     if (showTimerRef.current) {
       clearTimeout(showTimerRef.current)
       showTimerRef.current = null
     }
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current)
+      hideTimerRef.current = null
+    }
   }
 
   useEffect(() => () => clearShowTimer(), [])
+
+  const showTooltipAt = (clientX: number, clientY: number) => {
+    clearShowTimer()
+    latestPointerRef.current = { x: clientX, y: clientY }
+    setCursor(latestPointerRef.current)
+    hideTimerRef.current = setTimeout(
+      () => setCursor(null),
+      CURSOR_TOOLTIP_TOUCH_HIDE_MS
+    )
+  }
 
   const handlePointerEnter = (clientX: number, clientY: number) => {
     latestPointerRef.current = { x: clientX, y: clientY }
@@ -127,7 +187,7 @@ function FilterOptionRow({
     "flex w-full items-center gap-2 rounded-md px-2 py-2 text-left",
     optionDisabled
       ? "cursor-not-allowed opacity-45"
-      : "hover:bg-muted cursor-pointer"
+      : "cursor-pointer hover:bg-muted"
   )
 
   const row = (
@@ -135,35 +195,68 @@ function FilterOptionRow({
       <Checkbox
         checked={checked}
         disabled={optionDisabled}
-        onCheckedChange={onToggle}
+        tabIndex={-1}
+        aria-hidden="true"
+        className="pointer-events-none"
       />
-      <span className="min-w-0 flex-1 text-sm [overflow-wrap:anywhere]">{option}</span>
+      <span className="line-clamp-2 min-w-0 flex-1 text-sm" title={option}>
+        {option}
+      </span>
     </>
   )
 
   if (!optionDisabled || !disabledOptionTooltip) {
     return (
-      <label aria-disabled={optionDisabled} className={rowClassName}>
+      <div
+        ref={optionRef}
+        role="option"
+        aria-selected={checked}
+        aria-disabled={optionDisabled}
+        tabIndex={tabIndex}
+        className={rowClassName}
+        onFocus={onFocus}
+        onClick={onToggle}
+        onKeyDown={(event) => {
+          if (event.key === " ") {
+            event.preventDefault()
+            onToggle()
+          } else if (event.key === "Enter") {
+            event.preventDefault()
+            onRequestClose?.()
+          }
+        }}
+      >
         {row}
-      </label>
+      </div>
     )
   }
 
   return (
     <>
       <span
-        tabIndex={0}
+        ref={optionRef}
+        role="option"
+        aria-selected={checked}
+        tabIndex={tabIndex}
         aria-disabled="true"
         aria-label={`${option}. ${disabledOptionTooltip}`}
         className={rowClassName}
         onMouseEnter={(event) =>
           handlePointerEnter(event.clientX, event.clientY)
         }
-        onMouseMove={(event) =>
-          handlePointerMove(event.clientX, event.clientY)
-        }
+        onMouseMove={(event) => handlePointerMove(event.clientX, event.clientY)}
         onMouseLeave={handlePointerLeave}
+        onPointerDown={(event) => {
+          if (event.pointerType === "mouse") return
+          showTooltipAt(event.clientX, event.clientY)
+        }}
+        onKeyDown={(event) => {
+          if (event.key !== "Escape" || !cursor) return
+          event.stopPropagation()
+          handlePointerLeave()
+        }}
         onFocus={(event) => {
+          onFocus()
           const rect = event.currentTarget.getBoundingClientRect()
           handlePointerEnter(
             rect.left + rect.width / 2,
@@ -199,64 +292,180 @@ export function MultiSelectFilterPanel({
   onChange,
   disabledOptions = [],
   disabledOptionTooltip = FUNDRAISER_UNAVAILABLE_TOOLTIP,
-  placeholder = "Усі",
+  searchable = false,
+  searchPlaceholder = "Пошук",
   listClassName,
-  showSelectAllDivider = true,
+  listId,
+  onRequestClose,
 }: MultiSelectFilterPanelProps) {
-  const allSelected = isAllSelected(options, selected)
-  const disabled = useMemo(
-    () => new Set(disabledOptions),
-    [disabledOptions]
+  const [query, setQuery] = useState("")
+  const [pinnedSelection] = useState(() => new Set(selected))
+  const [activeIndex, setActiveIndex] = useState(0)
+  const optionRefs = useRef<Array<HTMLElement | null>>([])
+  const searchRef = useRef<HTMLInputElement | null>(null)
+  const disabled = useMemo(() => new Set(disabledOptions), [disabledOptions])
+  const visibleOptions = useMemo(() => {
+    const matches = options.filter((option) =>
+      matchesOptionQuery(option, query)
+    )
+    const pinned = matches.filter((option) => pinnedSelection.has(option))
+    const unpinned = matches.filter((option) => !pinnedSelection.has(option))
+    return [...pinned, ...unpinned]
+  }, [options, pinnedSelection, query])
+  const hasQuery = query.trim().length > 0
+  const selectableOptions = useMemo(
+    () => visibleOptions.filter((option) => !disabled.has(option)),
+    [disabled, visibleOptions]
   )
+  const allVisibleSelected =
+    selectableOptions.length > 0 &&
+    selectableOptions.every((option) => selected.includes(option))
+  const pinnedVisibleCount = visibleOptions.filter((option) =>
+    pinnedSelection.has(option)
+  ).length
 
   const isDisabled = (value: string) => disabled.has(value)
 
   const toggleOption = (value: string) => {
     if (isDisabled(value)) return
 
-    if (allSelected) {
-      onChange([value])
-      return
-    }
-
     if (selected.includes(value)) {
-      const next = selected.filter((option) => option !== value)
-      onChange(next.length === 0 ? [...options] : next)
+      onChange(selected.filter((option) => option !== value))
       return
     }
 
-    const next = [...selected, value]
-    onChange(next.length === options.length ? [...options] : next)
+    onChange([...selected, value])
   }
 
-  const selectAll = () => onChange([...options])
+  const toggleVisible = () => {
+    if (selectableOptions.length === 0) return
+    if (allVisibleSelected) {
+      const visible = new Set(selectableOptions)
+      onChange(selected.filter((option) => !visible.has(option)))
+      return
+    }
+    onChange([
+      ...selected,
+      ...selectableOptions.filter((option) => !selected.includes(option)),
+    ])
+  }
+
+  const moveOptionFocus = (direction: 1 | -1) => {
+    if (visibleOptions.length === 0) return
+    const next =
+      (activeIndex + direction + visibleOptions.length) % visibleOptions.length
+    setActiveIndex(next)
+    optionRefs.current[next]?.focus()
+  }
+
+  useEffect(() => {
+    setActiveIndex((current) =>
+      Math.min(current, Math.max(visibleOptions.length - 1, 0))
+    )
+  }, [visibleOptions.length])
 
   return (
     <div className="flex flex-col gap-1">
-      <label className="hover:bg-muted flex cursor-pointer items-center gap-2 rounded-md px-2 py-2">
-        <Checkbox
-          checked={allSelected}
-          onCheckedChange={(checked) => {
-            if (checked) selectAll()
-          }}
-        />
-        <span className="text-sm font-medium">{placeholder}</span>
-      </label>
-      {showSelectAllDivider ? <div className="bg-border my-1 h-px" /> : null}
-      <div className={listClassName}>
-        {options.map((option) => {
-          const optionDisabled = isDisabled(option)
-          return (
-            <FilterOptionRow
-              key={option}
-              option={option}
-              optionDisabled={optionDisabled}
-              checked={!allSelected && selected.includes(option)}
-              disabledOptionTooltip={disabledOptionTooltip}
-              onToggle={() => toggleOption(option)}
-            />
-          )
-        })}
+      {searchable ? (
+        <InputGroup
+          className={cn(siteControlClass, "h-8 shrink-0 rounded-none")}
+        >
+          <InputGroupAddon>
+            <SearchIcon className="size-3.5 opacity-60" aria-hidden />
+          </InputGroupAddon>
+          <InputGroupInput
+            ref={searchRef}
+            type="search"
+            autoComplete="off"
+            autoFocus
+            placeholder={searchPlaceholder}
+            value={query}
+            aria-label={searchPlaceholder}
+            onChange={(event) => setQuery(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "ArrowDown") {
+                event.preventDefault()
+                setActiveIndex(0)
+                optionRefs.current[0]?.focus()
+              } else if (event.key === "ArrowUp") {
+                event.preventDefault()
+                const last = Math.max(visibleOptions.length - 1, 0)
+                setActiveIndex(last)
+                optionRefs.current[last]?.focus()
+              } else if (event.key === "Enter") {
+                event.preventDefault()
+                onRequestClose?.()
+              }
+            }}
+          />
+        </InputGroup>
+      ) : null}
+      <div className="border-b border-border pb-1">
+        <Button
+          type="button"
+          variant="ghost"
+          className="h-8 w-full justify-start px-2 text-sm font-medium"
+          onClick={toggleVisible}
+          disabled={selectableOptions.length === 0}
+        >
+          {visibleOptions.length > selectableOptions.length
+            ? allVisibleSelected
+              ? "Зняти всі доступні"
+              : "Обрати всі доступні"
+            : allVisibleSelected
+              ? "Зняти всі"
+              : "Обрати всі"}
+          {hasQuery
+            ? ` (${selectableOptions.length.toLocaleString("uk-UA")})`
+            : ""}
+        </Button>
+      </div>
+      <div
+        id={listId}
+        role="listbox"
+        aria-multiselectable="true"
+        className={listClassName}
+        onKeyDown={(event) => {
+          if (event.key === "ArrowDown") {
+            event.preventDefault()
+            moveOptionFocus(1)
+          } else if (event.key === "ArrowUp") {
+            event.preventDefault()
+            moveOptionFocus(-1)
+          }
+        }}
+      >
+        {options.length === 0 ? (
+          <p className="px-2 py-2 text-sm text-muted-foreground">Немає даних</p>
+        ) : visibleOptions.length === 0 ? (
+          <p className="px-2 py-2 text-sm text-muted-foreground">
+            Нічого не знайдено
+          </p>
+        ) : (
+          visibleOptions.map((option, index) => {
+            const optionDisabled = isDisabled(option)
+            return (
+              <div key={`${option}-${index}`} role="none">
+                {index === pinnedVisibleCount && pinnedVisibleCount > 0 ? (
+                  <div className="my-1 h-px bg-border" aria-hidden="true" />
+                ) : null}
+                <FilterOptionRow
+                  option={option}
+                  optionDisabled={optionDisabled}
+                  checked={selected.includes(option)}
+                  disabledOptionTooltip={disabledOptionTooltip}
+                  onToggle={() => toggleOption(option)}
+                  onRequestClose={onRequestClose}
+                  optionRef={(node) => {
+                    optionRefs.current[index] = node
+                  }}
+                  tabIndex={index === activeIndex ? 0 : -1}
+                  onFocus={() => setActiveIndex(index)}
+                />
+              </div>
+            )
+          })
+        )}
       </div>
     </div>
   )
@@ -269,18 +478,33 @@ export function MultiSelectFilter({
   disabledOptions = [],
   disabledOptionTooltip = FUNDRAISER_UNAVAILABLE_TOOLTIP,
   placeholder = "Усі",
+  allSelectedLabel = placeholder,
+  searchable = false,
+  searchPlaceholder = "Пошук",
   className,
   id,
 }: MultiSelectFilterProps) {
-  const controlId = useFilterControlId(id)
+  const generatedId = useId()
+  const controlId = useFilterControlId(id) ?? generatedId
+  const listId = `${controlId}-listbox`
+  const descriptionId = `${controlId}-selection-description`
+  const [open, setOpen] = useState(false)
   const isActive = isFilterSelectionActive(options, selected)
+  const selectedCount = selected.filter((option) =>
+    options.includes(option)
+  ).length
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           id={controlId}
           type="button"
+          role="combobox"
+          aria-expanded={open}
+          aria-haspopup="listbox"
+          aria-controls={listId}
+          aria-describedby={descriptionId}
           variant="outline"
           className={cn(
             siteFilterTriggerClass,
@@ -290,9 +514,17 @@ export function MultiSelectFilter({
           )}
         >
           <span className="truncate">
-            {selectionLabel(options, selected, placeholder)}
+            {selectionLabel(options, selected, placeholder, allSelectedLabel)}
           </span>
-          <ChevronDownIcon className="size-4 shrink-0 opacity-60" />
+          <ChevronDownIcon
+            className="size-4 shrink-0 opacity-60"
+            aria-hidden="true"
+          />
+          <span id={descriptionId} className="sr-only" aria-live="polite">
+            {selectedCount === 0
+              ? "Нічого не обрано"
+              : `Обрано ${selectedCount.toLocaleString("uk-UA")}`}
+          </span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className={filterPopoverContentClass} align="start">
@@ -303,7 +535,11 @@ export function MultiSelectFilter({
           disabledOptions={disabledOptions}
           disabledOptionTooltip={disabledOptionTooltip}
           placeholder={placeholder}
+          searchable={searchable}
+          searchPlaceholder={searchPlaceholder}
           listClassName="max-h-64 overflow-y-auto"
+          listId={listId}
+          onRequestClose={() => setOpen(false)}
         />
       </PopoverContent>
     </Popover>

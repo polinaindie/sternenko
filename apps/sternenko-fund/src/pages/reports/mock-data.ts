@@ -167,6 +167,17 @@ export const FUNDRAISING_TO_PROJECT: Record<
   "Небесна інвестиція": "Небесний",
 }
 
+/** У вивантаженні проєкт приходить або лінійкою, або назвою збору («ReDrone»). */
+export function toIssuanceProjectLine(name: string): IssuanceProjectLine | null {
+  if ((ISSUANCE_PROJECT_LINES as readonly string[]).includes(name)) {
+    return name as IssuanceProjectLine
+  }
+  if (name in FUNDRAISING_TO_PROJECT) {
+    return FUNDRAISING_TO_PROJECT[name as (typeof FUNDRAISINGS)[number]]
+  }
+  return null
+}
+
 /**
  * Пакетний знімок KPI закупівель — оновлюється на бекенді раз на день або тиждень,
  * не перераховується при зміні періоду чи фільтрів таблиці.
@@ -188,6 +199,8 @@ export const ISSUANCE_ROWS: IssuanceRow[] = applyIssuanceAttachmentSamples(
   expandIssuanceRowsForDemo(
     ISSUANCE_IMPORTED_ROWS.map((row) => ({
       ...row,
+      /** Нерозпізнану назву лишаємо як є, щоб рядок не зник із таблиці. */
+      project: toIssuanceProjectLine(row.project) ?? (row.project as IssuanceProjectLine),
       attachments: {
         media: [...row.attachments.media],
         act: [...row.attachments.act],
@@ -195,6 +208,15 @@ export const ISSUANCE_ROWS: IssuanceRow[] = applyIssuanceAttachmentSamples(
       },
     }))
   )
+)
+
+const ISSUANCE_PROJECTS_IN_DATA = new Set<string>(
+  ISSUANCE_ROWS.map((row) => row.project)
+)
+
+/** Опції фільтра «Проєкт» — лише лінійки, що є у вивантаженні. */
+export const ISSUANCE_PROJECT_OPTIONS = ISSUANCE_PROJECT_LINES.filter((line) =>
+  ISSUANCE_PROJECTS_IN_DATA.has(line)
 )
 
 // --- Результати за зборами --------------------------------------------------

@@ -266,8 +266,8 @@ export function IncomeTab({
   }, [sortedRows, page, pageSize])
 
   const activeFilterChips = useMemo(
-    () => buildIncomeFilterChips(appliedFilters),
-    [appliedFilters]
+    () => buildIncomeFilterChips(appliedFilters, filteredRows),
+    [appliedFilters, filteredRows]
   )
 
   const activeFilterCount =

@@ -35,23 +35,48 @@ export const filterPopoverContentClass =
 /** Label accent when a filter shows a narrowed selection (not the placeholder). */
 export const siteFilterTriggerActiveClass = "[&_span.truncate]:text-white"
 
+const FILTER_APPLY_DISABLED_HINT =
+  "Оберіть хоча б один параметр фільтрації, щоб застосувати."
+
 /** Primary apply action in a filter row — Wide Bold label, 10px padding. */
 export function FilterApplyButton({
   className,
   children = "Фільтрувати",
+  disabled = false,
+  onClick,
   ...props
 }: React.ComponentProps<typeof Button>) {
+  const hintId = useId()
+  const isDisabled = Boolean(disabled)
+
   return (
-    <Button
-      type="button"
-      className={cn(
-        "shrink-0 [font-family:var(--font-display-dark)] h-[38px] p-2.5 normal-case",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </Button>
+    <span className={cn("relative inline-flex shrink-0", className)}>
+      <Button
+        type="button"
+        aria-disabled={isDisabled}
+        aria-describedby={isDisabled ? hintId : undefined}
+        className={cn(
+          "h-[38px] w-full p-2.5 [font-family:var(--font-display-dark)] normal-case",
+          isDisabled && "cursor-not-allowed opacity-50"
+        )}
+        onClick={(event) => {
+          if (isDisabled) {
+            event.preventDefault()
+            event.stopPropagation()
+            return
+          }
+          onClick?.(event)
+        }}
+        {...props}
+      >
+        {children}
+      </Button>
+      {isDisabled ? (
+        <span id={hintId} className="sr-only">
+          {FILTER_APPLY_DISABLED_HINT}
+        </span>
+      ) : null}
+    </span>
   )
 }
 
@@ -196,6 +221,30 @@ export const reportIssuanceFilterRowClass = cn(
 export const reportIssuanceFilterGroupClass = cn(
   reportControlGapStyle,
   "flex min-w-0 items-end gap-(--report-control-gap)"
+)
+
+/**
+ * Issuance desktop filter row — дві половини по 50%, як у сітці віджетів нижче,
+ * щоб центральний стик полів стояв рівно над стиком колонок зі статистикою.
+ */
+export const reportIssuanceFilterFieldsGridClass = cn(
+  reportControlGapStyle,
+  "grid w-full min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-end gap-x-(--report-control-gap) [&>*]:min-w-0"
+)
+
+/** Ліва половина рядка фільтрів — два рівні поля. */
+export const reportIssuanceFilterHalfClass = cn(
+  reportControlGapStyle,
+  "grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-end gap-x-(--report-control-gap) [&>*]:min-w-0"
+)
+
+/**
+ * Права половина — два поля та кнопка «Фільтрувати» у власному треку,
+ * щоб довжина її підпису не змінювала ширину полів.
+ */
+export const reportIssuanceFilterHalfWithApplyClass = cn(
+  reportControlGapStyle,
+  "grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-end gap-x-(--report-control-gap) [&>*]:min-w-0"
 )
 
 export function FilterField({

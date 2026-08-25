@@ -22,6 +22,7 @@ type ReportFiltersPanelProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   activeFilterCount: number
+  applyDisabled?: boolean
   onApply: () => void
   onCancel: () => void
   onClearAll?: () => void
@@ -35,6 +36,7 @@ export function ReportFiltersPanel({
   open,
   onOpenChange,
   activeFilterCount,
+  applyDisabled = false,
   onApply,
   onCancel,
   onClearAll,
@@ -74,7 +76,7 @@ export function ReportFiltersPanel({
             Фільтри{countLabel}
           </span>
         </Button>
-        {activeFilterCount > 0 && onClearAll ? (
+        {onClearAll ? (
           <Button
             type="button"
             variant="ghost"
@@ -82,7 +84,7 @@ export function ReportFiltersPanel({
             className="h-10 shrink-0 px-2"
             onClick={onClearAll}
           >
-            Очистити всі
+            Скинути фільтри
           </Button>
         ) : null}
       </div>
@@ -103,8 +105,8 @@ export function ReportFiltersPanel({
               {title}
             </SheetTitle>
             <SheetDescription className="sr-only">
-              Оберіть параметри фільтрації. Натисніть «Фільтрувати», щоб застосувати, або
-              «Скасувати», щоб закрити без змін.
+              Оберіть параметри фільтрації та застосуйте зміни. Закриття панелі
+              зберігає чернетку фільтрів.
             </SheetDescription>
             <Button
               type="button"
@@ -127,13 +129,16 @@ export function ReportFiltersPanel({
               <FilterPopoverResetButton
                 type="button"
                 className="h-10"
-                onClick={onCancel}
+                onClick={onClearAll}
               >
-                Скасувати
+                Скинути фільтри
               </FilterPopoverResetButton>
-              <FilterApplyButton type="button" className="h-10 w-full" onClick={onApply}>
-                Фільтрувати
-              </FilterApplyButton>
+              <FilterApplyButton
+                type="button"
+                className="h-10 w-full"
+                onClick={onApply}
+                disabled={applyDisabled}
+              />
             </div>
           </div>
         </SheetContent>

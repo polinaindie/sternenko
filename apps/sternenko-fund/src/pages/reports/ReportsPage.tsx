@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 import {
   Tabs,
@@ -19,6 +19,10 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { defaultIncomePeriod } from "./lib/income-analytics"
 import { formatReportsDataUpdatedAt } from "./lib/reports-meta"
+import {
+  siteHeaderOffsetTopLgClass,
+  useStickyTabsHeightVar,
+} from "./lib/sticky-offsets"
 import { IncomeTab } from "./tabs/IncomeTab"
 import { IssuanceTab } from "./tabs/IssuanceTab"
 
@@ -30,6 +34,9 @@ export function ReportsPage() {
   const [activeTab, setActiveTab] = useState(
     INCOME_TAB_ENABLED ? "income" : "issuance"
   )
+  const tabsBarRef = useRef<HTMLDivElement>(null)
+
+  useStickyTabsHeightVar(tabsBarRef)
 
   const reportTabTriggerClass =
     "[font-family:var(--font-display-dark)] flex-none rounded-none px-0 pb-3 text-base text-muted-foreground after:z-10 after:bg-primary after:bottom-0 group-data-horizontal/tabs:after:bottom-0 data-active:text-accent dark:data-active:text-accent data-active:shadow-none md:text-lg"
@@ -55,7 +62,14 @@ export function ReportsPage() {
               setActiveTab(value)
             }}
           >
-            <div className="relative mb-2 w-full">
+            <div
+              ref={tabsBarRef}
+              className={cn(
+                "relative mb-2 w-full lg:sticky lg:z-40",
+                siteHeaderOffsetTopLgClass,
+                "lg:before:pointer-events-none lg:before:absolute lg:before:inset-x-0 lg:before:-top-4 lg:before:bottom-0 lg:before:-z-10 lg:before:bg-background lg:before:content-['']"
+              )}
+            >
               <TabsList
                 variant="line"
                 className="mb-0 h-auto w-full justify-start gap-8 rounded-none border-0 bg-transparent p-0"

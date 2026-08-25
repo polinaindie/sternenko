@@ -1,4 +1,4 @@
-import { FUNDRAISINGS } from "../mock-data"
+import { FUNDRAISINGS, type IssuanceProjectLine } from "../mock-data"
 import { BRAND_PALETTE } from "./brand-palette"
 
 const { yellow, orange, brown, green, blue, gray } = BRAND_PALETTE
@@ -40,6 +40,22 @@ export const ISSUANCE_BREAKDOWN_FUNDRAISING_OVERRIDES: Partial<
   "Небесний Русоріз": blue.mid,
   // ReDrone — коричневий з брендбуку.
   ReDrone: brown.main,
+}
+
+/**
+ * Лінійка проєкту → той самий ключ заливки, що був у діаграмі за зборами.
+ * «Поточний» не бере «Русоріз»: у даних це «Тотальний Русоріз», без оверрайду.
+ */
+export const ISSUANCE_BREAKDOWN_PROJECT_COLOR_KEY: Record<
+  IssuanceProjectLine,
+  (typeof FUNDRAISINGS)[number]
+> = {
+  Поточний: "Тотальний Русоріз",
+  Шахедоріз: "Шахедоріз",
+  Небесний: "Небесний Русоріз",
+  РеДрон: "ReDrone",
+  Секретний: "Секретний RUSORIZ",
+  Опторіз: "Опторіз",
 }
 
 export function getIssuanceBreakdownFillColorByRank(rank: number): string {

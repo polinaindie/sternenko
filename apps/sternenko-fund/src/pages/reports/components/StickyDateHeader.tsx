@@ -2,21 +2,12 @@ import { useEffect, useRef, useState } from "react"
 
 import { cn } from "@workspace/ui/lib/utils"
 
-const STICKY_DATE_TOP = "top-[var(--site-header-offset,4.75rem)]"
+import {
+  readSiteHeaderOffsetPx,
+  siteHeaderOffsetTopClass,
+} from "../lib/sticky-offsets"
 
-function readSiteHeaderOffsetPx(): number {
-  const raw = getComputedStyle(document.documentElement)
-    .getPropertyValue("--site-header-offset")
-    .trim()
-  if (!raw) return 62
-  if (raw.endsWith("rem")) {
-    const rem = parseFloat(raw)
-    const root = parseFloat(getComputedStyle(document.documentElement).fontSize)
-    return Number.isFinite(rem) && Number.isFinite(root) ? rem * root : 62
-  }
-  const px = parseFloat(raw)
-  return Number.isFinite(px) ? px : 62
-}
+const STICKY_DATE_TOP = siteHeaderOffsetTopClass
 
 /**
  * Sticky day label for responsive transaction lists.

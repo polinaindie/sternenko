@@ -21,6 +21,7 @@
     "@tabler/icons-react": "^3.44.0",
     "@workspace/tokens": "workspace:*",
     "@workspace/ui": "workspace:*",
+    "date-fns": "^4.4.0",
     "lucide-react": "^1.18.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
