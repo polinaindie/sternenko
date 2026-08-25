@@ -58,7 +58,10 @@ export function FilterChips({
           type="button"
           variant="ghost"
           size="sm"
-          className={siteControlClass}
+          className={cn(
+            siteControlClass,
+            "text-muted-foreground hover:text-foreground"
+          )}
           onClick={onClear}
         >
           {clearLabel}

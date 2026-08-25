@@ -117,7 +117,7 @@ function Calendar({
           defaultClassNames.range_end
         ),
         today: cn(
-          "rounded-none bg-muted text-foreground data-[selected=true]:rounded-none",
+          "rounded-none text-foreground data-[selected=true]:rounded-none",
           defaultClassNames.today
         ),
         outside: cn(
@@ -191,6 +191,16 @@ const calendarActivityMarkClass =
 const calendarActivityMarkInCellClass =
   "pointer-events-none absolute inset-x-0 bottom-0"
 
+/**
+ * Сьогодні — контурна рамка, а не заливка: заливка збігалася з серединою
+ * діапазону і день губився. На картці 3.87:1, на темній 5.7:1; коли день
+ * потрапляє в межу діапазону, рамка переходить на primary-foreground —
+ * 4.4:1 на жовтому (WCAG 1.4.11). Фокус лишається кільцем на 3px, тож
+ * позначку сьогодні з ним не сплутати.
+ */
+const calendarTodayMarkClass =
+  "outline-solid outline-1 -outline-offset-1 outline-foreground/60 data-[range-end=true]:outline-primary-foreground/70 data-[range-start=true]:outline-primary-foreground/70 data-[selected-single=true]:outline-primary-foreground/70"
+
 function CalendarDayButton({
   className,
   day,
@@ -200,14 +210,19 @@ function CalendarDayButton({
 }: React.ComponentProps<typeof DayButton> & { locale?: Partial<Locale> }) {
   const defaultClassNames = getDefaultClassNames()
   const hasData = Boolean(modifiers.has_data)
+  const isToday = Boolean(modifiers.today)
   const boundaryDisabled = Boolean(modifiers.boundary_disabled)
   const fallbackLabel = day.date.toLocaleDateString(locale?.code ?? "uk-UA", {
     day: "numeric",
     month: "long",
   })
-  const accessibleLabel = hasData
-    ? `${props["aria-label"] ?? fallbackLabel}, є закупівлі`
-    : props["aria-label"]
+  const baseLabel = props["aria-label"] ?? fallbackLabel
+  const accessibleLabel =
+    isToday || hasData
+      ? [baseLabel, isToday ? "сьогодні" : null, hasData ? "є закупівлі" : null]
+          .filter(Boolean)
+          .join(", ")
+      : props["aria-label"]
 
   const ref = React.useRef<HTMLButtonElement>(null)
   React.useEffect(() => {
@@ -232,6 +247,7 @@ function CalendarDayButton({
       data-has-data={hasData}
       className={cn(
         "relative isolate z-10 flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 rounded-none border-0 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-[3px] group-data-[focused=true]/day:ring-ring/50 data-[range-end=true]:rounded-none data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground data-[range-middle=true]:rounded-none data-[range-middle=true]:bg-muted data-[range-middle=true]:text-foreground data-[range-start=true]:rounded-none data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[selected-single=true]:rounded-none data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground dark:hover:text-foreground [&[data-range-end=true]_.activity-mark]:bg-primary-foreground [&[data-range-end=true]_.activity-mark]:ring-0 [&[data-range-start=true]_.activity-mark]:bg-primary-foreground [&[data-range-start=true]_.activity-mark]:ring-0 [&[data-selected-single=true]_.activity-mark]:bg-primary-foreground [&[data-selected-single=true]_.activity-mark]:ring-0 [&>span]:text-xs [&>span]:opacity-70",
+        isToday && calendarTodayMarkClass,
         boundaryDisabled &&
           "cursor-not-allowed text-muted-foreground opacity-50",
         defaultClassNames.day,

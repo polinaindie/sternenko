@@ -34,6 +34,23 @@ import {
 
 type DateRange = { from: Date; to: Date }
 
+const monthIndex = (date: Date) => date.getFullYear() * 12 + date.getMonth()
+
+const startOfMonth = (date: Date) =>
+  new Date(date.getFullYear(), date.getMonth(), 1)
+
+/**
+ * Календар відкривається на поточному місяці, але звітність закінчується датою
+ * оновлення даних — тому місяць «сьогодні» підтягуємо до вікна, щоб не показувати
+ * сітку, в якій жоден день не вибрати.
+ */
+function clampMonthToReporting(target: Date, start: Date, end: Date): Date {
+  const index = monthIndex(target)
+  if (index < monthIndex(start)) return startOfMonth(start)
+  if (index > monthIndex(end)) return startOfMonth(end)
+  return startOfMonth(target)
+}
+
 type DateRangeFilterProps = {
   value: DateRange
   onChange: (value: DateRange) => void
@@ -57,7 +74,12 @@ export function DateRangeFilter({
 }: DateRangeFilterProps) {
   const controlId = useFilterControlId(id)
   const [open, setOpen] = useState(false)
-  const [visibleMonth, setVisibleMonth] = useState(() => value.from)
+  /** Період за замовчуванням — це «нічого не обрано», тож показуємо сьогодні. */
+  const initialVisibleMonth = () =>
+    isDefaultPeriod
+      ? clampMonthToReporting(new Date(), reportingStart, reportingEnd)
+      : startOfMonth(value.from)
+  const [visibleMonth, setVisibleMonth] = useState(initialVisibleMonth)
   const [calendarRange, setCalendarRange] = useState<DayPickerDateRange>()
   const activeDateValues = useMemo(
     () =>
@@ -73,7 +95,7 @@ export function DateRangeFilter({
 
   useEffect(() => {
     if (!open) return
-    setVisibleMonth(value.from)
+    setVisibleMonth(initialVisibleMonth())
     setCalendarRange({ from: value.from, to: value.to })
     // Sync only when the popover opens, not while the user is picking dates.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -142,8 +164,8 @@ export function DateRangeFilter({
             onMonthChange={setVisibleMonth}
             locale={uk}
             captionLayout="dropdown"
-            fromYear={reportingStart.getFullYear()}
-            toYear={reportingEnd.getFullYear()}
+            startMonth={startOfMonth(reportingStart)}
+            endMonth={startOfMonth(reportingEnd)}
             modifiers={{
               has_data: activeDateValues,
               boundary_disabled: [
@@ -151,6 +173,8 @@ export function DateRangeFilter({
                 { after: reportingEnd },
               ],
             }}
+            /** Відступ тримає лише поповер, інакше сітка днів вужча за кнопки під нею. */
+            className="p-0"
             classNames={{ root: "w-full min-w-0" }}
           />
 
