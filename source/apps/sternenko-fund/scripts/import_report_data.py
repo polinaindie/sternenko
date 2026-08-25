@@ -8,9 +8,30 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 APP_ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = APP_ROOT.parents[2] / "sternenko" / "data"
-INCOME_CSV = DATA_DIR / "sqllab_untitled_query_1_20260706T131329.csv"
-ISSUANCE_CSV = DATA_DIR / "zvitnist_merged_2025-02_2026-05.csv"
+INCOME_CSV_NAME = "sqllab_untitled_query_1_20260706T131329.csv"
+ISSUANCE_CSV_NAME = "zvitnist_merged_2025-02_2026-05.csv"
+
+
+def find_data_dir() -> Path:
+    """
+    Вивантаження лежать поза застосунком: у корені звітного репозиторію (`data/`)
+    або в сусідньому `sternenko/data`, якщо монорепо тримають окремою теку.
+    Шукаємо вгору по дереву, щоб скрипт не залежав від того, де саме він лежить.
+    """
+    for base in (APP_ROOT, *APP_ROOT.parents):
+        for candidate in (base / "data", base / "sternenko" / "data"):
+            if (candidate / INCOME_CSV_NAME).is_file():
+                return candidate
+
+    raise SystemExit(
+        f"Не знайдено теку з вивантаженнями: очікуємо {INCOME_CSV_NAME} "
+        f"у «data/» одного з батьківських каталогів {APP_ROOT}."
+    )
+
+
+DATA_DIR = find_data_dir()
+INCOME_CSV = DATA_DIR / INCOME_CSV_NAME
+ISSUANCE_CSV = DATA_DIR / ISSUANCE_CSV_NAME
 OUT_INCOME_JSON = APP_ROOT / "public/data/income-transactions.json"
 OUT_ISSUANCE_TS = APP_ROOT / "src/pages/reports/data/issuance-rows.generated.ts"
 OUT_ISSUANCE_UNITS = APP_ROOT / "src/pages/reports/data/issuance-units.ts"
