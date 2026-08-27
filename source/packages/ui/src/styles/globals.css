@@ -63,6 +63,8 @@
     --font-sans: var(--font-sans);
     --shadow-card: var(--shadow-card);
     --animate-scroll-hint-chevron: scroll-hint-chevron 1.4s ease-in-out infinite;
+    --animate-scroll-hint-chevron-vertical: scroll-hint-chevron-vertical 1.4s
+        ease-in-out infinite;
 }
 
 @keyframes scroll-hint-chevron {
@@ -73,6 +75,18 @@
     }
     50% {
         transform: translateX(5px);
+        opacity: 1;
+    }
+}
+
+@keyframes scroll-hint-chevron-vertical {
+    0%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.55;
+    }
+    50% {
+        transform: translateY(5px);
         opacity: 1;
     }
 }

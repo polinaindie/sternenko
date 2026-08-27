@@ -5,6 +5,9 @@ import { cn } from "@workspace/ui/lib/utils"
 const METRIC_BAR_TRACK_HEIGHT = "6rem"
 const METRIC_BAR_HORIZONTAL_TRACK_HEIGHT = "1.5rem"
 const METRIC_BAR_HORIZONTAL_SOLID_HEIGHT = "2rem"
+const METRIC_BAR_STRETCH_MIN_ROW_HEIGHT = "2rem"
+/** 24px — мінімальна ціль вказівника (WCAG 2.2 SC 2.5.8), нижче ряд не тоншає. */
+const METRIC_BAR_STRETCH_MIN_TARGET_HEIGHT = "1.5rem"
 const METRIC_BAR_HORIZONTAL_LABEL_GAP = "8px"
 const METRIC_BAR_SOLID_RADIUS = "4px"
 const METRIC_BAR_HORIZONTAL_SOLID_COLUMNS =
@@ -21,6 +24,8 @@ type MetricBarGroupContextValue = {
   sharedGrid?: boolean
   /** Розтягнути ряди та треки на всю висоту контейнера списку. */
   stretchRows?: boolean
+  /** Підлога висоти розтягнутого треку. Нижче 1.5rem ряд перестає бути валідною ціллю вказівника. */
+  rowMinHeight?: string
 }
 
 const MetricBarGroupContext = React.createContext<MetricBarGroupContextValue>(
@@ -246,6 +251,7 @@ function MetricBarHorizontal({
   const resolvedVariant = variant ?? group.variant ?? "track"
   const resolvedMaxPercent = maxPercent ?? group.maxPercent
   const stretchRows = group.stretchRows ?? false
+  const rowMinHeight = group.rowMinHeight ?? METRIC_BAR_STRETCH_MIN_ROW_HEIGHT
   const clamped = Math.min(100, Math.max(0, percent))
   const fillWidth = resolvedMaxPercent
     ? normalizedHorizontalBarWidth(clamped, resolvedMaxPercent)
@@ -328,13 +334,14 @@ function MetricBarHorizontal({
         tabIndex={renderTrack ? 0 : undefined}
         className={cn(
           "group/bar relative w-full min-w-0 overflow-hidden",
-          stretchRows && "h-full min-h-8 self-stretch",
+          stretchRows && "h-full self-stretch",
           renderTrack &&
             "outline-none focus-visible:ring-2 focus-visible:ring-background/60",
           trackClassName ?? "bg-background/15"
         )}
         style={{
           height: stretchRows ? undefined : solidTrackHeight,
+          minHeight: stretchRows ? rowMinHeight : undefined,
           borderRadius: METRIC_BAR_SOLID_RADIUS,
         }}
       >
@@ -459,12 +466,15 @@ function MetricBarList({
   variant,
   maxPercent,
   stretchRows,
+  rowMinHeight,
   children,
   ...props
 }: React.ComponentProps<"div"> & {
   variant?: MetricBarVariant
   maxPercent?: number
   stretchRows?: boolean
+  /** Підлога висоти розтягнутого ряда — не нижче 1.5rem (WCAG 2.2 SC 2.5.8). */
+  rowMinHeight?: string
 }) {
   const isSolidGrid = variant === "solid"
 
@@ -494,6 +504,7 @@ function MetricBarList({
         maxPercent: resolvedMaxPercent,
         sharedGrid: isSolidGrid,
         stretchRows,
+        rowMinHeight,
       }}
     >
       <div
@@ -531,6 +542,8 @@ export {
   METRIC_BAR_HORIZONTAL_SOLID_COLUMNS,
   METRIC_BAR_HORIZONTAL_SOLID_HEIGHT,
   METRIC_BAR_SOLID_RADIUS,
+  METRIC_BAR_STRETCH_MIN_ROW_HEIGHT,
+  METRIC_BAR_STRETCH_MIN_TARGET_HEIGHT,
   METRIC_BAR_TRACK_HEIGHT,
   MetricBar,
   MetricBarGroup,

@@ -76,7 +76,7 @@ export function ReportFiltersPanel({
             Фільтри{countLabel}
           </span>
         </Button>
-        {onClearAll ? (
+        {onClearAll && activeFilterCount > 0 ? (
           <Button
             type="button"
             variant="ghost"
@@ -121,7 +121,7 @@ export function ReportFiltersPanel({
           </SheetHeader>
 
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-            <div className="flex flex-1 flex-col gap-4 overflow-y-auto overscroll-contain p-4">
+            <div className="flex flex-1 flex-col gap-4 overflow-y-auto overscroll-contain px-4 pt-6 pb-4">
               {children}
             </div>
 

@@ -17,6 +17,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { AmountRangeFilter } from "../components/AmountRangeFilter"
 import { DateRangeFilter } from "../components/DateRangeFilter"
+import { AppliedPeriodSummary } from "../components/AppliedPeriodSummary"
 import { FilterChips } from "../components/FilterChips"
 import { ReportFiltersPanel } from "../components/ReportFiltersPanel"
 import { FundraisingTag } from "../components/FundraisingTag"
@@ -59,6 +60,7 @@ import {
   createDefaultIncomeFilters,
   filterIncomeTransactions,
   formatIncomeDateTime,
+  hasActiveIncomeFilters,
   isDefaultIncomePeriod,
   removeIncomeFilterChip,
   summarizeIncome,
@@ -452,13 +454,16 @@ export function IncomeTab({
             />
           ) : null}
         </div>
-
-        <FilterChips
-          chips={activeFilterChips}
-          onRemove={removeFilterChip}
-          className="lg:hidden"
-        />
       </Stack>
+
+      <AppliedPeriodSummary
+        from={period.from}
+        to={period.to}
+        visible={
+          hasActiveIncomeFilters(appliedFilters) ||
+          !isDefaultIncomePeriod(period.from, period.to)
+        }
+      />
 
       <Stack className="gap-3">
         <IncomeMetricsCluster summary={summary} bare className="hidden lg:flex" />

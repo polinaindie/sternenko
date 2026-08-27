@@ -120,6 +120,16 @@ export const ISSUANCE_PROJECT_LINES = [
   "РеДрон",
   "Секретний",
   "Опторіз",
+  // ДЕМО: дев’ять вигаданих лінійок, щоб подивитись скрол на 15 барах.
+  "Оптоволокно",
+  "Перехоплювач",
+  "Нічний вихід",
+  "Глушник",
+  "Наземка",
+  "Ретранслятор",
+  "Тепловізор",
+  "Зв’язок",
+  "Логістика",
 ] as const
 
 export type IssuanceProjectLine = (typeof ISSUANCE_PROJECT_LINES)[number]
@@ -195,12 +205,52 @@ export const ISSUANCE_SNAPSHOT: IssuanceSnapshot = {
 }
 
 
+/**
+ * ДЕМО: ваги розподілу закупівель по 12 лінійках (у відсотках, сума 100).
+ * Дає довгий хвіст із двома однопроцентними лінійками — найгірший випадок
+ * для читабельності діаграми.
+ */
+const DEMO_PROJECT_WEIGHTS: ReadonlyArray<[IssuanceProjectLine, number]> = [
+  ["Поточний", 25],
+  ["Опторіз", 14],
+  ["Небесний", 11],
+  ["Шахедоріз", 9],
+  ["РеДрон", 8],
+  ["Секретний", 7],
+  ["Оптоволокно", 6],
+  ["Перехоплювач", 5],
+  ["Нічний вихід", 4],
+  ["Глушник", 3],
+  ["Наземка", 3],
+  ["Ретранслятор", 2],
+  ["Тепловізор", 1],
+  ["Зв’язок", 1],
+  ["Логістика", 1],
+]
+
+const DEMO_PROJECT_BUCKETS = DEMO_PROJECT_WEIGHTS.reduce<
+  { project: IssuanceProjectLine; upTo: number }[]
+>((acc, [project, weight]) => {
+  const previous = acc.length > 0 ? acc[acc.length - 1]!.upTo : 0
+  acc.push({ project, upTo: previous + weight })
+  return acc
+}, [])
+
+/** ДЕМО: детерміновано за позицією рядка, щоб знімки були стабільні. */
+function demoProjectLine(index: number): IssuanceProjectLine {
+  const slot = index % 100
+  return (
+    DEMO_PROJECT_BUCKETS.find((bucket) => slot < bucket.upTo)?.project ??
+    "Поточний"
+  )
+}
+
 export const ISSUANCE_ROWS: IssuanceRow[] = applyIssuanceAttachmentSamples(
   expandIssuanceRowsForDemo(
-    ISSUANCE_IMPORTED_ROWS.map((row) => ({
+    ISSUANCE_IMPORTED_ROWS.map((row, index) => ({
       ...row,
-      /** Нерозпізнану назву лишаємо як є, щоб рядок не зник із таблиці. */
-      project: toIssuanceProjectLine(row.project) ?? (row.project as IssuanceProjectLine),
+      // ДЕМО: перекриває проєкт із вивантаження, щоб побачити 12 барів.
+      project: demoProjectLine(index),
       attachments: {
         media: [...row.attachments.media],
         act: [...row.attachments.act],

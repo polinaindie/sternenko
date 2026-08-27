@@ -1,6 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { MetricBar, MetricBarGroup, MetricBarHorizontal, MetricBarList } from "@workspace/ui/components/metric-bar"
+import {
+  METRIC_BAR_SOLID_RADIUS,
+  METRIC_BAR_STRETCH_MIN_ROW_HEIGHT,
+  METRIC_BAR_STRETCH_MIN_TARGET_HEIGHT,
+  MetricBar,
+  MetricBarGroup,
+  MetricBarHorizontal,
+  MetricBarList,
+} from "@workspace/ui/components/metric-bar"
 import { ReportCard } from "@workspace/ui/components/report-card"
 
 const meta = {
@@ -52,6 +60,105 @@ export const WithValues: Story = {
         <MetricBar percent={12} valueLabel="637" label="інших" />
       </MetricBarGroup>
     </ReportCard>
+  ),
+}
+
+/**
+ * Щільність розтягнутого списку. Понад шість рядів висоти картки вже не
+ * вистачає, тож ряди сідають на підлогу 24px — мінімальну ціль вказівника
+ * (WCAG 2.2 SC 2.5.8) — і далі росте картка, а не тоншають бари.
+ */
+const DENSE_ROWS = [
+  { label: "Поточний", count: 412, share: 30, fill: "#FFE69C" },
+  { label: "Опторіз", count: 220, share: 16, fill: "#FFB79D" },
+  { label: "Небесний", count: 165, share: 12, fill: "#D1BFA6" },
+  { label: "Шахедоріз", count: 137, share: 10, fill: "#B4C1A9" },
+  { label: "РеДрон", count: 124, share: 9, fill: "#66D2ED" },
+  { label: "Секретний", count: 96, share: 7, fill: "#F5F1E1" },
+  { label: "Оптичний", count: 69, share: 5, fill: "#FEE5DC" },
+  { label: "Дронвестиція", count: 55, share: 4, fill: "#F0E9E1" },
+  { label: "Перехоплення", count: 41, share: 3, fill: "#E9ECE5" },
+  { label: "Грім", count: 27, share: 2, fill: "#E1F5FA" },
+  { label: "Небесна інвестиція", count: 14, share: 1, fill: "#D9D9D9" },
+  { label: "Тотальний", count: 12, share: 1, fill: "#FFD23F" },
+]
+
+function DensityCard({
+  rowCount,
+  height,
+}: {
+  rowCount: number
+  height: number
+}) {
+  const rows = DENSE_ROWS.slice(0, rowCount)
+  const dense = rowCount > 6
+
+  return (
+    <div className="flex min-w-0 flex-1 flex-col gap-2">
+      <p className="text-background/70 text-xs">
+        {rowCount} рядів · трек ≥{" "}
+        {dense
+          ? METRIC_BAR_STRETCH_MIN_TARGET_HEIGHT
+          : METRIC_BAR_STRETCH_MIN_ROW_HEIGHT}
+      </p>
+      <ReportCard
+        tone="muted"
+        data-report-palette="shahedoriz"
+        className="min-h-0 min-w-0 gap-8 overflow-hidden"
+        style={{ height }}
+      >
+        <h2 className="text-background shrink-0 [font-family:var(--font-display-black)]">
+          Закритих запитів за проєктами
+        </h2>
+        <MetricBarList
+          variant="solid"
+          stretchRows
+          rowMinHeight={
+            dense
+              ? METRIC_BAR_STRETCH_MIN_TARGET_HEIGHT
+              : METRIC_BAR_STRETCH_MIN_ROW_HEIGHT
+          }
+          className={dense ? "min-h-0 flex-1 gap-y-1" : "min-h-0 flex-1"}
+        >
+          {rows.map((row) => (
+            <MetricBarHorizontal
+              key={row.label}
+              percent={row.share}
+              label={row.label}
+              labelClassName={dense ? "max-w-36 [&>span]:truncate" : undefined}
+              valueLabel={String(row.count)}
+              valueClassName="text-background"
+              fillColor={row.fill}
+              trackClassName="bg-current text-white/10"
+              renderFill={() => (
+                <div
+                  className="size-full w-full min-w-0"
+                  style={{
+                    backgroundColor: row.fill,
+                    borderRadius: METRIC_BAR_SOLID_RADIUS,
+                  }}
+                />
+              )}
+            />
+          ))}
+        </MetricBarList>
+      </ReportCard>
+    </div>
+  )
+}
+
+/**
+ * До шести рядів картка тримає задану висоту 367px і ряди розтягуються.
+ * На дванадцяти ряди впираються в 24px, і картці потрібно вже 430px.
+ */
+export const SolidBreakdownDensity: Story = {
+  args: { percent: 0 },
+  render: () => (
+    <div className="bg-foreground text-background flex w-full max-w-6xl flex-col gap-6 p-6 md:flex-row md:items-start">
+      <DensityCard rowCount={5} height={367} />
+      <DensityCard rowCount={7} height={367} />
+      <DensityCard rowCount={12} height={430} />
+    </div>
   ),
 }
 

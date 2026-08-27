@@ -25,6 +25,7 @@ import {
   type TransferMediaItem,
 } from "../components/AttachmentViewer"
 import { DateRangeFilter } from "../components/DateRangeFilter"
+import { AppliedPeriodSummary } from "../components/AppliedPeriodSummary"
 import { FilterChips } from "../components/FilterChips"
 import { ReportFiltersPanel } from "../components/ReportFiltersPanel"
 import { FundraisingTag } from "../components/FundraisingTag"
@@ -504,8 +505,6 @@ export function IssuanceTab() {
               />
             </FilterField>
           </ReportFiltersPanel>
-
-          <FilterChips chips={activeFilterChips} onRemove={removeFilterChip} />
         </Stack>
 
         <StickyFilterBar className="hidden lg:block">
@@ -578,6 +577,12 @@ export function IssuanceTab() {
             ) : null}
           </div>
         </StickyFilterBar>
+
+        <AppliedPeriodSummary
+          from={appliedFilters.from}
+          to={appliedFilters.to}
+          visible={hasIssuanceFilterSelection(appliedFilters)}
+        />
 
         <p
           className="sr-only"
