@@ -16,6 +16,11 @@ describe("project-display", () => {
     expect(getProjectDisplayName("Шахедоріз")).toBe("Шахедоріз")
   })
 
+  it("shows a hyphen when the fundraising is missing", () => {
+    expect(getProjectDisplayName("—")).toBe("-")
+    expect(getProjectDisplayName("")).toBe("-")
+  })
+
   it("resolves project lines from fundraisings", () => {
     expect(resolveProjectLine("ReDrone")).toBe("РеДрон")
     expect(resolveProjectLine("Поточний")).toBe("Поточний")

@@ -1,3 +1,5 @@
+import { EMPTY_TABLE_VALUE } from "./empty-table-value"
+
 /** Латинська i всередині кириличних слів (банківські виписки) → і. */
 function normalizeIncomeCommentScript(text: string): string {
   return text.replace(/(?<=[\u0400-\u04FF])i(?=[\u0400-\u04FF])/g, "і")
@@ -60,5 +62,5 @@ function isLikelyPersonalNameOnly(text: string): boolean {
 /** Публічний коментар для таблиці; без імен, телефонів і ідентифікаторів. */
 export function formatIncomeCommentDisplay(raw: string | undefined): string {
   const sanitized = sanitizeIncomeComment(raw ?? "")
-  return sanitized || "—"
+  return sanitized || EMPTY_TABLE_VALUE
 }

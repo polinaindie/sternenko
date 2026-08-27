@@ -1,5 +1,6 @@
 import { cn } from "@workspace/ui/lib/utils"
 
+import { EMPTY_TABLE_VALUE } from "../lib/empty-table-value"
 import { formatIncomeCommentDisplay } from "../lib/income-comment-display"
 import { reportTxCellCommentTone } from "./report-transaction-table-styles"
 
@@ -12,7 +13,7 @@ type IncomeCommentCellProps = {
 
 export function IncomeCommentCell({ comment, className }: IncomeCommentCellProps) {
   const display = formatIncomeCommentDisplay(comment)
-  const hidden = display === "—"
+  const hidden = display === EMPTY_TABLE_VALUE
 
   return (
     <span

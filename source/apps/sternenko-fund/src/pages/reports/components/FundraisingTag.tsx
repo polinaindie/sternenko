@@ -1,5 +1,6 @@
 import { cn } from "@workspace/ui/lib/utils"
 
+import { EMPTY_TABLE_VALUE, isEmptyTableValue } from "../lib/empty-table-value"
 import { getProjectDisplayName } from "../lib/project-display"
 
 type FundraisingTagProps = {
@@ -19,8 +20,15 @@ export function FundraisingTag({
   nowrap = false,
   variant = "text",
 }: FundraisingTagProps) {
-  if (name === "—") {
-    return <span className={cn("text-muted-foreground", className)}>—</span>
+  if (isEmptyTableValue(name)) {
+    return (
+      <span
+        className={cn("text-[var(--report-surface-foreground)]", className)}
+        aria-label="Проєкт не вказано"
+      >
+        {EMPTY_TABLE_VALUE}
+      </span>
+    )
   }
 
   const label = getProjectDisplayName(name)

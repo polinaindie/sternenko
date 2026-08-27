@@ -68,6 +68,7 @@ import {
 import {
   pruneProjectFundraiserFilters,
 } from "../lib/filter-availability"
+import { formatTableCellValue } from "../lib/empty-table-value"
 import { cycleColumnSort, resolveSortKey } from "../lib/table-sort"
 import { IncomeCommentCell } from "../components/IncomeCommentCell"
 import { FUNDRAISINGS, INCOME_SOURCES, ISSUANCE_PROJECT_LINES, type ChartGranularity } from "../mock-data"
@@ -561,7 +562,7 @@ export function IncomeTab({
                         {formatIncomeDateTime(row.at)}
                       </ReportTableCell>
                       <ReportTableCell className={incomeCellSource}>
-                        {row.source}
+                        {formatTableCellValue(row.source)}
                       </ReportTableCell>
                       <ReportTableCell className={incomeCellAmount}>
                         {formatReportNumber(row.amount)}

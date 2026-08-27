@@ -81,6 +81,11 @@ import {
   computeIssuanceDateCells,
   computeIssuanceDateGroupStripes,
 } from "../lib/issuance-table-dates"
+import {
+  EMPTY_TABLE_VALUE,
+  formatTableCellValue,
+  isEmptyTableValue,
+} from "../lib/empty-table-value"
 import { cycleColumnSort, resolveSortKey } from "../lib/table-sort"
 import {
   ISSUANCE_PROJECT_OPTIONS,
@@ -245,6 +250,12 @@ function initialIssuanceFiltersFromUrl(): {
 
 /** Кому передали: номер підрозділу жирним, назва — звичайно. */
 function RecipientCell({ value }: { value: string }) {
+  if (isEmptyTableValue(value)) {
+    return (
+      <span aria-label="Одержувача не вказано">{EMPTY_TABLE_VALUE}</span>
+    )
+  }
+
   const lastComma = value.lastIndexOf(",")
   const unit = lastComma === -1 ? value : value.slice(0, lastComma).trim()
   const unitMatch = unit.match(/^(\d+)\s+([\s\S]*)$/)
@@ -753,7 +764,7 @@ export function IssuanceTab() {
                           <ReportTableCell
                             className={cn("!px-1.5 md:!px-2", issuanceCellWrap)}
                           >
-                            {row.productName}
+                            {formatTableCellValue(row.productName)}
                           </ReportTableCell>
                           <ReportTableCell
                             className={cn(

@@ -4,6 +4,7 @@ import { formatReportNumber } from "@workspace/ui/components/report-metric"
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { IncomeTransaction } from "../data/income-transactions"
+import { formatTableCellValue } from "../lib/empty-table-value"
 import { formatIncomeDateParts } from "../lib/income-analytics"
 import { IncomeCommentCell } from "./IncomeCommentCell"
 import { FundraisingTag } from "./FundraisingTag"
@@ -73,7 +74,7 @@ function IncomeCompactCard({ row }: { row: IncomeTransaction }) {
         <div className="flex min-w-0 flex-col gap-3">
           <div className="min-w-0">
             <p className="text-lg leading-snug font-semibold break-words text-[var(--report-surface-foreground)]">
-              {row.source}
+              {formatTableCellValue(row.source)}
             </p>
             <p className={cn("mt-0.5 tabular-nums", secondaryTextClass)}>{time}</p>
           </div>

@@ -12,6 +12,11 @@ import type {
 import { FundraisingTag } from "./FundraisingTag"
 import { AttachmentButton } from "./report-ui"
 import { StickyDateHeader } from "./StickyDateHeader"
+import {
+  EMPTY_TABLE_VALUE,
+  formatTableCellValue,
+  isEmptyTableValue,
+} from "../lib/empty-table-value"
 import type { IssuanceRow } from "../mock-data"
 
 type IssuanceTransactionsCompactTableProps = {
@@ -47,6 +52,12 @@ function groupRowsByDate(rows: IssuanceRow[]) {
 }
 
 function RecipientCell({ value }: { value: string }) {
+  if (isEmptyTableValue(value)) {
+    return (
+      <span aria-label="Одержувача не вказано">{EMPTY_TABLE_VALUE}</span>
+    )
+  }
+
   const lastComma = value.lastIndexOf(",")
   const unit = lastComma === -1 ? value : value.slice(0, lastComma).trim()
   const unitMatch = unit.match(/^(\d+)\s+([\s\S]*)$/)
@@ -95,8 +106,7 @@ function AttachmentTile({
         "border border-[color-mix(in_oklch,var(--report-surface-foreground)_8%,transparent)]",
         "px-1.5 py-2",
         "[&_button]:size-10 [&_button]:text-[var(--report-surface-foreground)]",
-        "[&_button]:hover:bg-[color-mix(in_oklch,var(--report-surface-foreground)_12%,transparent)]",
-        "[&_span[aria-hidden]]:text-[color-mix(in_oklch,var(--report-surface-foreground)_45%,transparent)]"
+        "[&_button]:hover:bg-[color-mix(in_oklch,var(--report-surface-foreground)_12%,transparent)]"
       )}
     >
       <div className="flex min-h-10 min-w-10 items-center justify-center [&_svg]:size-5">
@@ -197,7 +207,7 @@ function IssuanceCompactCard({
           <div className="flex min-w-0 flex-1 flex-col gap-3">
             <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
               <p className="min-w-0 text-lg leading-snug font-semibold break-words text-[var(--report-surface-foreground)]">
-                {row.productName}
+                {formatTableCellValue(row.productName)}
               </p>
               <div className="min-w-0 sm:shrink-0 sm:text-right">
                 <AmountBlock row={row} />

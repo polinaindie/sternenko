@@ -10,6 +10,7 @@ import {
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { EMPTY_TABLE_VALUE } from "../lib/empty-table-value"
 import type { ChartGranularity } from "../mock-data"
 
 const FilterControlIdContext = createContext<string | undefined>(undefined)
@@ -416,7 +417,17 @@ export function AttachmentButton({
 
   if (!available) {
     if (!pending) {
-      return <span aria-hidden className={cn("inline-flex", sizeClass)} />
+      return (
+        <span
+          className={cn(
+            "inline-flex items-center justify-center tabular-nums text-[var(--report-surface-foreground)]",
+            sizeClass
+          )}
+          aria-label={`${label}: немає`}
+        >
+          {EMPTY_TABLE_VALUE}
+        </span>
+      )
     }
 
     return (

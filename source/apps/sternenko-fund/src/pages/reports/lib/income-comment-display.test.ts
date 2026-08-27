@@ -75,6 +75,6 @@ describe("income comment display", () => {
   })
 
   it("returns dash when only personal data remains", () => {
-    expect(formatIncomeCommentDisplay("Гох Максим Iгорович")).toBe("—")
+    expect(formatIncomeCommentDisplay("Гох Максим Iгорович")).toBe("-")
   })
 })
