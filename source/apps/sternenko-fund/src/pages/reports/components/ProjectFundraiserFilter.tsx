@@ -9,10 +9,8 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
-  FUNDRAISER_UNAVAILABLE_TOOLTIP,
   isFilterSelectionActive,
   MultiSelectFilterPanel,
-  PROJECT_UNAVAILABLE_TOOLTIP,
   selectionLabel,
 } from "./MultiSelectFilter"
 import {
@@ -26,11 +24,9 @@ type ProjectFundraiserFilterProps = {
   projectOptions: readonly string[]
   projects: string[]
   onProjectsChange: (projects: string[]) => void
-  disabledProjects?: readonly string[]
   fundraisingOptions: readonly string[]
   fundraisings: string[]
   onFundraisingsChange: (fundraisings: string[]) => void
-  disabledFundraisings?: readonly string[]
   className?: string
   id?: string
 }
@@ -69,11 +65,9 @@ export function ProjectFundraiserFilter({
   projectOptions,
   projects,
   onProjectsChange,
-  disabledProjects = [],
   fundraisingOptions,
   fundraisings,
   onFundraisingsChange,
-  disabledFundraisings = [],
   className,
   id,
 }: ProjectFundraiserFilterProps) {
@@ -115,8 +109,6 @@ export function ProjectFundraiserFilter({
               options={projectOptions}
               selected={projects}
               onChange={onProjectsChange}
-              disabledOptions={disabledProjects}
-              disabledOptionTooltip={PROJECT_UNAVAILABLE_TOOLTIP}
               placeholder="Усі проєкти"
               showSelectAllDivider={false}
             />
@@ -128,8 +120,6 @@ export function ProjectFundraiserFilter({
               options={fundraisingOptions}
               selected={fundraisings}
               onChange={onFundraisingsChange}
-              disabledOptions={disabledFundraisings}
-              disabledOptionTooltip={FUNDRAISER_UNAVAILABLE_TOOLTIP}
               placeholder="Усі збори"
               showSelectAllDivider={false}
             />

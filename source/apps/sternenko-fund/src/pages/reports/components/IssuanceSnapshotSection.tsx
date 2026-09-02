@@ -12,6 +12,7 @@ type IssuanceSnapshotSectionProps = {
   rows: IssuanceRow[]
   /** Конкретне пояснення замість порожньої діаграми. */
   emptyMessage: string
+  onResetFilters?: () => void
   isLoading?: boolean
   /** Render KPI column + chart as grid siblings (no outer wrapper). */
   bare?: boolean
@@ -21,6 +22,7 @@ type IssuanceSnapshotSectionProps = {
 export function IssuanceSnapshotSection({
   rows,
   emptyMessage,
+  onResetFilters,
   isLoading = false,
   bare = false,
   className,
@@ -41,6 +43,7 @@ export function IssuanceSnapshotSection({
       lossesUsd={kpis.lossesUsd}
       breakdown={requestBreakdown}
       emptyMessage={emptyMessage}
+      onResetFilters={onResetFilters}
       isLoading={isLoading}
     />
   )

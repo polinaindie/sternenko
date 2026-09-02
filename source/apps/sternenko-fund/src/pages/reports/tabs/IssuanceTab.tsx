@@ -26,7 +26,7 @@ import {
 } from "../components/AttachmentViewer"
 import { DateRangeFilter } from "../components/DateRangeFilter"
 import { AppliedPeriodSummary } from "../components/AppliedPeriodSummary"
-import { FilterChips } from "../components/FilterChips"
+import { FilterChips, type FilterChip } from "../components/FilterChips"
 import { ReportFiltersPanel } from "../components/ReportFiltersPanel"
 import { FundraisingTag } from "../components/FundraisingTag"
 import { IssuanceSnapshotSection } from "../components/IssuanceSnapshotSection"
@@ -42,7 +42,7 @@ import {
   AttachmentButton,
   FilterApplyButton,
   FilterField,
-  FilterPopoverResetButton,
+  ResetAllFiltersButton,
   reportIssuanceDesktopGridClass,
   reportIssuanceFilterFieldsGridClass,
   reportIssuanceFilterHalfClass,
@@ -65,18 +65,24 @@ import {
 } from "../components/report-transaction-table-styles"
 import {
   buildIssuanceFilterChips,
-  buildIssuanceEmptyStateMessage,
   collectIssuanceActiveDates,
+  collectIssuanceProductNames,
+  computeIssuanceCrossCounts,
   createDefaultIssuanceFilters,
   filterIssuanceResult,
   hasActiveIssuanceFilters,
   hasIssuanceFilterSelection,
   isDefaultIssuancePeriod,
   isSameIssuanceFilters,
+  ISSUANCE_EMPTY_FILTERS_MESSAGE,
   removeIssuanceFilterChip,
-  type IssuanceFilterChip,
   type IssuanceFilters,
 } from "../lib/issuance-analytics"
+import {
+  buildIssuanceFiltersQuery,
+  parseIssuanceFiltersFromQuery,
+} from "../lib/issuance-filters-url"
+import { reloadReportsWithQuery } from "../lib/reports-reload"
 import {
   computeIssuanceDateCells,
   computeIssuanceDateGroupStripes,
@@ -93,6 +99,8 @@ import {
   ISSUANCE_UNITS,
   REPORTS_DATA_UPDATED_AT,
 } from "../mock-data"
+
+const ISSUANCE_PRODUCT_NAMES = collectIssuanceProductNames(ISSUANCE_ROWS)
 
 /** Заголовки — один рядок, повна назва стовпця без обрізання (типографіка — reportTableHeadClass). */
 const issuanceHead = reportTxHead
@@ -209,51 +217,18 @@ type ViewerState = {
   documentItems?: DocumentAttachmentItem[]
 }
 
-function initialIssuanceFiltersFromUrl(): {
-  filters: ReturnType<typeof createDefaultIssuanceFilters>
-  dropped: string[]
-} {
-  const filters = createDefaultIssuanceFilters()
-  if (typeof window === "undefined") return { filters, dropped: [] }
-
-  const params = new URLSearchParams(window.location.search)
-  const requestedProjects = [
-    ...params.getAll("project"),
-    ...params.getAll("projects"),
-  ]
-  const requestedUnits = [...params.getAll("unit"), ...params.getAll("units")]
-  const projects = requestedProjects.filter((value) =>
-    (ISSUANCE_PROJECT_OPTIONS as readonly string[]).includes(value)
-  ) as typeof filters.projects
-  const units = requestedUnits.filter((value) =>
-    (ISSUANCE_UNITS as readonly string[]).includes(value)
-  )
-  const dropped = [
-    ...requestedProjects.filter(
-      (value) =>
-        !(ISSUANCE_PROJECT_OPTIONS as readonly string[]).includes(value)
-    ),
-    ...requestedUnits.filter(
-      (value) => !(ISSUANCE_UNITS as readonly string[]).includes(value)
-    ),
-  ]
-
-  return {
-    filters: {
-      ...filters,
-      projects: requestedProjects.length > 0 ? projects : filters.projects,
-      units: requestedUnits.length > 0 ? units : filters.units,
-    },
-    dropped,
+function initialIssuanceFiltersFromUrl() {
+  if (typeof window === "undefined") {
+    return { filters: createDefaultIssuanceFilters(), dropped: [] as string[] }
   }
+
+  return parseIssuanceFiltersFromQuery(window.location.search)
 }
 
 /** Кому передали: номер підрозділу жирним, назва — звичайно. */
 function RecipientCell({ value }: { value: string }) {
   if (isEmptyTableValue(value)) {
-    return (
-      <span aria-label="Одержувача не вказано">{EMPTY_TABLE_VALUE}</span>
-    )
+    return <span aria-label="Одержувача не вказано">{EMPTY_TABLE_VALUE}</span>
   }
 
   const lastComma = value.lastIndexOf(",")
@@ -312,6 +287,10 @@ export function IssuanceTab() {
     () => buildIssuanceFilterChips(appliedFilters, filteredRows),
     [appliedFilters, filteredRows]
   )
+  const optionCounts = useMemo(
+    () => computeIssuanceCrossCounts(ISSUANCE_ROWS, draftFilters),
+    [draftFilters]
+  )
 
   /**
    * Порожня чернетка нічого не фільтрує, але коли вона розійшлася з застосованим
@@ -326,8 +305,6 @@ export function IssuanceTab() {
     (isDefaultIssuancePeriod(appliedFilters.from, appliedFilters.to) ? 0 : 1)
   const isLoading = pendingFilters !== null
   const visibleRows = isLoading ? [] : filteredRows
-  const resultFilters = pendingFilters ?? appliedFilters
-  const emptyMessage = buildIssuanceEmptyStateMessage(resultFilters)
 
   useEffect(() => {
     if (!pendingFilters) return
@@ -419,12 +396,15 @@ export function IssuanceTab() {
     setFiltersOpen(false)
   }
 
-  const removeFilterChip = (chip: IssuanceFilterChip) => {
-    const next = removeIssuanceFilterChip(appliedFilters, chip)
-    setPendingFilters(null)
-    setDraftFilters(next)
-    setAppliedFilters(next)
-    setPage(1)
+  /** Знятий фільтр їде в адресу, а сторінка перезавантажується — результат завжди збігається з посиланням. */
+  const removeFilterChips = (chips: FilterChip[]) => {
+    let next = appliedFilters
+    for (const chip of chips) {
+      const match = activeFilterChips.find((item) => item.id === chip.id)
+      if (!match) continue
+      next = removeIssuanceFilterChip(next, match)
+    }
+    reloadReportsWithQuery(buildIssuanceFiltersQuery(next))
   }
 
   const openMedia = (productName: string, items: TransferMediaItem[]) => {
@@ -471,6 +451,7 @@ export function IssuanceTab() {
             <FilterField label="Найменування">
               <NameSearchFilter
                 value={draftFilters.nameQuery}
+                suggestions={ISSUANCE_PRODUCT_NAMES}
                 onChange={(nameQuery) =>
                   setDraftFilters((current) => ({ ...current, nameQuery }))
                 }
@@ -498,6 +479,7 @@ export function IssuanceTab() {
                 onChange={(projects) =>
                   setDraftFilters((current) => ({ ...current, projects }))
                 }
+                optionCounts={optionCounts.projects}
                 placeholder="Обрати проєкти"
                 allSelectedLabel="Усі проєкти"
               />
@@ -509,6 +491,7 @@ export function IssuanceTab() {
                 onChange={(units) =>
                   setDraftFilters((current) => ({ ...current, units }))
                 }
+                optionCounts={optionCounts.units}
                 placeholder="Обрати підрозділи"
                 allSelectedLabel="Усі підрозділи"
                 searchable
@@ -524,6 +507,7 @@ export function IssuanceTab() {
               <FilterField label="Найменування">
                 <NameSearchFilter
                   value={draftFilters.nameQuery}
+                  suggestions={ISSUANCE_PRODUCT_NAMES}
                   onChange={(nameQuery) =>
                     setDraftFilters((current) => ({ ...current, nameQuery }))
                   }
@@ -554,6 +538,7 @@ export function IssuanceTab() {
                   onChange={(projects) =>
                     setDraftFilters((current) => ({ ...current, projects }))
                   }
+                  optionCounts={optionCounts.projects}
                   placeholder="Обрати проєкти"
                   allSelectedLabel="Усі проєкти"
                 />
@@ -565,6 +550,7 @@ export function IssuanceTab() {
                   onChange={(units) =>
                     setDraftFilters((current) => ({ ...current, units }))
                   }
+                  optionCounts={optionCounts.units}
                   placeholder="Обрати підрозділи"
                   allSelectedLabel="Усі підрозділи"
                   searchable
@@ -580,7 +566,7 @@ export function IssuanceTab() {
             {activeFilterChips.length > 0 ? (
               <FilterChips
                 chips={activeFilterChips}
-                onRemove={removeFilterChip}
+                onRemove={removeFilterChips}
                 onClear={clearFilters}
                 clearLabel="Очистити всі"
                 className="col-span-full"
@@ -611,14 +597,16 @@ export function IssuanceTab() {
             bare
             rows={visibleRows}
             isLoading={isLoading}
-            emptyMessage={emptyMessage}
+            emptyMessage={ISSUANCE_EMPTY_FILTERS_MESSAGE}
+            onResetFilters={clearFilters}
           />
         </div>
 
         <IssuanceSnapshotSection
           rows={visibleRows}
           isLoading={isLoading}
-          emptyMessage={emptyMessage}
+          emptyMessage={ISSUANCE_EMPTY_FILTERS_MESSAGE}
+          onResetFilters={clearFilters}
           className="lg:hidden"
         />
 
@@ -627,18 +615,13 @@ export function IssuanceTab() {
             <div
               role="status"
               aria-busy="true"
-              className="text-foreground flex min-h-32 items-center justify-center rounded-[var(--radius-report)] border border-border bg-card p-8 text-sm"
+              className="flex min-h-32 items-center justify-center rounded-[var(--radius-report)] border border-border bg-card p-8 text-sm text-foreground"
             >
               Завантажуємо записи…
             </div>
           ) : pageRows.length === 0 ? (
-            <EmptyReportState message={emptyMessage}>
-              <FilterPopoverResetButton
-                className="h-10 w-auto px-4"
-                onClick={clearFilters}
-              >
-                Скинути всі фільтри
-              </FilterPopoverResetButton>
+            <EmptyReportState message={ISSUANCE_EMPTY_FILTERS_MESSAGE}>
+              <ResetAllFiltersButton onClick={clearFilters} />
             </EmptyReportState>
           ) : (
             <>

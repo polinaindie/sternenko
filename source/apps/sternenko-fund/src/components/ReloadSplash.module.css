@@ -1,0 +1,130 @@
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  background: var(--background);
+  opacity: 1;
+  transition: opacity 220ms ease-out;
+}
+
+.splashLeaving {
+  opacity: 0;
+}
+
+.lockup {
+  position: relative;
+  display: block;
+  width: 202px;
+  height: 80px;
+  animation: splash-lockup-in 380ms ease-out both;
+}
+
+.logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Смуга світла йде по логотипу: маска обрізає її рівно по контуру знака. */
+.sweep {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 42%,
+    rgb(255 255 255 / 0.55) 50%,
+    transparent 58%
+  );
+  background-size: 250% 100%;
+  background-position: -50% 0;
+  mask: url("../assets/brand/logo-nav.svg") center / contain no-repeat;
+  -webkit-mask: url("../assets/brand/logo-nav.svg") center / contain no-repeat;
+  animation: splash-sweep 1.6s ease-in-out 380ms infinite;
+}
+
+.caption {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--foreground);
+  animation: splash-fade-in 380ms ease-out 120ms both;
+}
+
+.progress {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  width: 202px;
+  height: 2px;
+  background: color-mix(in oklch, var(--foreground) 16%, transparent);
+}
+
+.progressBar {
+  position: absolute;
+  inset-block: 0;
+  width: 40%;
+  background: var(--primary);
+  animation: splash-progress 1.3s ease-in-out infinite;
+}
+
+@keyframes splash-lockup-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes splash-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes splash-sweep {
+  from {
+    background-position: -50% 0;
+  }
+  to {
+    background-position: 150% 0;
+  }
+}
+
+@keyframes splash-progress {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash {
+    transition: none;
+  }
+
+  .lockup,
+  .caption,
+  .progressBar {
+    animation: none;
+  }
+
+  .sweep {
+    display: none;
+  }
+
+  .progressBar {
+    width: 100%;
+  }
+}

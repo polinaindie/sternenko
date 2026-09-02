@@ -15,6 +15,7 @@ import {
 } from "../data/issuance-reporting"
 import { clampIncomeRange, isSameIncomePeriod } from "./income-analytics"
 import { computeFilterAvailability } from "./filter-availability"
+import { matchesNameQuery } from "./fuzzy-text-match"
 
 export type IssuanceFilters = {
   from: Date
@@ -61,7 +62,9 @@ export function isDefaultIssuancePeriod(from: Date, to: Date): boolean {
 function formatIssuanceDate(date: Date, includeYear: boolean): string {
   const day = String(date.getDate()).padStart(2, "0")
   const month = String(date.getMonth() + 1).padStart(2, "0")
-  return includeYear ? `${day}.${month}.${date.getFullYear()}` : `${day}.${month}`
+  return includeYear
+    ? `${day}.${month}.${date.getFullYear()}`
+    : `${day}.${month}`
 }
 
 export function formatIssuancePeriod(from: Date, to: Date): string {
@@ -76,42 +79,15 @@ export function formatIssuancePeriod(from: Date, to: Date): string {
   return `${formatIssuanceDate(from, !sameYear)} – ${formatIssuanceDate(to, !sameYear)}`
 }
 
-function quotedValues(values: readonly string[]): string {
-  return values.map((value) => `«${value}»`).join(", ")
-}
+export const ISSUANCE_EMPTY_FILTERS_MESSAGE =
+  "За обраними фільтрами не знайдено результатів"
 
-export function buildIssuanceEmptyStateMessage(
-  filters: Pick<
-    IssuanceFilters,
-    "from" | "to" | "nameQuery" | "projects" | "units"
-  >
-): string {
-  const parts = [`За ${formatIssuancePeriod(filters.from, filters.to)}`]
-
-  if (filters.projects.length === 1) {
-    parts.push(`по проєкту ${quotedValues(filters.projects)}`)
-  } else if (filters.projects.length > 1) {
-    parts.push(
-      `по обраних проєктах (${filters.projects.length.toLocaleString("uk-UA")}): ${quotedValues(filters.projects)}`
-    )
-  }
-
-  if (filters.units.length === 1) {
-    parts.push(`у підрозділі ${quotedValues(filters.units)}`)
-  } else if (filters.units.length > 1) {
-    parts.push(
-      `у підрозділах (${filters.units.length.toLocaleString("uk-UA")}): ${quotedValues(filters.units)}`
-    )
-  }
-
-  const query = filters.nameQuery.trim()
-  parts.push(
-    query
-      ? `нічого не знайдено за запитом «${query}»`
-      : "закупівель не було"
+export function collectIssuanceProductNames(
+  rows: readonly IssuanceRow[]
+): string[] {
+  return [...new Set(rows.map((row) => row.productName))].sort((a, b) =>
+    a.localeCompare(b, "uk")
   )
-
-  return parts.join(" ")
 }
 
 export function createDefaultIssuanceFilters(): IssuanceFilters {
@@ -147,7 +123,10 @@ export function isSameIssuanceFilters(
   b: IssuanceFilters
 ): boolean {
   return (
-    isSameIncomePeriod({ from: a.from, to: a.to }, { from: b.from, to: b.to }) &&
+    isSameIncomePeriod(
+      { from: a.from, to: a.to },
+      { from: b.from, to: b.to }
+    ) &&
     a.nameQuery.trim() === b.nameQuery.trim() &&
     sameFilterValues(a.projects, b.projects) &&
     sameFilterValues(a.fundraisings, b.fundraisings) &&
@@ -195,8 +174,7 @@ function matchesIssuanceDimensions(
   row: IssuanceRow,
   filters: IssuanceFilters
 ): boolean {
-  const query = filters.nameQuery.trim().toLowerCase()
-  if (query && !row.productName.toLowerCase().includes(query)) return false
+  if (!matchesNameQuery(row.productName, filters.nameQuery)) return false
   if (
     filters.projects.length > 0 &&
     filters.projects.length < ISSUANCE_PROJECT_OPTIONS.length
@@ -258,56 +236,51 @@ export function filterIssuanceResult(
   }
 }
 
-export type IssuanceCrossAvailability = {
-  projects: ReadonlySet<string>
-  units: ReadonlySet<string>
+export type IssuanceCrossCounts = {
+  projects: ReadonlyMap<string, number>
+  units: ReadonlyMap<string, number>
 }
 
 /**
- * Проєкт і підрозділ — незалежні виміри однієї видачі, тож кожен вимір
- * рахується без урахування власного вибору: інакше опції глушили б самі себе.
+ * Фасетні лічильники: проєкти враховують вибрані підрозділи, а підрозділи —
+ * вибрані проєкти. Власний вимір не враховується, щоб можна було додати ще
+ * одну опцію до поточного вибору.
  */
-export function computeIssuanceCrossAvailability(
+export function computeIssuanceCrossCounts(
   rows: readonly IssuanceRow[],
   filters: Pick<
     IssuanceFilters,
     "from" | "to" | "nameQuery" | "projects" | "units"
   >
-): IssuanceCrossAvailability {
+): IssuanceCrossCounts {
   const { from, to } = clampIncomeRange(filters.from, filters.to)
   const fromMs = from.getTime()
   const toMs = to.getTime()
-  const query = filters.nameQuery.trim().toLowerCase()
   const projectPicks = new Set<string>(filters.projects)
   const unitPicks = new Set<string>(filters.units)
+  const projectsNarrowed =
+    projectPicks.size > 0 && projectPicks.size < ISSUANCE_PROJECT_OPTIONS.length
+  const unitsNarrowed =
+    unitPicks.size > 0 && unitPicks.size < ISSUANCE_UNITS.length
 
-  const projects = new Set<string>()
-  const units = new Set<string>()
+  const projects = new Map<string, number>()
+  const units = new Map<string, number>()
 
   for (const row of rows) {
     const ms = parseIssuanceDate(row.date).getTime()
     if (ms < fromMs || ms > toMs) continue
-    if (query && !row.productName.toLowerCase().includes(query)) continue
+    if (!matchesNameQuery(row.productName, filters.nameQuery)) continue
 
-    if (unitPicks.size === 0 || unitPicks.has(row.unit)) {
-      projects.add(row.project)
+    const project = toIssuanceProjectLine(row.project)
+    if (project && (!unitsNarrowed || unitPicks.has(row.unit))) {
+      projects.set(project, (projects.get(project) ?? 0) + 1)
     }
-    if (projectPicks.size === 0 || projectPicks.has(row.project)) {
-      units.add(row.unit)
+    if (project && (!projectsNarrowed || projectPicks.has(project))) {
+      units.set(row.unit, (units.get(row.unit) ?? 0) + 1)
     }
   }
 
   return { projects, units }
-}
-
-/** Вже обране ніколи не глушимо — інакше людина не зможе зняти власний фільтр. */
-export function unavailableIssuanceOptions(
-  options: readonly string[],
-  available: ReadonlySet<string>,
-  selected: readonly string[]
-): string[] {
-  const keep = new Set(selected)
-  return options.filter((option) => !available.has(option) && !keep.has(option))
 }
 
 function countIssuanceRowsByValue(

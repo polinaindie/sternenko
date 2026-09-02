@@ -81,6 +81,30 @@ export function FilterApplyButton({
   )
 }
 
+const RESET_ALL_FILTERS_LABEL = "Скинути всі фільтри"
+
+/** Tertiary reset for empty results — ghost, not a filled popover control. */
+export function ResetAllFiltersButton({
+  className,
+  children = RESET_ALL_FILTERS_LABEL,
+  ...props
+}: React.ComponentProps<typeof Button>) {
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      className={cn(
+        siteControlClass,
+        "h-10 w-auto bg-foreground/5 px-4 font-normal hover:bg-foreground/10 dark:hover:bg-foreground/10",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </Button>
+  )
+}
+
 /** Secondary reset inside filter popovers — text action, not input-like. */
 export function FilterPopoverResetButton({
   className,

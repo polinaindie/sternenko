@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest"
 
 import {
-  buildIssuanceEmptyStateMessage,
   createDefaultIssuanceFilters,
   filterIssuanceResult,
   formatIssuancePeriod,
   hasActiveIssuanceFilters,
+  ISSUANCE_EMPTY_FILTERS_MESSAGE,
 } from "./issuance-analytics"
 import { ISSUANCE_ROWS } from "../mock-data"
 
@@ -22,45 +22,9 @@ describe("issuance empty state copy", () => {
     ).toBe("01.05 – 30.05")
   })
 
-  it("names every applied filter value", () => {
-    expect(
-      buildIssuanceEmptyStateMessage({
-        from: new Date(2026, 4, 15),
-        to: new Date(2026, 4, 15),
-        nameQuery: "",
-        projects: ["Опторіз"],
-        units: ["81 БПАК"],
-      })
-    ).toBe(
-      "За 15.05.2026 по проєкту «Опторіз» у підрозділі «81 БПАК» закупівель не було"
-    )
-  })
-
-  it("lists multiple values instead of hiding them behind a generic count", () => {
-    expect(
-      buildIssuanceEmptyStateMessage({
-        from: new Date(2026, 4, 1),
-        to: new Date(2026, 4, 30),
-        nameQuery: "",
-        projects: ["Опторіз", "Русоріз", "Небесний русоріз"],
-        units: [],
-      })
-    ).toBe(
-      "За 01.05 – 30.05 по обраних проєктах (3): «Опторіз», «Русоріз», «Небесний русоріз» закупівель не було"
-    )
-  })
-
-  it("uses the search-specific explanation", () => {
-    expect(
-      buildIssuanceEmptyStateMessage({
-        from: new Date(2026, 4, 1),
-        to: new Date(2026, 4, 30),
-        nameQuery: "STRIX",
-        projects: [],
-        units: [],
-      })
-    ).toBe(
-      "За 01.05 – 30.05 нічого не знайдено за запитом «STRIX»"
+  it("uses the same copy regardless of which filters emptied the result", () => {
+    expect(ISSUANCE_EMPTY_FILTERS_MESSAGE).toBe(
+      "За обраними фільтрами не знайдено результатів"
     )
   })
 })

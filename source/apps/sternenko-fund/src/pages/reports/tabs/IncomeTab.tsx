@@ -347,10 +347,13 @@ export function IncomeTab({
     setFiltersOpen(false)
   }
 
-  const removeFilterChip = (chip: { id: string }) => {
-    const match = activeFilterChips.find((item) => item.id === chip.id)
-    if (!match) return
-    const next = removeIncomeFilterChip(appliedFilters, match)
+  const removeFilterChips = (chips: { id: string }[]) => {
+    let next = appliedFilters
+    for (const chip of chips) {
+      const match = activeFilterChips.find((item) => item.id === chip.id)
+      if (!match) continue
+      next = removeIncomeFilterChip(next, match)
+    }
     setDraftFilters(next)
     setAppliedFilters(next)
     setPage(1)
@@ -449,7 +452,7 @@ export function IncomeTab({
           {activeFilterChips.length > 0 ? (
             <FilterChips
               chips={activeFilterChips}
-              onRemove={removeFilterChip}
+              onRemove={removeFilterChips}
               onClear={clearFilters}
               clearLabel="Очистити всі"
             />

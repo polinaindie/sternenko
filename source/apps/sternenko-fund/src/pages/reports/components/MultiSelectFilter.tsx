@@ -1,5 +1,11 @@
-import { useEffect, useId, useMemo, useRef, useState } from "react"
-import { createPortal } from "react-dom"
+import {
+  useDeferredValue,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import { ChevronDownIcon, SearchIcon } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
@@ -14,6 +20,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
@@ -24,28 +31,39 @@ import {
   useFilterControlId,
 } from "./report-ui"
 
-export const FUNDRAISER_UNAVAILABLE_TOOLTIP =
-  "Цього збору немає у обраному періоді"
+/**
+ * Коротший список браузер малює за один кадр, тож скелетони лише блимнули б.
+ * Довший (126 підрозділів) відкладаємо, щоб попап відкривався одразу.
+ */
+const DEFERRED_ROWS_THRESHOLD = 24
+/**
+ * Сам рендер укладається в кілька десятків мілісекунд, тож без витримки скелетон
+ * блимнув би й читався як збій, а не як «зараз буде список».
+ */
+const SKELETON_MIN_VISIBLE_MS = 400
+/**
+ * Сім смуг заповнюють max-h-64 без пустот, а різна довжина читається як список
+ * назв, а не як таблиця.
+ */
+const SKELETON_ROW_WIDTHS = [
+  "w-4/5",
+  "w-3/5",
+  "w-11/12",
+  "w-2/3",
+  "w-3/4",
+  "w-1/2",
+  "w-5/6",
+] as const
 
-export const PROJECT_UNAVAILABLE_TOOLTIP =
-  "Цього проєкту немає у обраному періоді"
-
-const CURSOR_TOOLTIP_OFFSET = 12
-const CURSOR_TOOLTIP_SHOW_DELAY_MS = 200
-/** Дотик не має «leave», тож підказка ховається сама. */
-const CURSOR_TOOLTIP_TOUCH_HIDE_MS = 4000
-
-const cursorTooltipClassName =
-  "pointer-events-none fixed z-[100] max-w-[13rem] rounded-md bg-foreground px-2 py-1 text-[0.6875rem] leading-snug text-background shadow-md"
+/** Стабільна порожня опора для useDeferredValue — за нею й пізнаємо очікування. */
+const PENDING_OPTIONS: readonly string[] = []
 
 type MultiSelectFilterProps = {
   options: readonly string[]
   selected: string[]
   onChange: (selected: string[]) => void
-  /** Options visible but not selectable for the current date/period. */
-  disabledOptions?: readonly string[]
-  /** Shown on hover/focus for disabled options. */
-  disabledOptionTooltip?: string
+  /** Number of matching purchases for every option. */
+  optionCounts?: ReadonlyMap<string, number>
   placeholder?: string
   allSelectedLabel?: string
   /** Пошук за опціями всередині дропдауну. */
@@ -59,8 +77,7 @@ export type MultiSelectFilterPanelProps = {
   options: readonly string[]
   selected: string[]
   onChange: (selected: string[]) => void
-  disabledOptions?: readonly string[]
-  disabledOptionTooltip?: string
+  optionCounts?: ReadonlyMap<string, number>
   placeholder?: string
   searchable?: boolean
   searchPlaceholder?: string
@@ -116,9 +133,8 @@ export function selectionLabel(
 
 type FilterOptionRowProps = {
   option: string
-  optionDisabled: boolean
+  count?: number
   checked: boolean
-  disabledOptionTooltip?: string
   onToggle: () => void
   onRequestClose?: () => void
   optionRef: (node: HTMLElement | null) => void
@@ -128,73 +144,41 @@ type FilterOptionRowProps = {
 
 function FilterOptionRow({
   option,
-  optionDisabled,
+  count,
   checked,
-  disabledOptionTooltip,
   onToggle,
   onRequestClose,
   optionRef,
   tabIndex,
   onFocus,
 }: FilterOptionRowProps) {
-  const [cursor, setCursor] = useState<{ x: number; y: number } | null>(null)
-  const latestPointerRef = useRef({ x: 0, y: 0 })
-  const showTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const optionLabel =
+    count === undefined
+      ? option
+      : `${option}. Закупівель: ${count.toLocaleString("uk-UA")}`
 
-  const clearShowTimer = () => {
-    if (showTimerRef.current) {
-      clearTimeout(showTimerRef.current)
-      showTimerRef.current = null
-    }
-    if (hideTimerRef.current) {
-      clearTimeout(hideTimerRef.current)
-      hideTimerRef.current = null
-    }
-  }
-
-  useEffect(() => () => clearShowTimer(), [])
-
-  const showTooltipAt = (clientX: number, clientY: number) => {
-    clearShowTimer()
-    latestPointerRef.current = { x: clientX, y: clientY }
-    setCursor(latestPointerRef.current)
-    hideTimerRef.current = setTimeout(
-      () => setCursor(null),
-      CURSOR_TOOLTIP_TOUCH_HIDE_MS
-    )
-  }
-
-  const handlePointerEnter = (clientX: number, clientY: number) => {
-    latestPointerRef.current = { x: clientX, y: clientY }
-    clearShowTimer()
-    showTimerRef.current = setTimeout(() => {
-      setCursor(latestPointerRef.current)
-    }, CURSOR_TOOLTIP_SHOW_DELAY_MS)
-  }
-
-  const handlePointerMove = (clientX: number, clientY: number) => {
-    latestPointerRef.current = { x: clientX, y: clientY }
-    setCursor((current) => (current ? latestPointerRef.current : current))
-  }
-
-  const handlePointerLeave = () => {
-    clearShowTimer()
-    setCursor(null)
-  }
-
-  const rowClassName = cn(
-    "flex w-full items-center gap-2 rounded-md px-2 py-2 text-left",
-    optionDisabled
-      ? "cursor-not-allowed opacity-45"
-      : "cursor-pointer hover:bg-muted"
-  )
-
-  const row = (
-    <>
+  return (
+    <div
+      ref={optionRef}
+      role="option"
+      aria-selected={checked}
+      aria-label={optionLabel}
+      tabIndex={tabIndex}
+      className="flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-left hover:bg-muted"
+      onFocus={onFocus}
+      onClick={onToggle}
+      onKeyDown={(event) => {
+        if (event.key === " ") {
+          event.preventDefault()
+          onToggle()
+        } else if (event.key === "Enter") {
+          event.preventDefault()
+          onRequestClose?.()
+        }
+      }}
+    >
       <Checkbox
         checked={checked}
-        disabled={optionDisabled}
         tabIndex={-1}
         aria-hidden="true"
         className="pointer-events-none"
@@ -202,87 +186,36 @@ function FilterOptionRow({
       <span className="line-clamp-2 min-w-0 flex-1 text-sm" title={option}>
         {option}
       </span>
-    </>
+      {count === undefined ? null : (
+        <span
+          className="shrink-0 text-sm text-foreground tabular-nums"
+          aria-hidden="true"
+        >
+          ({count.toLocaleString("uk-UA")})
+        </span>
+      )}
+    </div>
   )
+}
 
-  if (!optionDisabled || !disabledOptionTooltip) {
-    return (
-      <div
-        ref={optionRef}
-        role="option"
-        aria-selected={checked}
-        aria-disabled={optionDisabled}
-        tabIndex={tabIndex}
-        className={rowClassName}
-        onFocus={onFocus}
-        onClick={onToggle}
-        onKeyDown={(event) => {
-          if (event.key === " ") {
-            event.preventDefault()
-            onToggle()
-          } else if (event.key === "Enter") {
-            event.preventDefault()
-            onRequestClose?.()
-          }
-        }}
-      >
-        {row}
-      </div>
-    )
-  }
-
+/** Тримає ту саму висоту рядка (36px), щоб список не стрибав при появі опцій. */
+function FilterOptionsSkeleton() {
   return (
-    <>
-      <span
-        ref={optionRef}
-        role="option"
-        aria-selected={checked}
-        tabIndex={tabIndex}
-        aria-disabled="true"
-        aria-label={`${option}. ${disabledOptionTooltip}`}
-        className={rowClassName}
-        onMouseEnter={(event) =>
-          handlePointerEnter(event.clientX, event.clientY)
-        }
-        onMouseMove={(event) => handlePointerMove(event.clientX, event.clientY)}
-        onMouseLeave={handlePointerLeave}
-        onPointerDown={(event) => {
-          if (event.pointerType === "mouse") return
-          showTooltipAt(event.clientX, event.clientY)
-        }}
-        onKeyDown={(event) => {
-          if (event.key !== "Escape" || !cursor) return
-          event.stopPropagation()
-          handlePointerLeave()
-        }}
-        onFocus={(event) => {
-          onFocus()
-          const rect = event.currentTarget.getBoundingClientRect()
-          handlePointerEnter(
-            rect.left + rect.width / 2,
-            rect.top + rect.height / 2
-          )
-        }}
-        onBlur={handlePointerLeave}
-      >
-        {row}
-      </span>
-      {cursor
-        ? createPortal(
-            <div
-              role="tooltip"
-              className={cursorTooltipClassName}
-              style={{
-                left: cursor.x + CURSOR_TOOLTIP_OFFSET,
-                top: cursor.y + CURSOR_TOOLTIP_OFFSET,
-              }}
-            >
-              {disabledOptionTooltip}
-            </div>,
-            document.body
-          )
-        : null}
-    </>
+    <div aria-busy="true">
+      <p className="sr-only" role="status">
+        Завантажуємо опції…
+      </p>
+      {SKELETON_ROW_WIDTHS.map((width, index) => (
+        <div
+          key={index}
+          className="flex h-9 items-center gap-2 px-2"
+          aria-hidden="true"
+        >
+          <Skeleton className="size-4 shrink-0 rounded-sm motion-reduce:animate-none" />
+          <Skeleton className={cn("h-3.5 motion-reduce:animate-none", width)} />
+        </div>
+      ))}
+    </div>
   )
 }
 
@@ -290,8 +223,7 @@ export function MultiSelectFilterPanel({
   options,
   selected,
   onChange,
-  disabledOptions = [],
-  disabledOptionTooltip = FUNDRAISER_UNAVAILABLE_TOOLTIP,
+  optionCounts,
   searchable = false,
   searchPlaceholder = "Пошук",
   listClassName,
@@ -303,7 +235,6 @@ export function MultiSelectFilterPanel({
   const [activeIndex, setActiveIndex] = useState(0)
   const optionRefs = useRef<Array<HTMLElement | null>>([])
   const searchRef = useRef<HTMLInputElement | null>(null)
-  const disabled = useMemo(() => new Set(disabledOptions), [disabledOptions])
   const visibleOptions = useMemo(() => {
     const matches = options.filter((option) =>
       matchesOptionQuery(option, query)
@@ -312,23 +243,39 @@ export function MultiSelectFilterPanel({
     const unpinned = matches.filter((option) => !pinnedSelection.has(option))
     return [...pinned, ...unpinned]
   }, [options, pinnedSelection, query])
-  const hasQuery = query.trim().length > 0
-  const selectableOptions = useMemo(
-    () => visibleOptions.filter((option) => !disabled.has(option)),
-    [disabled, visibleOptions]
+  /**
+   * Рядки монтуються з нижчим пріоритетом: попап та пошук з'являються одразу,
+   * а важкий список — наступним проходом, поки видно скелетони.
+   */
+  const [defersRows] = useState(() => options.length > DEFERRED_ROWS_THRESHOLD)
+  const renderedOptions = useDeferredValue(
+    visibleOptions,
+    defersRows ? PENDING_OPTIONS : visibleOptions
   )
+  const [skeletonHold, setSkeletonHold] = useState(defersRows)
+  const rowsPending =
+    options.length > 0 && (skeletonHold || renderedOptions === PENDING_OPTIONS)
+
+  /** Витримка йде від відкриття списку й більше не повертається — пошук не блимає. */
+  useEffect(() => {
+    if (!skeletonHold) return
+
+    const timer = window.setTimeout(
+      () => setSkeletonHold(false),
+      SKELETON_MIN_VISIBLE_MS
+    )
+
+    return () => window.clearTimeout(timer)
+  }, [skeletonHold])
+  const hasQuery = query.trim().length > 0
   const allVisibleSelected =
-    selectableOptions.length > 0 &&
-    selectableOptions.every((option) => selected.includes(option))
-  const pinnedVisibleCount = visibleOptions.filter((option) =>
+    visibleOptions.length > 0 &&
+    visibleOptions.every((option) => selected.includes(option))
+  const pinnedVisibleCount = renderedOptions.filter((option) =>
     pinnedSelection.has(option)
   ).length
 
-  const isDisabled = (value: string) => disabled.has(value)
-
   const toggleOption = (value: string) => {
-    if (isDisabled(value)) return
-
     if (selected.includes(value)) {
       onChange(selected.filter((option) => option !== value))
       return
@@ -338,31 +285,32 @@ export function MultiSelectFilterPanel({
   }
 
   const toggleVisible = () => {
-    if (selectableOptions.length === 0) return
+    if (visibleOptions.length === 0) return
     if (allVisibleSelected) {
-      const visible = new Set(selectableOptions)
+      const visible = new Set(visibleOptions)
       onChange(selected.filter((option) => !visible.has(option)))
       return
     }
     onChange([
       ...selected,
-      ...selectableOptions.filter((option) => !selected.includes(option)),
+      ...visibleOptions.filter((option) => !selected.includes(option)),
     ])
   }
 
   const moveOptionFocus = (direction: 1 | -1) => {
-    if (visibleOptions.length === 0) return
+    if (rowsPending || renderedOptions.length === 0) return
     const next =
-      (activeIndex + direction + visibleOptions.length) % visibleOptions.length
+      (activeIndex + direction + renderedOptions.length) %
+      renderedOptions.length
     setActiveIndex(next)
     optionRefs.current[next]?.focus()
   }
 
   useEffect(() => {
     setActiveIndex((current) =>
-      Math.min(current, Math.max(visibleOptions.length - 1, 0))
+      Math.min(current, Math.max(renderedOptions.length - 1, 0))
     )
-  }, [visibleOptions.length])
+  }, [renderedOptions.length])
 
   return (
     <div className="flex flex-col gap-1">
@@ -385,11 +333,13 @@ export function MultiSelectFilterPanel({
             onKeyDown={(event) => {
               if (event.key === "ArrowDown") {
                 event.preventDefault()
+                if (rowsPending) return
                 setActiveIndex(0)
                 optionRefs.current[0]?.focus()
               } else if (event.key === "ArrowUp") {
                 event.preventDefault()
-                const last = Math.max(visibleOptions.length - 1, 0)
+                if (rowsPending) return
+                const last = Math.max(renderedOptions.length - 1, 0)
                 setActiveIndex(last)
                 optionRefs.current[last]?.focus()
               } else if (event.key === "Enter") {
@@ -406,17 +356,11 @@ export function MultiSelectFilterPanel({
           variant="ghost"
           className="h-8 w-full justify-start px-2 text-sm font-medium"
           onClick={toggleVisible}
-          disabled={selectableOptions.length === 0}
+          disabled={visibleOptions.length === 0}
         >
-          {visibleOptions.length > selectableOptions.length
-            ? allVisibleSelected
-              ? "Зняти всі доступні"
-              : "Обрати всі доступні"
-            : allVisibleSelected
-              ? "Зняти всі"
-              : "Обрати всі"}
+          {allVisibleSelected ? "Зняти всі" : "Обрати всі"}
           {hasQuery
-            ? ` (${selectableOptions.length.toLocaleString("uk-UA")})`
+            ? ` (${visibleOptions.length.toLocaleString("uk-UA")})`
             : ""}
         </Button>
       </div>
@@ -424,6 +368,7 @@ export function MultiSelectFilterPanel({
         id={listId}
         role="listbox"
         aria-multiselectable="true"
+        aria-busy={rowsPending || undefined}
         className={listClassName}
         onKeyDown={(event) => {
           if (event.key === "ArrowDown") {
@@ -437,13 +382,14 @@ export function MultiSelectFilterPanel({
       >
         {options.length === 0 ? (
           <p className="px-2 py-2 text-sm text-muted-foreground">Немає даних</p>
-        ) : visibleOptions.length === 0 ? (
+        ) : rowsPending ? (
+          <FilterOptionsSkeleton />
+        ) : renderedOptions.length === 0 ? (
           <p className="px-2 py-2 text-sm text-muted-foreground">
             Нічого не знайдено
           </p>
         ) : (
-          visibleOptions.map((option, index) => {
-            const optionDisabled = isDisabled(option)
+          renderedOptions.map((option, index) => {
             return (
               <div key={`${option}-${index}`} role="none">
                 {index === pinnedVisibleCount && pinnedVisibleCount > 0 ? (
@@ -451,9 +397,10 @@ export function MultiSelectFilterPanel({
                 ) : null}
                 <FilterOptionRow
                   option={option}
-                  optionDisabled={optionDisabled}
+                  count={
+                    optionCounts ? (optionCounts.get(option) ?? 0) : undefined
+                  }
                   checked={selected.includes(option)}
-                  disabledOptionTooltip={disabledOptionTooltip}
                   onToggle={() => toggleOption(option)}
                   onRequestClose={onRequestClose}
                   optionRef={(node) => {
@@ -475,8 +422,7 @@ export function MultiSelectFilter({
   options,
   selected,
   onChange,
-  disabledOptions = [],
-  disabledOptionTooltip = FUNDRAISER_UNAVAILABLE_TOOLTIP,
+  optionCounts,
   placeholder = "Усі",
   allSelectedLabel = placeholder,
   searchable = false,
@@ -532,8 +478,7 @@ export function MultiSelectFilter({
           options={options}
           selected={selected}
           onChange={onChange}
-          disabledOptions={disabledOptions}
-          disabledOptionTooltip={disabledOptionTooltip}
+          optionCounts={optionCounts}
           placeholder={placeholder}
           searchable={searchable}
           searchPlaceholder={searchPlaceholder}

@@ -30,6 +30,7 @@ import {
   KpiGrid,
   reportIssuanceDesktopGridClass,
   reportIssuanceSplitColumnClass,
+  ResetAllFiltersButton,
   SectionTitle,
 } from "./report-ui"
 
@@ -39,6 +40,7 @@ type IssuanceSnapshotBlockProps = {
   lossesUsd: number
   breakdown: IssuanceRequestBreakdownItem[]
   emptyMessage: string
+  onResetFilters?: () => void
   isLoading?: boolean
   /** Render KPI column + chart as grid siblings (no outer wrapper). */
   bare?: boolean
@@ -204,6 +206,7 @@ export function IssuanceSnapshotBlock({
   lossesUsd,
   breakdown,
   emptyMessage,
+  onResetFilters,
   isLoading = false,
   bare = false,
   className,
@@ -263,10 +266,22 @@ export function IssuanceSnapshotBlock({
       </SectionTitle>
       {!isLoading && visibleBreakdown.length > 0 ? (
         <BreakdownChart breakdown={breakdown} />
-      ) : (
+      ) : isLoading ? (
         <p role="status" className="text-sm text-background">
-          {isLoading ? "Завантажуємо розподіл…" : emptyMessage}
+          Завантажуємо розподіл…
         </p>
+      ) : (
+        <div className="flex flex-col items-start gap-3">
+          <p role="status" className="text-sm text-background">
+            {emptyMessage}
+          </p>
+          {onResetFilters ? (
+            <ResetAllFiltersButton
+              className="bg-background/10 text-background hover:bg-background/20 hover:text-background dark:hover:bg-background/20"
+              onClick={onResetFilters}
+            />
+          ) : null}
+        </div>
       )}
     </ReportCard>
   )
