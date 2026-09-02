@@ -21,19 +21,18 @@ import styles from "./SiteHeader.module.css"
 
 function NavMenuLink({
   item,
+  current = item.current,
   onNavigate,
 }: {
   item: NavLink
+  current?: boolean
   onNavigate?: () => void
 }) {
   return (
     <a
       href={item.href}
-      aria-current={item.current ? "page" : undefined}
-      className={cn(
-        styles.navMenuLink,
-        item.current && styles.navMenuLinkCurrent
-      )}
+      aria-current={current ? "page" : undefined}
+      className={cn(styles.navMenuLink, current && styles.navMenuLinkCurrent)}
       onClick={onNavigate}
     >
       {item.label}
@@ -41,7 +40,12 @@ function NavMenuLink({
   )
 }
 
-export function SiteHeader() {
+type SiteHeaderProps = {
+  /** Сторінки помилок не належать жодному розділу — там активний пункт не позначаємо. */
+  markCurrentNav?: boolean
+}
+
+export function SiteHeader({ markCurrentNav = true }: SiteHeaderProps = {}) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const headerRef = useRef<HTMLElement>(null)
 
@@ -106,6 +110,7 @@ export function SiteHeader() {
                   <NavMenuLink
                     key={item.label}
                     item={item}
+                    current={markCurrentNav && item.current}
                     onNavigate={() => setMobileOpen(false)}
                   />
                 ))}

@@ -12,4 +12,13 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      input: {
+        index: path.resolve(__dirname, "index.html"),
+        // Статична сторінка помилки — її віддає сервер, коли застосунку немає.
+        500: path.resolve(__dirname, "500.html"),
+      },
+    },
+  },
 })
