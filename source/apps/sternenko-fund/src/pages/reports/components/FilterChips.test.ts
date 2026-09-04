@@ -81,13 +81,13 @@ describe("pluralizeFilters", () => {
 describe("confirmRemoveFiltersMessage", () => {
   it("asks about one filter without naming it in the sentence", () => {
     expect(confirmRemoveFiltersMessage(1)).toBe(
-      "Ви впевнені, що хочете видалити фільтр?"
+      "Ви впевнені, що хочете очистити фільтр?"
     )
   })
 
   it("uses the plural when several chips are queued", () => {
     expect(confirmRemoveFiltersMessage(3)).toBe(
-      "Ви впевнені, що хочете видалити фільтри?"
+      "Ви впевнені, що хочете очистити фільтри?"
     )
   })
 })

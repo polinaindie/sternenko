@@ -39,8 +39,8 @@ const FILTER_REMOVE_TOAST_ID = "report-filter-remove-confirm"
 
 export function confirmRemoveFiltersMessage(count: number): string {
   return count === 1
-    ? "Ви впевнені, що хочете видалити фільтр?"
-    : "Ви впевнені, що хочете видалити фільтри?"
+    ? "Ви впевнені, що хочете очистити фільтр?"
+    : "Ви впевнені, що хочете очистити фільтри?"
 }
 
 export function queueFilterChip<T extends { id: string }>(
@@ -117,7 +117,7 @@ function RemoveFiltersConfirmToast({
           )}
           onClick={onDelete}
         >
-          Видалити
+          Очистити
         </Button>
         <Button
           type="button"
