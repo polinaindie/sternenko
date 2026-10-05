@@ -122,42 +122,57 @@ const incomeHeadSource = cn(
 )
 const incomeHeadAmount = cn(
   reportTxHeadSortable,
-  "!pl-1.5",
+  reportTxCellPadding,
   incomeNumericGap,
   "tabular-nums"
 )
 const incomeHeadCurrency = cn(
   reportTxHead,
-  "!px-1",
+  reportTxCellPadding,
   incomeNumericGap,
   "!overflow-hidden whitespace-nowrap text-right"
 )
 const incomeHeadAmountUah = cn(
   reportTxHeadSortable,
-  "!pl-2",
-  "!pr-2",
+  reportTxCellPadding,
   "tabular-nums"
 )
 const incomeHeadComment = cn(reportTxHead, reportTxCellPadding, "min-w-0")
+const incomeCellText = "!align-middle text-left"
+const incomeCellNumeric = "!align-middle text-right"
 const incomeCellSource = cn(
   reportTxCellPadding,
+  incomeCellText,
   "min-w-0 whitespace-normal [overflow-wrap:normal] [word-break:normal]"
 )
 const incomeCellDate = cn(
   reportTxCellPadding,
+  incomeCellText,
   "border-r border-[var(--report-border)] whitespace-nowrap tabular-nums",
   reportTxCellCommentTone
 )
-const incomeCellAmount = cn("!pl-1.5", incomeNumericGap, reportTxCellAmountLight)
-const incomeCellCurrency = cn(
-  "!px-1",
+const incomeCellAmount = cn(
+  reportTxCellPadding,
+  incomeCellNumeric,
   incomeNumericGap,
-  "whitespace-nowrap tabular-nums text-right",
+  reportTxCellAmountLight
+)
+const incomeCellCurrency = cn(
+  reportTxCellPadding,
+  incomeCellNumeric,
+  incomeNumericGap,
+  "whitespace-nowrap tabular-nums",
   reportTxCellCommentTone
 )
-const incomeCellAmountUah = cn("!pl-1.5", incomeNumericGap, reportTxCellAmountStrong)
+const incomeCellAmountUah = cn(
+  reportTxCellPadding,
+  incomeCellNumeric,
+  incomeNumericGap,
+  reportTxCellAmountStrong
+)
 const incomeCellComment = cn(
   reportTxCellPadding,
+  incomeCellText,
   "min-w-0"
 )
 

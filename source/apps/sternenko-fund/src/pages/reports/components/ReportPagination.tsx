@@ -22,6 +22,10 @@ type ReportPaginationProps = {
   pageSize: number
   total: number
   pageSizeOptions?: number[]
+  /** Inclusive 1-based index of first visible item when pages are packed unevenly. */
+  rangeFrom?: number
+  rangeTo?: number
+  pageCount?: number
   onPageChange: (page: number) => void
   onPageSizeChange?: (pageSize: number) => void
 }
@@ -38,12 +42,20 @@ export function ReportPagination({
   pageSize,
   total,
   pageSizeOptions = [15, 30, 50],
+  rangeFrom,
+  rangeTo,
+  pageCount: pageCountOverride,
   onPageChange,
   onPageSizeChange,
 }: ReportPaginationProps) {
-  const pageCount = Math.max(1, Math.ceil(total / pageSize))
+  const pageCount = Math.max(
+    1,
+    pageCountOverride ?? Math.ceil(total / pageSize)
+  )
   const safePage = Math.min(page, pageCount)
-  const { from, to } = pageRange(safePage, pageSize, total)
+  const computedRange = pageRange(safePage, pageSize, total)
+  const from = rangeFrom ?? computedRange.from
+  const to = rangeTo ?? computedRange.to
   const [jumpValue, setJumpValue] = useState(String(safePage))
   const pageSizeId = useId()
   const pageJumpId = useId()

@@ -6,7 +6,7 @@ import type {
 } from "./components/AttachmentViewer"
 import { ISSUANCE_IMPORTED_ROWS } from "./data/issuance-rows.generated"
 import { applyIssuanceAttachmentSamples } from "./data/issuance-attachment-samples"
-import { expandIssuanceRowsForDemo } from "./data/expand-issuance-demo"
+import { expandIssuanceRowsForDemo, seedIssuanceDemoKits } from "./data/expand-issuance-demo"
 import { ISSUANCE_UNITS } from "./data/issuance-units"
 
 export { ISSUANCE_UNITS } from "./data/issuance-units"
@@ -104,7 +104,7 @@ export type IssuanceRow = {
   fundraising: string
   recipient: string
   project: IssuanceProjectLine
-  direction: IssuanceDirection
+  purpose: IssuancePaymentPurpose
   agency: IssuanceAgency
   unit: string
   category: IssuancePropertyCategory
@@ -134,14 +134,13 @@ export const ISSUANCE_PROJECT_LINES = [
 
 export type IssuanceProjectLine = (typeof ISSUANCE_PROJECT_LINES)[number]
 
-export const ISSUANCE_DIRECTIONS = [
-  "ППО",
-  "Розвідка",
-  "Штурмові",
-  "Логістика",
+export const ISSUANCE_PAYMENT_PURPOSES = [
+  "Оплата",
+  "Доплата",
+  "Передоплата",
 ] as const
 
-export type IssuanceDirection = (typeof ISSUANCE_DIRECTIONS)[number]
+export type IssuancePaymentPurpose = (typeof ISSUANCE_PAYMENT_PURPOSES)[number]
 
 export const ISSUANCE_AGENCIES = ["ЗСУ", "ТРО", "ДСНС"] as const
 
@@ -245,18 +244,32 @@ function demoProjectLine(index: number): IssuanceProjectLine {
   )
 }
 
+/** ДЕМО: у вивантаженні колонка ще «ППО/Розвідка»; у таблиці — форма оплати. */
+function demoPaymentPurpose(index: number): IssuancePaymentPurpose {
+  const slot = index % 10
+  if (slot === 3) return "Доплата"
+  if (slot === 7) return "Передоплата"
+  return "Оплата"
+}
+
 export const ISSUANCE_ROWS: IssuanceRow[] = applyIssuanceAttachmentSamples(
-  expandIssuanceRowsForDemo(
-    ISSUANCE_IMPORTED_ROWS.map((row, index) => ({
-      ...row,
-      // ДЕМО: перекриває проєкт із вивантаження, щоб побачити 12 барів.
-      project: demoProjectLine(index),
-      attachments: {
-        media: [...row.attachments.media],
-        act: [...row.attachments.act],
-        payment: [...row.attachments.payment],
-      },
-    }))
+  seedIssuanceDemoKits(
+    expandIssuanceRowsForDemo(
+      ISSUANCE_IMPORTED_ROWS.map((row, index) => {
+        const { direction: _combatDirection, ...imported } = row
+        return {
+          ...imported,
+          // ДЕМО: перекриває проєкт із вивантаження, щоб побачити 12 барів.
+          project: demoProjectLine(index),
+          purpose: demoPaymentPurpose(index),
+          attachments: {
+            media: [...row.attachments.media],
+            act: [...row.attachments.act],
+            payment: [...row.attachments.payment],
+          },
+        }
+      })
+    )
   )
 )
 

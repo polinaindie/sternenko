@@ -13,8 +13,8 @@ export const reportTxHeadSortable = cn(
 export const reportTxHeaderDivider =
   "[&_th]:border-b [&_th]:border-b-[var(--report-border)]"
 
-/** Рядки: мін-висота, вміст зверху. */
-export const reportTxBodyRow = "[&>td]:h-[3.25rem] [&>td]:!align-top"
+/** Рядки: мін-висота, вміст по вертикалі по центру. */
+export const reportTxBodyRow = "[&>td]:h-[3.25rem] [&>td]:!align-middle"
 
 export const reportTxCellWrap = "min-w-0 whitespace-normal break-words"
 
@@ -45,8 +45,11 @@ export const reportTxProjectColWidth = "calc(9ch + 1.5rem)"
 
 export const reportTxHeadProject = cn(
   reportTxHead,
-  "px-1.5 md:px-2 max-w-[calc(9ch+1.5rem)]"
+  reportTxCellPadding,
+  "max-w-[calc(9ch+1.5rem)]"
 )
 
-export const reportTxCellProject =
-  "min-w-0 max-w-[calc(9ch+1.5rem)] overflow-hidden px-1.5 md:px-2 leading-snug"
+export const reportTxCellProject = cn(
+  reportTxCellPadding,
+  "!align-middle text-left min-w-0 max-w-[calc(9ch+1.5rem)] overflow-hidden leading-snug"
+)

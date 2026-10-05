@@ -6,6 +6,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from import_report_data import (
     dedupe_concatenated_unit,
+    infer_payment_purpose,
     normalize_issuance_field,
     normalize_unit_field,
 )
@@ -34,6 +35,11 @@ class IssuanceFieldNormalizationTests(unittest.TestCase):
             normalize_unit_field("\u20604 впс РУБпАК приккшр РУБпАК 5 ПРИКЗ"),
             "4 впс РУБпАК приккшр РУБпАК 5 ПРИКЗ",
         )
+
+    def test_infers_payment_purpose(self) -> None:
+        self.assertEqual(infer_payment_purpose("Гривня"), "Оплата")
+        self.assertEqual(infer_payment_purpose("Доплата"), "Доплата")
+        self.assertEqual(infer_payment_purpose("передоплата UAH"), "Передоплата")
 
 
 if __name__ == "__main__":

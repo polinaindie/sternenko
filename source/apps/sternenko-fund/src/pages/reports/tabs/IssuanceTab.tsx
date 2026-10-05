@@ -49,7 +49,6 @@ import {
   reportIssuanceFilterHalfWithApplyClass,
 } from "../components/report-ui"
 import {
-  reportTxBodyRow,
   reportTxCellAmountLight,
   reportTxCellCommentTone,
   reportTxCellPadding,
@@ -88,6 +87,14 @@ import {
   computeIssuanceDateGroupStripes,
 } from "../lib/issuance-table-dates"
 import {
+  computeTransferCellPlacements,
+  flattenTransferGroups,
+  groupIssuanceTransfers,
+  mergeTransferAttachments,
+  paginateTransferGroups,
+  sortIssuanceTransferGroups,
+} from "../lib/issuance-transfers"
+import {
   EMPTY_TABLE_VALUE,
   formatTableCellValue,
   isEmptyTableValue,
@@ -113,9 +120,11 @@ const ISSUANCE_UNIT_PRICE_COL_WIDTH = "calc(9ch + 2.5rem)"
 /** Сума рядка — вузький числовий стовпець. */
 const ISSUANCE_TOTAL_COL_WIDTH = "calc(10ch + 2.5rem)"
 const ISSUANCE_PROJECT_COL_WIDTH = reportTxProjectColWidth
+/** Оплата / Доплата / Передоплата + заголовок «Призначення». */
+const ISSUANCE_DIRECTION_COL_WIDTH = "calc(12ch + 1.5rem)"
 /** Іконка size-8 + мінімальний падинг. */
 const ISSUANCE_ATTACHMENT_COL_WIDTH = "3.25rem"
-const ISSUANCE_FIXED_COLS_WIDTH = `calc(${ISSUANCE_DATE_COL_WIDTH} + ${ISSUANCE_QUANTITY_COL_WIDTH} + ${ISSUANCE_UNIT_PRICE_COL_WIDTH} + ${ISSUANCE_TOTAL_COL_WIDTH} + ${ISSUANCE_PROJECT_COL_WIDTH} + 3 * ${ISSUANCE_ATTACHMENT_COL_WIDTH})`
+const ISSUANCE_FIXED_COLS_WIDTH = `calc(${ISSUANCE_DATE_COL_WIDTH} + ${ISSUANCE_QUANTITY_COL_WIDTH} + ${ISSUANCE_UNIT_PRICE_COL_WIDTH} + ${ISSUANCE_TOTAL_COL_WIDTH} + ${ISSUANCE_PROJECT_COL_WIDTH} + ${ISSUANCE_DIRECTION_COL_WIDTH} + 3 * ${ISSUANCE_ATTACHMENT_COL_WIDTH})`
 
 /** Пропорції гнучких стовпців: найменування, кому передали. */
 const ISSUANCE_FLEX_COL_FRACTIONS = [42, 38] as const
@@ -131,45 +140,106 @@ function issuanceFlexColWidth(fraction: number) {
 const issuanceHeadSortable = reportTxHeadSortable
 
 const issuanceCellWrap = reportTxCellWrap
+/** Текстові комірки — вертикаль по центру, горизонталь зліва. */
+const issuanceCellText = "!align-middle text-left"
+/** Цифрові комірки — вертикаль по центру, горизонталь справа. */
+const issuanceCellNumeric = "!align-middle text-right"
 
 /** Дата — середній сірий, як коментар; вирівнювання з першим товаром у групі. */
 const issuanceCellDate = cn(
   issuanceCellWrap,
-  "max-w-[6.5rem] border-r border-[var(--report-border)] !align-top whitespace-nowrap tabular-nums",
+  reportTxCellPadding,
+  issuanceCellText,
+  "max-w-[6.5rem] border-r border-[var(--report-border)] whitespace-nowrap tabular-nums",
   reportTxCellCommentTone
 )
-const issuanceBodyRow = reportTxBodyRow
+const issuanceBodyRow = "[&>td]:h-[3.25rem] [&>td]:!align-middle"
 /** Початок нового дня: тонка лінія + помірний відступ. */
 const issuanceDayGroupStartRow =
   "border-t border-[var(--report-border)] [&>td]:pt-5"
+/** Нова передача всередині дня — тонша лінія, без додаткового відступу. */
+const issuanceTransferStartRow = "border-t border-[var(--report-border)]"
 const issuanceHeaderDivider = reportTxHeaderDivider
-const issuanceHeadQuantity = cn(issuanceHeadSortable, "max-w-[4.5rem] !px-2")
-const issuanceCellQuantity = "max-w-[4.5rem] whitespace-nowrap tabular-nums"
+const issuanceHeadQuantity = cn(
+  issuanceHeadSortable,
+  reportTxCellPadding,
+  "max-w-[4.5rem] text-right"
+)
+const issuanceCellQuantity = cn(
+  reportTxCellPadding,
+  issuanceCellNumeric,
+  "max-w-[4.5rem] whitespace-nowrap tabular-nums"
+)
 const issuanceHeadUnitPrice = cn(
   issuanceHeadSortable,
-  "max-w-[calc(9ch+2.5rem)] !px-1.5"
+  reportTxCellPadding,
+  "max-w-[calc(9ch+2.5rem)] text-right"
 )
 const issuanceCellUnitPrice = cn(
-  "max-w-[calc(9ch+2.5rem)] text-right whitespace-nowrap tabular-nums",
+  reportTxCellPadding,
+  issuanceCellNumeric,
+  "max-w-[calc(9ch+2.5rem)] whitespace-nowrap tabular-nums",
   reportTxCellCommentTone
 )
+const issuanceColRule = "border-l border-[var(--report-border)]"
 const issuanceHeadTotal = cn(
   issuanceHeadSortable,
-  "max-w-[calc(10ch+2.5rem)] !px-1.5 md:!px-2"
+  reportTxCellPadding,
+  "max-w-[calc(10ch+2.5rem)] text-right",
+  issuanceColRule
 )
 const issuanceCellTotal = cn(
+  reportTxCellPadding,
+  issuanceCellNumeric,
   "max-w-[calc(10ch+2.5rem)]",
+  issuanceColRule,
   reportTxCellAmountLight
 )
-const issuanceHeadProject = reportTxHeadProject
-const issuanceCellProject = reportTxCellProject
-const issuanceCellRecipient = "min-w-0"
+const issuanceHeadProject = cn(reportTxHeadProject, issuanceColRule)
+const issuanceCellProject = cn(
+  reportTxCellProject,
+  issuanceCellText,
+  issuanceColRule
+)
+const issuanceHeadRecipient = cn(
+  issuanceHead,
+  reportTxCellPadding,
+  issuanceColRule,
+  "border-r border-[var(--report-border)]"
+)
+const issuanceCellRecipient = cn(
+  reportTxCellPadding,
+  issuanceCellText,
+  "min-w-0 whitespace-normal",
+  issuanceColRule,
+  "border-r border-[var(--report-border)]"
+)
+const issuanceHeadDirection = cn(
+  issuanceHead,
+  reportTxCellPadding,
+  "max-w-[calc(12ch+1.5rem)] border-r border-[var(--report-border)]"
+)
+const issuanceCellDirection = cn(
+  reportTxCellPadding,
+  issuanceCellText,
+  "min-w-0 max-w-[calc(12ch+1.5rem)] whitespace-nowrap border-r border-[var(--report-border)]",
+  reportTxCellCommentTone
+)
+const issuanceHeadProduct = cn(issuanceHead, reportTxCellPadding)
+const issuanceCellProduct = cn(
+  reportTxCellPadding,
+  issuanceCellText,
+  issuanceCellWrap
+)
 
 const issuanceHeadAttachment =
   "!h-auto min-h-11 !whitespace-normal text-center py-1.5 leading-tight !px-0.5 max-w-[3.25rem]"
-const issuanceCellAttachment = "!px-0.5 py-2 text-center max-w-[3.25rem]"
+const issuanceCellAttachment =
+  "!px-0.5 py-2 text-center max-w-[3.25rem] !align-middle"
+/** Лінія лише між позиціями комплекту — не через суму / проєкт / одержувача. */
+const issuanceKitLineDivider = "border-b border-[var(--report-border)]"
 
-/** Дата, к-сть, вартість, сума, проєкт, вкладення — фіксовані; найменування й одержувач ділять залишок. */
+/** Дата, к-сть, вартість, сума, проєкт, призначення, вкладення — фіксовані; найменування й одержувач ділять залишок. */
 const ISSUANCE_COLUMN_WIDTHS = [
   ISSUANCE_DATE_COL_WIDTH,
   issuanceFlexColWidth(ISSUANCE_FLEX_COL_FRACTIONS[0]),
@@ -178,6 +248,7 @@ const ISSUANCE_COLUMN_WIDTHS = [
   ISSUANCE_TOTAL_COL_WIDTH,
   ISSUANCE_PROJECT_COL_WIDTH,
   issuanceFlexColWidth(ISSUANCE_FLEX_COL_FRACTIONS[1]),
+  ISSUANCE_DIRECTION_COL_WIDTH,
   ISSUANCE_ATTACHMENT_COL_WIDTH,
   ISSUANCE_ATTACHMENT_COL_WIDTH,
   ISSUANCE_ATTACHMENT_COL_WIDTH,
@@ -321,28 +392,39 @@ export function IssuanceTab() {
     setPage(1)
   }, [appliedFilters])
 
-  const sortedRows = useMemo(() => {
-    const rows = [...filteredRows]
+  const sortedGroups = useMemo(() => {
     const direction = sortDir === "asc" ? 1 : -1
-
-    rows.sort((a, b) => {
-      if (sortKey === "date") {
-        const byDate =
-          (parseIssuanceDate(a.date) - parseIssuanceDate(b.date)) * direction
-        if (byDate !== 0) return byDate
-        return a.id.localeCompare(b.id, "uk")
-      }
-      if (sortKey === "quantity") {
-        return (a.quantity - b.quantity) * direction
-      }
-      if (sortKey === "unitPrice") {
-        return (a.unitPrice - b.unitPrice) * direction
-      }
-      return (a.total - b.total) * direction
-    })
-
-    return rows
+    return sortIssuanceTransferGroups(
+      groupIssuanceTransfers(filteredRows),
+      sortKey,
+      direction
+    )
   }, [filteredRows, sortKey, sortDir])
+
+  const packedPages = useMemo(
+    () => paginateTransferGroups(sortedGroups, pageSize),
+    [sortedGroups, pageSize]
+  )
+  const pageCount = Math.max(1, packedPages.length)
+  const safePage = Math.min(page, pageCount)
+
+  const pageRows = useMemo(
+    () => flattenTransferGroups(packedPages[safePage - 1] ?? []),
+    [packedPages, safePage]
+  )
+  const pageRange = useMemo(() => {
+    let offset = 0
+    for (let index = 0; index < safePage - 1; index += 1) {
+      offset += flattenTransferGroups(packedPages[index] ?? []).length
+    }
+    const from = pageRows.length === 0 ? 0 : offset + 1
+    const to = offset + pageRows.length
+    return { from, to }
+  }, [packedPages, pageRows.length, safePage])
+
+  useEffect(() => {
+    if (page > pageCount) setPage(pageCount)
+  }, [page, pageCount])
 
   const cycleSort = (key: IssuanceSortKey) => {
     const next = cycleColumnSort(key, activeSortKey, sortDir, DEFAULT_SORT_DIR)
@@ -351,11 +433,6 @@ export function IssuanceTab() {
     setPage(1)
   }
 
-  const pageRows = useMemo(() => {
-    const start = (page - 1) * pageSize
-    return sortedRows.slice(start, start + pageSize)
-  }, [sortedRows, page, pageSize])
-
   const dateCellPlacements = useMemo(
     () => computeIssuanceDateCells(pageRows, sortKey === "date"),
     [pageRows, sortKey]
@@ -363,6 +440,11 @@ export function IssuanceTab() {
 
   const dateGroupStripes = useMemo(
     () => computeIssuanceDateGroupStripes(pageRows),
+    [pageRows]
+  )
+
+  const transferCellPlacements = useMemo(
+    () => computeTransferCellPlacements(pageRows),
     [pageRows]
   )
 
@@ -650,13 +732,12 @@ export function IssuanceTab() {
                         }
                         onCycleSort={() => cycleSort("date")}
                         className={cn(
-                          "max-w-[6.5rem] border-r border-[var(--report-border)] !px-1.5 md:!px-2",
+                          reportTxCellPadding,
+                          "max-w-[6.5rem] border-r border-[var(--report-border)]",
                           issuanceHeadSortable
                         )}
                       />
-                      <ReportTableHead
-                        className={cn("!px-1.5 md:!px-2", issuanceHead)}
-                      >
+                      <ReportTableHead className={issuanceHeadProduct}>
                         Найменування
                       </ReportTableHead>
                       <ReportTableHeadSortable
@@ -689,10 +770,11 @@ export function IssuanceTab() {
                       <ReportTableHead className={issuanceHeadProject}>
                         Проєкт
                       </ReportTableHead>
-                      <ReportTableHead
-                        className={cn("!px-1.5 md:!px-2", issuanceHead)}
-                      >
+                      <ReportTableHead className={issuanceHeadRecipient}>
                         Кому передали
+                      </ReportTableHead>
+                      <ReportTableHead className={issuanceHeadDirection}>
+                        Призначення
                       </ReportTableHead>
                       <ReportTableHead className={issuanceHeadAttachment}>
                         Фото/
@@ -710,14 +792,42 @@ export function IssuanceTab() {
                   <ReportTableBody>
                     {pageRows.map((row, rowIndex) => {
                       const dateCell = dateCellPlacements.get(row.id)
+                      const transferCell = transferCellPlacements.get(row.id)
                       const showDaySeparator =
                         dateCell?.isDayGroupStart &&
-                        !(page === 1 && rowIndex === 0)
+                        !(safePage === 1 && rowIndex === 0)
+                      const showTransferSeparator =
+                        Boolean(transferCell?.isTransferStart) &&
+                        !showDaySeparator &&
+                        rowIndex > 0
                       const dateGroupStriped =
                         dateGroupStripes[rowIndex] ?? false
                       const dateGroupRowClass = dateGroupStriped
                         ? issuanceRowStripeClass
                         : reportTableRowSurfaceClass
+                      const transferRows = transferCell?.show
+                        ? pageRows.slice(
+                            rowIndex,
+                            rowIndex + transferCell.rowSpan
+                          )
+                        : []
+                      const transferTotal = transferRows.reduce(
+                        (sum, item) => sum + item.total,
+                        0
+                      )
+                      const transferAttachments = transferCell?.show
+                        ? mergeTransferAttachments(transferRows)
+                        : null
+                      const transferProductLabel = transferRows
+                        .map((item) => item.productName)
+                        .join(", ")
+                      const nextTransfer = pageRows[rowIndex + 1]
+                        ? transferCellPlacements.get(pageRows[rowIndex + 1]!.id)
+                        : undefined
+                      const kitContinues =
+                        Boolean(transferCell) &&
+                        nextTransfer != null &&
+                        !nextTransfer.isTransferStart
                       return (
                         <ReportTableRow
                           key={row.id}
@@ -725,6 +835,8 @@ export function IssuanceTab() {
                           className={cn(
                             issuanceBodyRow,
                             showDaySeparator && issuanceDayGroupStartRow,
+                            showTransferSeparator && issuanceTransferStartRow,
+                            kitContinues && "border-b-0",
                             dateGroupRowClass
                           )}
                         >
@@ -735,108 +847,167 @@ export function IssuanceTab() {
                                   ? dateCell.rowSpan
                                   : undefined
                               }
-                              className={cn(
-                                "!px-1.5 md:!px-2",
-                                issuanceCellDate,
-                                dateGroupRowClass
-                              )}
+                              className={cn(issuanceCellDate, dateGroupRowClass)}
                             >
                               {row.date}
                             </ReportTableCell>
                           ) : null}
                           <ReportTableCell
-                            className={cn("!px-1.5 md:!px-2", issuanceCellWrap)}
+                            className={cn(
+                              issuanceCellProduct,
+                              kitContinues && issuanceKitLineDivider
+                            )}
                           >
                             {formatTableCellValue(row.productName)}
                           </ReportTableCell>
                           <ReportTableCell
                             className={cn(
-                              "!px-1 text-right",
-                              issuanceCellQuantity
+                              issuanceCellQuantity,
+                              kitContinues && issuanceKitLineDivider
                             )}
                           >
                             {row.quantity}
                           </ReportTableCell>
                           <ReportTableCell
                             className={cn(
-                              "!px-1 text-right",
-                              issuanceCellUnitPrice
+                              issuanceCellUnitPrice,
+                              kitContinues && issuanceKitLineDivider
                             )}
                           >
                             {formatReportNumber(row.unitPrice)}
                           </ReportTableCell>
+                          {transferCell?.show ? (
+                            <ReportTableCell
+                              data-transfer-span=""
+                              rowSpan={
+                                transferCell.rowSpan > 1
+                                  ? transferCell.rowSpan
+                                  : undefined
+                              }
+                              className={issuanceCellTotal}
+                            >
+                              {formatReportNumber(transferTotal)}
+                            </ReportTableCell>
+                          ) : null}
+                          {transferCell?.show ? (
+                            <ReportTableCell
+                              data-transfer-span=""
+                              rowSpan={
+                                transferCell.rowSpan > 1
+                                  ? transferCell.rowSpan
+                                  : undefined
+                              }
+                              className={issuanceCellProject}
+                            >
+                              <FundraisingTag
+                                name={row.project}
+                                variant="colored"
+                              />
+                            </ReportTableCell>
+                          ) : null}
+                          {transferCell?.show ? (
+                            <ReportTableCell
+                              data-transfer-span=""
+                              rowSpan={
+                                transferCell.rowSpan > 1
+                                  ? transferCell.rowSpan
+                                  : undefined
+                              }
+                              className={issuanceCellRecipient}
+                            >
+                              <RecipientCell value={row.recipient} />
+                            </ReportTableCell>
+                          ) : null}
                           <ReportTableCell
                             className={cn(
-                              "!px-1.5 text-right md:!px-2",
-                              issuanceCellTotal
+                              issuanceCellDirection,
+                              kitContinues && issuanceKitLineDivider
                             )}
                           >
-                            {formatReportNumber(row.total)}
+                            {formatTableCellValue(row.purpose)}
                           </ReportTableCell>
-                          <ReportTableCell className={issuanceCellProject}>
-                            <FundraisingTag
-                              name={row.project}
-                              variant="colored"
-                            />
-                          </ReportTableCell>
-                          <ReportTableCell
-                            className={cn(
-                              "!px-1.5 md:!px-2",
-                              issuanceCellRecipient
-                            )}
-                          >
-                            <RecipientCell value={row.recipient} />
-                          </ReportTableCell>
-                          <ReportTableCell className={issuanceCellAttachment}>
-                            <AttachmentButton
-                              label="Переглянути фото та відео передачі"
-                              icon={ImagesIcon}
-                              iconClassName="size-4"
-                              compact
-                              available={row.attachments.media.length > 0}
-                              pending={row.pendingAttachments.media}
-                              onClick={() =>
-                                openMedia(
-                                  row.productName,
-                                  row.attachments.media
-                                )
-                              }
-                            />
-                          </ReportTableCell>
-                          <ReportTableCell className={issuanceCellAttachment}>
-                            <AttachmentButton
-                              label="Переглянути акт видачі"
-                              icon={FileTextIcon}
-                              iconClassName="size-4"
-                              compact
-                              available={row.attachments.act.length > 0}
-                              pending={row.pendingAttachments.act}
-                              onClick={() =>
-                                openDocument(
-                                  "act",
-                                  row.productName,
-                                  row.attachments.act
-                                )
-                              }
-                            />
-                          </ReportTableCell>
-                          <ReportTableCell className={issuanceCellAttachment}>
-                            <AttachmentButton
-                              label="Переглянути платіжний документ"
-                              icon={ReceiptIcon}
-                              iconClassName="size-4"
-                              compact
-                              available={row.attachments.payment.length > 0}
-                              pending={row.pendingAttachments.payment}
-                              onClick={() =>
-                                openDocument(
-                                  "payment",
-                                  row.productName,
-                                  row.attachments.payment
-                                )
-                              }
-                            />
-                          </ReportTableCell>
+                          {transferCell?.show && transferAttachments ? (
+                            <>
+                              <ReportTableCell
+                                data-transfer-span=""
+                                rowSpan={
+                                  transferCell.rowSpan > 1
+                                    ? transferCell.rowSpan
+                                    : undefined
+                                }
+                                className={issuanceCellAttachment}
+                              >
+                                <AttachmentButton
+                                  label="Переглянути фото та відео передачі"
+                                  icon={ImagesIcon}
+                                  iconClassName="size-4"
+                                  compact
+                                  available={
+                                    transferAttachments.media.length > 0
+                                  }
+                                  pending={transferAttachments.pending.media}
+                                  onClick={() =>
+                                    openMedia(
+                                      transferProductLabel,
+                                      transferAttachments.media
+                                    )
+                                  }
+                                />
+                              </ReportTableCell>
+                              <ReportTableCell
+                                data-transfer-span=""
+                                rowSpan={
+                                  transferCell.rowSpan > 1
+                                    ? transferCell.rowSpan
+                                    : undefined
+                                }
+                                className={issuanceCellAttachment}
+                              >
+                                <AttachmentButton
+                                  label="Переглянути акт видачі"
+                                  icon={FileTextIcon}
+                                  iconClassName="size-4"
+                                  compact
+                                  available={transferAttachments.act.length > 0}
+                                  pending={transferAttachments.pending.act}
+                                  onClick={() =>
+                                    openDocument(
+                                      "act",
+                                      transferProductLabel,
+                                      transferAttachments.act
+                                    )
+                                  }
+                                />
+                              </ReportTableCell>
+                              <ReportTableCell
+                                data-transfer-span=""
+                                rowSpan={
+                                  transferCell.rowSpan > 1
+                                    ? transferCell.rowSpan
+                                    : undefined
+                                }
+                                className={issuanceCellAttachment}
+                              >
+                                <AttachmentButton
+                                  label="Переглянути платіжний документ"
+                                  icon={ReceiptIcon}
+                                  iconClassName="size-4"
+                                  compact
+                                  available={
+                                    transferAttachments.payment.length > 0
+                                  }
+                                  pending={transferAttachments.pending.payment}
+                                  onClick={() =>
+                                    openDocument(
+                                      "payment",
+                                      transferProductLabel,
+                                      transferAttachments.payment
+                                    )
+                                  }
+                                />
+                              </ReportTableCell>
+                            </>
+                          ) : null}
                         </ReportTableRow>
                       )
                     })}
@@ -847,9 +1018,12 @@ export function IssuanceTab() {
           )}
           {!isLoading ? (
             <ReportPagination
-              page={page}
+              page={safePage}
               pageSize={pageSize}
               total={filteredRows.length}
+              pageCount={pageCount}
+              rangeFrom={pageRange.from}
+              rangeTo={pageRange.to}
               onPageChange={setPage}
               onPageSizeChange={(size) => {
                 setPageSize(size)

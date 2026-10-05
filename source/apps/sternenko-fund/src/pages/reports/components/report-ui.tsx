@@ -1,5 +1,5 @@
 import { createContext, useContext, useId } from "react"
-import { ClockIcon } from "lucide-react"
+import { CheckIcon } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -433,7 +433,7 @@ export function AttachmentButton({
   iconClassName?: string
   compact?: boolean
   available: boolean
-  /** Документ ще очікується — годинник замість порожньої клітинки. */
+  /** Документ ще очікується — галочка замість порожньої клітинки. */
   pending?: boolean
   onClick?: () => void
 }) {
@@ -467,7 +467,7 @@ export function AttachmentButton({
                 sizeClass
               )}
             >
-              <ClockIcon className={iconClassName} />
+              <CheckIcon className={iconClassName} />
             </span>
           </TooltipTrigger>
           <TooltipContent side="top" sideOffset={6} hideArrow>

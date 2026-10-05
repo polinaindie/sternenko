@@ -224,6 +224,16 @@ def infer_category(name: str) -> str:
     return "БК"
 
 
+def infer_payment_purpose(value: str) -> str:
+    """Призначення платежу: оплата / доплата / передоплата."""
+    text = normalize_issuance_field(value).lower()
+    if "передоплат" in text:
+        return "Передоплата"
+    if "доплат" in text:
+        return "Доплата"
+    return "Оплата"
+
+
 AWAITING_MARKER = "awaiting"
 
 
@@ -341,6 +351,7 @@ def import_issuance_rows(csv_rows: list[dict[str, str]]) -> tuple[list[dict], st
         media_raw = normalize_issuance_field(row["Фото/Відео звіт"])
         act_raw = normalize_issuance_field(row["Акт прийому-передачі"])
         payment_raw = normalize_issuance_field(row["Платіжний документ"])
+        purpose = infer_payment_purpose(row["Валюта і форма оплати"])
 
         month, day, year = normalize_issuance_field(row["Дата"]).split("-")
         parsed = datetime(2000 + int(year), int(month), int(day))
@@ -358,7 +369,7 @@ def import_issuance_rows(csv_rows: list[dict[str, str]]) -> tuple[list[dict], st
                 "fundraising": fundraising,
                 "recipient": f"{unit}, ЗСУ",
                 "project": project,
-                "direction": "ППО" if category == "FPV-дрони" else "Розвідка",
+                "purpose": purpose,
                 "agency": "ЗСУ",
                 "unit": unit,
                 "category": category,

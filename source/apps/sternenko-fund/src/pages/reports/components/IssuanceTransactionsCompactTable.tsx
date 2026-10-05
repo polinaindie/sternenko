@@ -17,6 +17,11 @@ import {
   formatTableCellValue,
   isEmptyTableValue,
 } from "../lib/empty-table-value"
+import {
+  groupIssuanceTransfers,
+  mergeTransferAttachments,
+  type IssuanceTransferGroup,
+} from "../lib/issuance-transfers"
 import type { IssuanceRow } from "../mock-data"
 
 type IssuanceTransactionsCompactTableProps = {
@@ -120,11 +125,15 @@ function AttachmentTile({
 }
 
 function AttachmentsColumn({
-  row,
+  productLabel,
+  attachments,
+  pending,
   onOpenMedia,
   onOpenDocument,
 }: {
-  row: IssuanceRow
+  productLabel: string
+  attachments: IssuanceRow["attachments"]
+  pending: IssuanceRow["pendingAttachments"]
   onOpenMedia: (productName: string, items: TransferMediaItem[]) => void
   onOpenDocument: (
     kind: Extract<AttachmentKind, "act" | "payment">,
@@ -142,9 +151,9 @@ function AttachmentsColumn({
           label="Переглянути фото та відео передачі"
           icon={ImagesIcon}
           iconClassName="size-5"
-          available={row.attachments.media.length > 0}
-          pending={row.pendingAttachments.media}
-          onClick={() => onOpenMedia(row.productName, row.attachments.media)}
+          available={attachments.media.length > 0}
+          pending={pending.media}
+          onClick={() => onOpenMedia(productLabel, attachments.media)}
         />
       </AttachmentTile>
       <AttachmentTile label="Акт">
@@ -152,9 +161,9 @@ function AttachmentsColumn({
           label="Переглянути акт видачі"
           icon={FileTextIcon}
           iconClassName="size-5"
-          available={row.attachments.act.length > 0}
-          pending={row.pendingAttachments.act}
-          onClick={() => onOpenDocument("act", row.productName, row.attachments.act)}
+          available={attachments.act.length > 0}
+          pending={pending.act}
+          onClick={() => onOpenDocument("act", productLabel, attachments.act)}
         />
       </AttachmentTile>
       <AttachmentTile label="Платіж">
@@ -162,10 +171,10 @@ function AttachmentsColumn({
           label="Переглянути платіжний документ"
           icon={ReceiptIcon}
           iconClassName="size-5"
-          available={row.attachments.payment.length > 0}
-          pending={row.pendingAttachments.payment}
+          available={attachments.payment.length > 0}
+          pending={pending.payment}
           onClick={() =>
-            onOpenDocument("payment", row.productName, row.attachments.payment)
+            onOpenDocument("payment", productLabel, attachments.payment)
           }
         />
       </AttachmentTile>
@@ -173,25 +182,12 @@ function AttachmentsColumn({
   )
 }
 
-function AmountBlock({ row }: { row: IssuanceRow }) {
-  return (
-    <div className="min-w-0">
-      <p className="text-2xl leading-tight font-bold tabular-nums text-[var(--report-surface-foreground)] sm:text-[1.625rem]">
-        {formatReportNumber(row.total)} ₴
-      </p>
-      <p className={cn("mt-1 tabular-nums", secondaryTextClass)}>
-        {row.quantity} шт × {formatReportNumber(row.unitPrice)} ₴
-      </p>
-    </div>
-  )
-}
-
 function IssuanceCompactCard({
-  row,
+  group,
   onOpenMedia,
   onOpenDocument,
 }: {
-  row: IssuanceRow
+  group: IssuanceTransferGroup<IssuanceRow>
   onOpenMedia: (productName: string, items: TransferMediaItem[]) => void
   onOpenDocument: (
     kind: Extract<AttachmentKind, "act" | "payment">,
@@ -199,36 +195,61 @@ function IssuanceCompactCard({
     items: DocumentAttachmentItem[]
   ) => void
 }) {
+  const host = group.rows[0]!
+  const merged = mergeTransferAttachments(group.rows)
+  const productLabel = group.rows.map((row) => row.productName).join(", ")
+
   return (
     <article className="rounded-[var(--radius-report)] border border-[var(--report-border)] bg-[var(--card)] p-4 text-[var(--report-surface-foreground)]">
       <div className="flex min-w-0 flex-col">
-        {/* Назва + сума зліва, вкладення стовпчиком справа */}
         <div className="flex items-start gap-3">
           <div className="flex min-w-0 flex-1 flex-col gap-3">
             <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
-              <p className="min-w-0 text-lg leading-snug font-semibold break-words text-[var(--report-surface-foreground)]">
-                {formatTableCellValue(row.productName)}
-              </p>
+              <ul className="flex min-w-0 flex-1 flex-col gap-2">
+                {group.rows.map((row) => (
+                  <li key={row.id} className="flex min-w-0 flex-col">
+                    <p className="min-w-0 text-lg leading-snug font-semibold break-words text-[var(--report-surface-foreground)]">
+                      {formatTableCellValue(row.productName)}
+                    </p>
+                    <p className={cn("mt-0.5 tabular-nums", secondaryTextClass)}>
+                      {row.quantity} шт × {formatReportNumber(row.unitPrice)} ₴
+                    </p>
+                  </li>
+                ))}
+              </ul>
               <div className="min-w-0 sm:shrink-0 sm:text-right">
-                <AmountBlock row={row} />
+                <p className="text-2xl leading-tight font-bold tabular-nums text-[var(--report-surface-foreground)] sm:text-[1.625rem]">
+                  {formatReportNumber(group.total)} ₴
+                </p>
               </div>
             </div>
 
             <div className="flex min-w-0 flex-col gap-4">
               <CompactMetaRow label="Проєкт/збір">
                 <FundraisingTag
-                  name={row.project}
+                  name={host.project}
                   variant="colored"
                   className="inline-flex"
                 />
               </CompactMetaRow>
               <CompactMetaRow label="Кому передали">
-                <RecipientCell value={row.recipient} />
+                <RecipientCell value={host.recipient} />
+              </CompactMetaRow>
+              <CompactMetaRow label="Призначення">
+                <span className="leading-snug text-[var(--report-surface-foreground)]">
+                  {formatTableCellValue(host.purpose)}
+                </span>
               </CompactMetaRow>
             </div>
           </div>
           <AttachmentsColumn
-            row={row}
+            productLabel={productLabel}
+            attachments={{
+              media: merged.media,
+              act: merged.act,
+              payment: merged.payment,
+            }}
+            pending={merged.pending}
             onOpenMedia={onOpenMedia}
             onOpenDocument={onOpenDocument}
           />
@@ -240,7 +261,7 @@ function IssuanceCompactCard({
 
 /**
  * Компактне подання закупленого та виданого для mobile/tablet (< lg) —
- * групи по даті зі sticky-заголовком, кожен товар окремою карткою.
+ * групи по даті зі sticky-заголовком, кожна передача окремою карткою.
  */
 export function IssuanceTransactionsCompactTable({
   rows,
@@ -254,22 +275,25 @@ export function IssuanceTransactionsCompactTable({
       className="flex flex-col gap-4 pb-12 lg:hidden [--report-border:var(--border)] [--report-surface:var(--muted)] [--report-surface-foreground:var(--foreground)]"
       aria-label="Список закупленого та виданого майна"
     >
-      {dateGroups.map((group) => (
-        <section key={group.date} className="flex flex-col gap-3">
-          <StickyDateHeader date={group.date} />
-          <ul className="flex flex-col gap-3">
-            {group.rows.map((row) => (
-              <li key={row.id} className="min-w-0">
-                <IssuanceCompactCard
-                  row={row}
-                  onOpenMedia={onOpenMedia}
-                  onOpenDocument={onOpenDocument}
-                />
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
+      {dateGroups.map((group) => {
+        const transfers = groupIssuanceTransfers(group.rows)
+        return (
+          <section key={group.date} className="flex flex-col gap-3">
+            <StickyDateHeader date={group.date} />
+            <ul className="flex flex-col gap-3">
+              {transfers.map((transfer) => (
+                <li key={transfer.key} className="min-w-0">
+                  <IssuanceCompactCard
+                    group={transfer}
+                    onOpenMedia={onOpenMedia}
+                    onOpenDocument={onOpenDocument}
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      })}
     </div>
   )
 }
