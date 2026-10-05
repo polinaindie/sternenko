@@ -918,14 +918,19 @@ export function IssuanceTab() {
                               <RecipientCell value={row.recipient} />
                             </ReportTableCell>
                           ) : null}
-                          <ReportTableCell
-                            className={cn(
-                              issuanceCellDirection,
-                              kitContinues && issuanceKitLineDivider
-                            )}
-                          >
-                            {formatTableCellValue(row.purpose)}
-                          </ReportTableCell>
+                          {transferCell?.show ? (
+                            <ReportTableCell
+                              data-transfer-span=""
+                              rowSpan={
+                                transferCell.rowSpan > 1
+                                  ? transferCell.rowSpan
+                                  : undefined
+                              }
+                              className={issuanceCellDirection}
+                            >
+                              {formatTableCellValue(row.purpose)}
+                            </ReportTableCell>
+                          ) : null}
                           {transferCell?.show && transferAttachments ? (
                             <>
                               <ReportTableCell
