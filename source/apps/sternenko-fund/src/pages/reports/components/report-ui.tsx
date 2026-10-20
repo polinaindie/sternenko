@@ -1,5 +1,5 @@
 import { createContext, useContext, useId } from "react"
-import { CheckIcon } from "lucide-react"
+import { HourglassIcon } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -433,7 +433,7 @@ export function AttachmentButton({
   iconClassName?: string
   compact?: boolean
   available: boolean
-  /** Документ ще очікується — галочка замість порожньої клітинки. */
+  /** Документ ще очікується — пісочний годинник замість порожньої клітинки. */
   pending?: boolean
   onClick?: () => void
 }) {
@@ -461,17 +461,17 @@ export function AttachmentButton({
             <span
               role="img"
               tabIndex={0}
-              aria-label={`${label} — документ очікується`}
+              aria-label={`${label} — очікується`}
               className={cn(
                 "inline-flex cursor-default select-none items-center justify-center text-muted-foreground/60 outline-none focus-visible:ring-2 focus-visible:ring-foreground/30",
                 sizeClass
               )}
             >
-              <CheckIcon className={iconClassName} />
+              <HourglassIcon className={iconClassName} />
             </span>
           </TooltipTrigger>
           <TooltipContent side="top" sideOffset={6} hideArrow>
-            Документ очікується
+            Очікується
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
