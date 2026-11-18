@@ -41,7 +41,7 @@ export function ReportFiltersPanel({
   onCancel,
   onClearAll,
   children,
-  title = "Фільтри",
+  title = "Фільтрувати",
   barClassName = "lg:hidden",
 }: ReportFiltersPanelProps) {
   const countLabel =
@@ -96,12 +96,12 @@ export function ReportFiltersPanel({
           showCloseButton={false}
           className={cn(
             siteControlClass,
-            "inset-0 flex h-dvh max-h-dvh w-full max-w-none flex-col gap-0 rounded-none border-0 p-0",
+            "z-[1001] inset-0 flex h-dvh max-h-dvh w-full max-w-none flex-col gap-0 rounded-none border-0 p-0",
             "data-[side=right]:inset-0 data-[side=right]:h-dvh data-[side=right]:w-full data-[side=right]:max-w-none data-[side=right]:border-0 data-[side=right]:sm:max-w-none"
           )}
         >
-          <SheetHeader className="relative shrink-0 border-b px-4 py-3 pr-14 pt-[max(0.75rem,env(safe-area-inset-top))] text-left">
-            <SheetTitle className="[font-family:var(--font-display-dark)] text-lg leading-tight">
+          <SheetHeader className="shrink-0 flex-row items-center justify-between gap-3 border-b px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] text-left">
+            <SheetTitle className="[font-family:var(--font-display-dark)] text-lg leading-tight normal-case">
               {title}
             </SheetTitle>
             <SheetDescription className="sr-only">
@@ -112,7 +112,7 @@ export function ReportFiltersPanel({
               type="button"
               variant="ghost"
               size="icon"
-              className={cn(siteControlClass, "absolute top-2 right-2 size-10")}
+              className={cn(siteControlClass, "size-10 shrink-0")}
               onClick={onCancel}
               aria-label="Закрити фільтри"
             >

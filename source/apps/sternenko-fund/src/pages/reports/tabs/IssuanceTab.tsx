@@ -564,6 +564,7 @@ export function IssuanceTab() {
                 optionCounts={optionCounts.projects}
                 placeholder="Обрати проєкти"
                 allSelectedLabel="Усі проєкти"
+                sortable
               />
             </FilterField>
             <FilterField label="Підрозділи">
@@ -578,6 +579,7 @@ export function IssuanceTab() {
                 allSelectedLabel="Усі підрозділи"
                 searchable
                 searchPlaceholder="Пошук підрозділу"
+                sortable
               />
             </FilterField>
           </ReportFiltersPanel>
@@ -623,6 +625,7 @@ export function IssuanceTab() {
                   optionCounts={optionCounts.projects}
                   placeholder="Обрати проєкти"
                   allSelectedLabel="Усі проєкти"
+                  sortable
                 />
               </FilterField>
               <FilterField label="Підрозділи">
@@ -637,6 +640,7 @@ export function IssuanceTab() {
                   allSelectedLabel="Усі підрозділи"
                   searchable
                   searchPlaceholder="Пошук підрозділу"
+                  sortable
                 />
               </FilterField>
               <FilterApplyButton

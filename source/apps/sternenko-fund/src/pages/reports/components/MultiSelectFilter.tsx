@@ -6,7 +6,13 @@ import {
   useRef,
   useState,
 } from "react"
-import { ChevronDownIcon, SearchIcon } from "lucide-react"
+import {
+  ArrowDownIcon,
+  ArrowUpDownIcon,
+  ArrowUpIcon,
+  ChevronDownIcon,
+  SearchIcon,
+} from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -20,9 +26,23 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
+import {
+  cycleOptionSort,
+  optionSortActionLabel,
+  sortFilterOptions,
+  type OptionListSort,
+  type OptionSortDirection,
+  type OptionSortKey,
+} from "../lib/option-list-sort"
 import {
   filterPopoverContentClass,
   siteControlClass,
@@ -69,6 +89,8 @@ type MultiSelectFilterProps = {
   /** Пошук за опціями всередині дропдауну. */
   searchable?: boolean
   searchPlaceholder?: string
+  /** Сортування списку за кількістю і за назвою. */
+  sortable?: boolean
   className?: string
   id?: string
 }
@@ -81,6 +103,7 @@ export type MultiSelectFilterPanelProps = {
   placeholder?: string
   searchable?: boolean
   searchPlaceholder?: string
+  sortable?: boolean
   listClassName?: string
   listId?: string
   onRequestClose?: () => void
@@ -199,6 +222,50 @@ function FilterOptionRow({
 }
 
 /** Тримає ту саму висоту рядка (36px), щоб список не стрибав при появі опцій. */
+function OptionSortButton({
+  sortKey,
+  direction,
+  marker,
+  onClick,
+}: {
+  sortKey: OptionSortKey
+  direction: OptionSortDirection | null
+  marker: string
+  onClick: () => void
+}) {
+  const label = optionSortActionLabel(sortKey, direction)
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          onClick={onClick}
+          aria-label={label}
+          className={cn(
+            "inline-flex h-8 shrink-0 items-center gap-0.5 rounded-sm px-1 text-foreground opacity-70 outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            direction && "bg-foreground/12 opacity-100"
+          )}
+        >
+          <span className="text-xs leading-none" aria-hidden="true">
+            {marker}
+          </span>
+          {direction === null ? (
+            <ArrowUpDownIcon className="size-3.5" aria-hidden />
+          ) : direction === "asc" ? (
+            <ArrowUpIcon className="size-3.5" aria-hidden />
+          ) : (
+            <ArrowDownIcon className="size-3.5" aria-hidden />
+          )}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="top" sideOffset={6} hideArrow className="z-[1100]">
+        {label}
+      </TooltipContent>
+    </Tooltip>
+  )
+}
+
 function FilterOptionsSkeleton() {
   return (
     <div aria-busy="true">
@@ -226,12 +293,14 @@ export function MultiSelectFilterPanel({
   optionCounts,
   searchable = false,
   searchPlaceholder = "Пошук",
+  sortable = false,
   listClassName,
   listId,
   onRequestClose,
 }: MultiSelectFilterPanelProps) {
   const [query, setQuery] = useState("")
   const [pinnedSelection] = useState(() => new Set(selected))
+  const [sort, setSort] = useState<OptionListSort | null>(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const optionRefs = useRef<Array<HTMLElement | null>>([])
   const searchRef = useRef<HTMLInputElement | null>(null)
@@ -239,10 +308,11 @@ export function MultiSelectFilterPanel({
     const matches = options.filter((option) =>
       matchesOptionQuery(option, query)
     )
+    if (sort) return sortFilterOptions(matches, sort, optionCounts)
     const pinned = matches.filter((option) => pinnedSelection.has(option))
     const unpinned = matches.filter((option) => !pinnedSelection.has(option))
     return [...pinned, ...unpinned]
-  }, [options, pinnedSelection, query])
+  }, [optionCounts, options, pinnedSelection, query, sort])
   /**
    * Рядки монтуються з нижчим пріоритетом: попап та пошук з'являються одразу,
    * а важкий список — наступним проходом, поки видно скелетони.
@@ -350,19 +420,37 @@ export function MultiSelectFilterPanel({
           />
         </InputGroup>
       ) : null}
-      <div className="border-b border-border pb-1">
+      <div className="flex items-center gap-1 border-b border-border pb-1">
         <Button
           type="button"
           variant="ghost"
-          className="h-8 w-full justify-start px-2 text-sm font-medium"
+          className="h-8 min-w-0 flex-1 justify-start px-2 text-sm font-medium"
           onClick={toggleVisible}
           disabled={visibleOptions.length === 0}
         >
-          {allVisibleSelected ? "Зняти всі" : "Обрати всі"}
-          {hasQuery
-            ? ` (${visibleOptions.length.toLocaleString("uk-UA")})`
-            : ""}
+          <span className="truncate">
+            {allVisibleSelected ? "Зняти всі" : "Обрати всі"}
+            {hasQuery
+              ? ` (${visibleOptions.length.toLocaleString("uk-UA")})`
+              : ""}
+          </span>
         </Button>
+        {sortable ? (
+          <TooltipProvider delayDuration={200}>
+            <OptionSortButton
+              sortKey="count"
+              marker="1"
+              direction={sort?.key === "count" ? sort.direction : null}
+              onClick={() => setSort((current) => cycleOptionSort("count", current))}
+            />
+            <OptionSortButton
+              sortKey="name"
+              marker="А"
+              direction={sort?.key === "name" ? sort.direction : null}
+              onClick={() => setSort((current) => cycleOptionSort("name", current))}
+            />
+          </TooltipProvider>
+        ) : null}
       </div>
       <div
         id={listId}
@@ -427,6 +515,7 @@ export function MultiSelectFilter({
   allSelectedLabel = placeholder,
   searchable = false,
   searchPlaceholder = "Пошук",
+  sortable = false,
   className,
   id,
 }: MultiSelectFilterProps) {
@@ -482,6 +571,7 @@ export function MultiSelectFilter({
           placeholder={placeholder}
           searchable={searchable}
           searchPlaceholder={searchPlaceholder}
+          sortable={sortable}
           listClassName="max-h-64 overflow-y-auto"
           listId={listId}
           onRequestClose={() => setOpen(false)}
